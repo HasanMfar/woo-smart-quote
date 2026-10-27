@@ -10,6 +10,8 @@ jobs:
   build:
     name: Build Signed Android App
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout Repository
