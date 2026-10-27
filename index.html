@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>دموی آنلاین افزونه «مَظَنّه چند؟» — استعلام قیمت و پیش‌فاکتور رسمی ووکامرس</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-dark: #0369a1;
+      --primary-glow: rgba(14, 165, 233, 0.35);
+      --dark-bg: #030c1b;
+      --dark-card: #0a192f;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --accent-gold: #f59e0b;
+      --accent-green: #10b981;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: var(--text-main);
+      line-height: 1.7;
+    }
+
+    /* Top Demo Header */
+    .demo-bar {
+      background: linear-gradient(90deg, #0b1f3a, #030c1b);
+      color: #ffffff;
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+    .demo-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 18px;
+    }
+    .demo-tag {
+      background: rgba(14, 165, 233, 0.2);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      color: #38bdf8;
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+    .demo-actions {
+      display: flex;
+      gap: 12px;
+    }
+    .btn-apk {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #ffffff;
+      text-decoration: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+      transition: all 0.2s;
+    }
+    .btn-apk:hover { transform: translateY(-2px); }
+
+    /* Hero Banner */
+    .hero {
+      background: linear-gradient(135deg, #030c1b 0%, #081a36 60%, #030c1b 100%);
+      color: #ffffff;
+      padding: 60px 24px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-title {
+      font-size: 36px;
+      font-weight: 900;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #ffffff 40%, #bae6fd 75%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-sub {
+      font-size: 17px;
+      color: #94a3b8;
+      max-width: 800px;
+      margin: 0 auto 30px;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 26px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 30px;
+    }
+    .section-title span { color: var(--primary); }
+
+    /* Store Catalog */
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+      margin-bottom: 50px;
+    }
+    .product-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.04);
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      flex-direction: column;
+    }
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    }
+    .product-thumb {
+      height: 160px;
+      background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 54px;
+    }
+    .product-info {
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .product-tag {
+      font-size: 11px;
+      color: #f59e0b;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .product-name {
+      font-size: 17px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 10px;
+    }
+    .product-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+    .btn-quote {
+      background: #0284c7;
+      color: #ffffff;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.2s;
+      width: 100%;
+    }
+    .btn-quote:hover { background: #0369a1; }
+    .btn-quote.added { background: #10b981; }
+
+    /* Floating Basket Button */
+    .floating-basket {
+      position: fixed;
+      bottom: 30px;
+      left: 30px;
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      color: #ffffff;
+      border: 2px solid #38bdf8;
+      border-radius: 50px;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 15px;
+      font-weight: 800;
+      box-shadow: 0 10px 30px rgba(2, 132, 199, 0.45);
+      cursor: pointer;
+      z-index: 999;
+      transition: transform 0.2s;
+    }
+    .floating-basket:hover { transform: scale(1.05); }
+    .basket-badge {
+      background: #ef4444;
+      color: #ffffff;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(8px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 600px;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+      display: flex;
+      flex-direction: column;
+      max-height: 90vh;
+    }
+    .modal-head {
+      background: #0b1f3a;
+      color: #ffffff;
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-head h3 { font-size: 18px; font-weight: 800; }
+    .modal-close {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 24px;
+      cursor: pointer;
+    }
+    .modal-body {
+      padding: 24px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .modal-items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+    .modal-items-table th, .modal-items-table td {
+      padding: 10px;
+      border-bottom: 1px solid #e2e8f0;
+      text-align: right;
+    }
+    .form-group {
+      margin-bottom: 14px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #334155;
+    }
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 14px;
+    }
+    .btn-submit-quote {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #ffffff;
+      border: none;
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+    }
+
+    /* Live Invoice Preview */
+    .invoice-preview-card {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+      margin-top: 40px;
+    }
+    .inv-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #0284c7;
+      padding-bottom: 18px;
+      margin-bottom: 20px;
+    }
+    .inv-title { font-size: 22px; font-weight: 900; color: #0f172a; }
+    .inv-meta { font-size: 13px; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+  <!-- Top Demo Bar -->
+  <header class="demo-bar">
+    <div class="demo-brand">
+      <span>مَـظَنّـه چند؟</span>
+      <span class="demo-tag">دموی آنلاین ووکامرس</span>
+    </div>
+    <div class="demo-actions">
+      <a href="https://github.com/HasanMfar/woo-smart-quote/releases/latest" class="btn-apk" target="_blank">
+        <span>📱 دانلود APK اپلیکیشن اندروید</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Hero Banner -->
+  <section class="hero">
+    <h1 class="hero-title">دموی آنلاین سیستم استعلام قیمت «مَـظَنّـه چند؟»</h1>
+    <p class="hero-sub">
+      سیستم جامع B2B استعلام قیمت توافقی و صدور پیش‌فاکتور رسمی ماده ۱۶۹ امور مالیاتی در ووکامرس با اپلیکیشن اندروید اختصاصی و اطلاع‌رسانی در بله و ایتا.
+    </p>
+  </section>
+
+  <!-- Main Container -->
+  <main class="container">
+    <h2 class="section-title">فروشگاه تستی: <span>کالاهای بدون قیمت قطعی / نوسانی</span></h2>
+    <p style="text-align: center; color: #64748b; margin-top: -20px; margin-bottom: 30px;">
+      روی دکمه «استعلام قیمت» کلیک کنید تا اقلام را به سبد شناور استعلام اضافه کنید و پیش‌فاکتور رسمی را ببینید:
+    </p>
+
+    <!-- Product Grid -->
+    <div class="catalog-grid">
+      
+      <div class="product-card">
+        <div class="product-thumb">🏗️</div>
+        <div class="product-info">
+          <div>
+            <span class="product-tag">آهن‌آلات و فولاد • قیمت توافقی</span>
+            <h3 class="product-name">میلگرد ۱۴ آجدار ذوب‌آهن (شاخه ۱۲ متری)</h3>
+            <p class="product-desc">فروش به صورت تناژ و ظرفیت با قیمت توافقی روزانه کارخانه.</p>
+          </div>
+          <button class="btn-quote" onclick="addToQuote('میلگرد ۱۴ آجدار ذوب‌آهن', 50)">
+            <span>➕ افزودن به استعلام قیمت</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-thumb">🔩</div>
+        <div class="product-info">
+          <div>
+            <span class="product-tag">تجهیزات صنعتی • استعلام عمده</span>
+            <h3 class="product-name">لوله مانیسمان رده ۴۰ بدون درز (۶ اینچ)</h3>
+            <p class="product-desc">تامین سفارش‌های سازمانی و پروژه‌ای با صدور پیش‌فاکتور رسمی دارایی.</p>
+          </div>
+          <button class="btn-quote" onclick="addToQuote('لوله مانیسمان رده ۴۰ (۶ اینچ)', 12)">
+            <span>➕ افزودن به استعلام قیمت</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-thumb">🧱</div>
+        <div class="product-info">
+          <div>
+            <span class="product-tag">مصالح ساختمانی • فاکتور رسمی</span>
+            <h3 class="product-name">سیمان پرتلند تیپ ۲ (حواله کارخانه)</h3>
+            <p class="product-desc">حداقل سفارش ۲۵ تن با ارائه گواهی استاندارد و محاسبه مالیات بر ارزش افزوده.</p>
+          </div>
+          <button class="btn-quote" onclick="addToQuote('سیمان تیپ ۲ (حواله کارخانه)', 25)">
+            <span>➕ افزودن به استعلام قیمت</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-thumb">⚙️</div>
+        <div class="product-info">
+          <div>
+            <span class="product-tag">قطعات صنعتی • خرید شرکتی</span>
+            <h3 class="product-name">الکتروموتور ۱۱ کیلووات ۳ فاز موتوژن</h3>
+            <p class="product-desc">گارانتی طلایی، کد اقتصادی و شناسه ملی فروشنده جهت ثبت در سامانه مودیان.</p>
+          </div>
+          <button class="btn-quote" onclick="addToQuote('الکتروموتور ۱۱ کیلووات موتوژن', 4)">
+            <span>➕ افزودن به استعلام قیمت</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Live Invoice Preview Section -->
+    <div class="invoice-preview-card">
+      <div class="inv-header">
+        <div>
+          <span style="background: #e0f2fe; color: #0284c7; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;">پیش‌نمایش سند خروجی mPDF</span>
+          <h3 class="inv-title">پیش‌فاکتور رسمی فروش کالا و خدمات (ماده ۱۶۹)</h3>
+          <span class="inv-meta">شناسه ملی: ۱۰۱۰۳۴۸۵۹۴ • کد اقتصادی: ۴۱۱۳۷۸۶۶۵۵</span>
+        </div>
+        <div style="text-align: left;">
+          <div style="font-weight: 800; color: #0284c7;">شماره استعلام: WSQ-1403-8201</div>
+          <div style="font-size: 13px; color: #64748b;">تاریخ: ۱۴۰۳/۰۸/۰۶ • اعتبار: ۴۸ ساعت</div>
+        </div>
+      </div>
+
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 14px; text-align: right;" id="invoice-table">
+          <thead>
+            <tr style="background: #f1f5f9; color: #0f172a;">
+              <th style="padding: 10px; border: 1px solid #cbd5e1;">ردیف</th>
+              <th style="padding: 10px; border: 1px solid #cbd5e1;">شرح کالا یا خدمت</th>
+              <th style="padding: 10px; border: 1px solid #cbd5e1;">تعداد</th>
+              <th style="padding: 10px; border: 1px solid #cbd5e1;">مبلغ واحد (ریال)</th>
+              <th style="padding: 10px; border: 1px solid #cbd5e1;">تخفیف</th>
+              <th style="padding: 10px; border: 1px solid #cbd5e1;">مبلغ کل پس از تخفیف</th>
+            </tr>
+          </thead>
+          <tbody id="invoice-tbody">
+            <tr>
+              <td style="padding: 10px; border: 1px solid #e2e8f0;">۱</td>
+              <td style="padding: 10px; border: 1px solid #e2e8f0;">میلگرد ۱۴ آجدار ذوب‌آهن</td>
+              <td style="padding: 10px; border: 1px solid #e2e8f0;">۵۰</td>
+              <td style="padding: 10px; border: 1px solid #e2e8f0;">۴,۸۰۰,۰۰۰</td>
+              <td style="padding: 10px; border: 1px solid #e2e8f0;">۵٪</td>
+              <td style="padding: 10px; border: 1px solid #e2e8f0;">۲۲۸,۰۰۰,۰۰۰</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px; border: 1px solid #e2e8f0;">۲</td>
+              <td style="padding: 10px; border: 1px solid #e2e8f0;">لوله مانیسمان رده ۴۰ (۶ اینچ)</td>
+              <td style="padding: 10px; border: 1px solid #e2e8f0;">۱۲</td>
+              <td style="padding: 10px; border: 1px solid #e2e8f0;">۳۸,۰۰۰,۰۰۰</td>
+              <td style="padding: 10px; border: 1px solid #e2e8f0;">۰</td>
+              <td style="padding: 10px; border: 1px solid #e2e8f0;">۴۵۶,۰۰۰,۰۰۰</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr style="background: #f8fafc; font-weight: 800;">
+              <td colspan="5" style="padding: 10px; border: 1px solid #cbd5e1; text-align: left;">مجموع اقلام:</td>
+              <td style="padding: 10px; border: 1px solid #cbd5e1;">۶۸۴,۰۰۰,۰۰۰ ریال</td>
+            </tr>
+            <tr style="background: #f8fafc; font-weight: 800;">
+              <td colspan="5" style="padding: 10px; border: 1px solid #cbd5e1; text-align: left;">مالیات بر ارزش افزوده (۱۰٪):</td>
+              <td style="padding: 10px; border: 1px solid #cbd5e1;">۶۸,۴۰۰,۰۰۰ ریال</td>
+            </tr>
+            <tr style="background: #e0f2fe; color: #0369a1; font-weight: 900; font-size: 16px;">
+              <td colspan="5" style="padding: 12px; border: 1px solid #cbd5e1; text-align: left;">مبلغ قابل پرداخت نهایی:</td>
+              <td style="padding: 12px; border: 1px solid #cbd5e1;">۷۵۲,۴۰۰,۰۰۰ ریال</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Floating Basket Widget -->
+  <div class="floating-basket" onclick="openModal()">
+    <span>📋 سبد استعلام قیمت</span>
+    <span class="basket-badge" id="basket-count">۲</span>
+  </div>
+
+  <!-- Quote Modal -->
+  <div class="modal-overlay" id="quote-modal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3>ثبت نهایی درخواست استعلام قیمت</h3>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <table class="modal-items-table">
+          <thead>
+            <tr>
+              <th>عنوان کالا</th>
+              <th>تعداد</th>
+              <th>حذف</th>
+            </tr>
+          </thead>
+          <tbody id="modal-tbody">
+            <!-- Populated via JS -->
+          </tbody>
+        </table>
+
+        <div class="form-group">
+          <label>نام و نام خانوادگی / نام شرکت خریدار:</label>
+          <input type="text" id="cust-name" value="شرکت مهندسی و بازرگانی کاسپین" />
+        </div>
+        <div class="form-group">
+          <label>شماره تماس خریدار (جهت ارسال SMS و بله/ایتا):</label>
+          <input type="text" id="cust-phone" value="۰۹۱۲۳۴۵۶۷۸۹" />
+        </div>
+        <div class="form-group">
+          <label>یادداشت یا توضیحات تکمیلی استعلام:</label>
+          <textarea rows="2" id="cust-note">لطفاً پیش‌فاکتور با مهلت اعتبار ۷۲ ساعته صادر شود.</textarea>
+        </div>
+
+        <button class="btn-submit-quote" onclick="submitQuote()">
+          <span>🚀 ثبت استعلام و صدور آنی پیش‌فاکتور</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let quoteItems = [
+      { name: 'میلگرد ۱۴ آجدار ذوب‌آهن', qty: 50 },
+      { name: 'لوله مانیسمان رده ۴۰ (۶ اینچ)', qty: 12 }
+    ];
+
+    function updateBadge() {
+      document.getElementById('basket-count').textContent = quoteItems.length;
+    }
+
+    function addToQuote(name, qty) {
+      quoteItems.push({ name: name, qty: qty });
+      updateBadge();
+      alert('کالای «' + name + '» با موفقیت به سبد استعلام قیمت اضافه شد.');
+    }
+
+    function openModal() {
+      const tbody = document.getElementById('modal-tbody');
+      tbody.innerHTML = '';
+      quoteItems.forEach((item, idx) => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${item.name}</td>
+            <td><strong>${item.qty}</strong></td>
+            <td><button style="color:red; border:none; background:none; cursor:pointer;" onclick="removeItem(${idx})">✖</button></td>
+          </tr>
+        `;
+      });
+      document.getElementById('quote-modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('quote-modal').style.display = 'none';
+    }
+
+    function removeItem(idx) {
+      quoteItems.splice(idx, 1);
+      updateBadge();
+      openModal();
+    }
+
+    function submitQuote() {
+      alert('درخواست استعلام با موفقیت ثبت شد!\nپیش‌فاکتور رسمی صادر گردید و اعلان برای مدیر فروشگاه و پیام‌رسان بله/ایتا ارسال شد.');
+      closeModal();
+    }
+  </script>
+</body>
+</html>

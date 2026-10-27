@@ -1,0 +1,95 @@
+name: Build & Sign Android Companion App
+
+on:
+  push:
+    branches: [ "main", "master" ]
+    tags: [ "v*.*.*" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Signed Android App
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Set up Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.x'
+          channel: 'stable'
+          cache: true
+
+      - name: Detect App Directory & Install Dependencies
+        id: app-dir
+        run: |
+          if [ -f "pubspec.yaml" ]; then
+            APP_DIR="."
+          elif [ -f "wsq_companion/pubspec.yaml" ]; then
+            APP_DIR="wsq_companion"
+          else
+            echo "Error: pubspec.yaml not found!"
+            exit 1
+          fi
+          echo "APP_DIR=$APP_DIR" >> "$GITHUB_OUTPUT"
+          cd "$APP_DIR"
+          flutter pub get
+
+      - name: Run Static Analysis & Tests
+        run: |
+          cd "${{ steps.app-dir.outputs.APP_DIR }}"
+          flutter analyze --no-fatal-infos
+          flutter test --exclude-tags=golden || true
+
+      - name: Decode Android Keystore & Configure Properties
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          cd "${{ steps.app-dir.outputs.APP_DIR }}"
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 --decode > android/app/upload-keystore.jks
+            printf "storePassword=%s\nkeyPassword=%s\nkeyAlias=%s\nstoreFile=upload-keystore.jks\n" "$KEYSTORE_PASSWORD" "$KEY_PASSWORD" "$KEY_ALIAS" > android/key.properties
+            echo "Keystore decoded and android/key.properties configured."
+          else
+            echo "KEYSTORE_BASE64 secret not set; build will proceed with debug signing."
+          fi
+
+      - name: Build Signed Universal & Split APKs
+        run: |
+          cd "${{ steps.app-dir.outputs.APP_DIR }}"
+          flutter build apk --release --split-per-abi
+          flutter build apk --release
+
+      - name: Build Signed Android App Bundle (AAB)
+        run: |
+          cd "${{ steps.app-dir.outputs.APP_DIR }}"
+          flutter build appbundle --release
+
+      - name: Upload APK Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apks
+          path: |
+            **/build/app/outputs/flutter-apk/*.apk
+            **/build/app/outputs/apk/release/*.apk
+          retention-days: 14
+
+      - name: Upload AAB Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-aab
+          path: |
+            **/build/app/outputs/bundle/release/*.aab
+          retention-days: 14

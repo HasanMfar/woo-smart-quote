@@ -1,0 +1,6 @@
+{
+  "summary": "Detailed implementation plan for a WooCommerce plugin that connects YITH Request a Quote events to Bale and Eitaa messengers with Persian/RTL PDF generation. Covers 9 phases: environment setup, plugin skeleton, YITH hooks, Action Scheduler queue, API wrappers for both messengers, Dompdf-based Persian PDF generation, message templating, admin settings UI, and distribution prep. Includes file structure, code samples, risk table, timeline estimate, and open questions.",
+  "updatedAt": "2026-09-09T15:10:43.392201300Z",
+  "requestFeedback": true,
+  "userFacing": true
+}

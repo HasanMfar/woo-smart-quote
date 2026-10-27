@@ -1,0 +1,33 @@
+# OS & Editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# Archives & Temporary Backups
+*.zip
+*.tar.gz
+*.log
+*.pid
+*.err
+woo-smart-quote-backup-*/
+wordpress/
+yith_extracted_small/
+.freebuff/
+mock-captures/
+ui-checks/
+screenshots/
+
+# Secrets & Keystores (Handled via GitHub Secrets)
+*.jks
+*.keystore
+
+# Flutter / Dart build outputs
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+**/build/
+**/android/.gradle/
+**/android/local.properties

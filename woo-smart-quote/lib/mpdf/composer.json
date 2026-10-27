@@ -1,0 +1,4 @@
+{
+  "require": { "mpdf/mpdf": "^8.2" },
+  "config": { "platform": { "php": "8.2.29" }, "optimize-autoloader": true }
+}

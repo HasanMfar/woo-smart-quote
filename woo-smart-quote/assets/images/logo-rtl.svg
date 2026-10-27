@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 96" width="460" height="96" dir="rtl">
+  <defs>
+    <linearGradient id="logoBgRTL" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F46E5"/>
+      <stop offset="50%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#7C3AED"/>
+    </linearGradient>
+    <linearGradient id="primaryTextGradRTL" x1="100%" y1="0%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#4F46E5"/>
+      <stop offset="100%" stop-color="#7C3AED"/>
+    </linearGradient>
+    <linearGradient id="sparkGradRTL" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10B981"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <filter id="logoShadowRTL" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="6" stdDeviation="7" flood-color="#4F46E5" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+
+  <!-- Right Icon Mark (Positioned on the Right for RTL) -->
+  <g transform="translate(366, 6)" filter="url(#logoShadowRTL)">
+    <!-- Squircle Base -->
+    <rect x="0" y="0" width="84" height="84" rx="22" fill="url(#logoBgRTL)"/>
+    <rect x="0.5" y="0.5" width="83" height="83" rx="21.5" fill="none" stroke="#FFFFFF" stroke-width="1.2" stroke-opacity="0.3"/>
+
+    <!-- Document Sheet with folded corner -->
+    <path d="M 22 14 L 52 14 L 64 26 L 64 68 A 4 4 0 0 1 60 72 L 22 72 A 4 4 0 0 1 18 68 L 18 18 A 4 4 0 0 1 22 14 Z" fill="#FFFFFF"/>
+    <path d="M 52 14 L 52 23 A 3 3 0 0 0 55 26 L 64 26 Z" fill="#CBD5E1"/>
+
+    <!-- Quotation Marks -->
+    <g fill="url(#logoBgRTL)">
+      <path d="M 26 34 C 26 29 29 26 33 26 C 35 26 36 27 37 28 C 35 30 35 33 35 35 L 37 35 A 2 2 0 0 1 39 37 L 39 42 A 2 2 0 0 1 37 44 L 30 44 C 28 44 26 42 26 40 Z"/>
+      <path d="M 41 34 C 41 29 44 26 48 26 C 50 26 51 27 52 28 C 50 30 50 33 50 35 L 52 35 A 2 2 0 0 1 54 37 L 54 42 A 2 2 0 0 1 52 44 L 45 44 C 43 44 41 42 41 40 Z"/>
+    </g>
+
+    <!-- Document Content Lines -->
+    <rect x="25" y="50" width="28" height="2.5" rx="1.25" fill="#94A3B8"/>
+    <rect x="25" y="56" width="19" height="2.5" rx="1.25" fill="#94A3B8" opacity="0.6"/>
+
+    <!-- Emerald Instant Spark Badge -->
+    <circle cx="62" cy="62" r="11" fill="url(#sparkGradRTL)"/>
+    <path d="M 63 56 L 58 62 L 61.5 62 L 60.5 68 L 66 61 L 62.5 61 Z" fill="#FFFFFF"/>
+  </g>
+
+  <!-- Typography Brand Text (Persian RTL aligned to the Right) -->
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Vazirmatn', 'IranSans', 'Segoe UI', Tahoma, sans-serif" direction="rtl">
+    <!-- Main Persian Title -->
+    <text x="348" y="44" font-size="24" font-weight="800" fill="#0F172A" text-anchor="start" letter-spacing="-0.3">
+      هوشمند استعلام قیمت
+    </text>
+
+    <!-- Sub-brand Tagline -->
+    <text x="348" y="66" font-size="12" font-weight="500" fill="#64748B" text-anchor="start">
+      صدور پیش‌فاکتور رسمی PDF • اتصال بومی به بله و ایتا
+    </text>
+
+    <!-- WooCommerce Integration Pill -->
+    <g transform="translate(14, 26)">
+      <rect x="0" y="0" width="108" height="22" rx="11" fill="#EEF2FF" stroke="#C7D2FE" stroke-width="0.8"/>
+      <text x="54" y="15" font-size="10.5" font-weight="700" fill="#4F46E5" text-anchor="middle" font-family="-apple-system, 'Segoe UI', sans-serif">
+        ووکامرس پرو
+      </text>
+    </g>
+
+    <!-- Active Channel Badges Pill -->
+    <g transform="translate(14, 52)">
+      <rect x="0" y="0" width="108" height="20" rx="10" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="0.8"/>
+      <circle cx="16" cy="10" r="3.5" fill="#10B981"/>
+      <text x="60" y="14" font-size="10" font-weight="600" fill="#059669" text-anchor="middle">
+        بله + ایتا + پیامک
+      </text>
+    </g>
+  </g>
+</svg>

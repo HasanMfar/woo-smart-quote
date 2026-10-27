@@ -1,0 +1,2575 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>دموی زنده و تعاملی | WooCommerce Smart Quote (استعلام قیمت هوشمند ووکامرس)</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #4F46E5;
+      --primary-dark: #3730A3;
+      --primary-light: #EEF2FF;
+      --accent: #7C3AED;
+      --success: #10B981;
+      --success-dark: #059669;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+      --bale: #0284C7;
+      --bale-light: #E0F2FE;
+      --eitaa: #EA580C;
+      --eitaa-light: #FFEDD5;
+      --telegram: #2AABEE;
+      
+      --bg: #F8FAFC;
+      --card-bg: #FFFFFF;
+      --text-main: #0F172A;
+      --text-muted: #64748B;
+      --border: #E2E8F0;
+      --border-focus: #818CF8;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.04);
+      --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* ========================================================
+       TOP NAVIGATION BAR
+       ======================================================== */
+    header {
+      background: #FFFFFF;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-inner {
+      max-width: 1520px;
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo-badge {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 22px;
+      font-weight: 900;
+      box-shadow: 0 6px 14px rgba(79, 70, 229, 0.35);
+      position: relative;
+    }
+
+    .brand-logo-badge::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      right: -2px;
+      width: 14px;
+      height: 14px;
+      background: var(--success);
+      border: 2.5px solid white;
+      border-radius: 50%;
+    }
+
+    .brand-text h1 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-text p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .nav-tabs {
+      display: flex;
+      background: #F1F5F9;
+      padding: 4px;
+      border-radius: 10px;
+      gap: 4px;
+    }
+
+    .nav-tab-btn {
+      background: transparent;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .nav-tab-btn:hover {
+      color: var(--text-main);
+    }
+
+    .nav-tab-btn.active {
+      background: #FFFFFF;
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-quick-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sound-toggle {
+      background: #F8FAFC;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .sound-toggle.active {
+      background: #EEF2FF;
+      border-color: #C7D2FE;
+      color: var(--primary);
+    }
+
+    .cta-marketplace-btn {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+      text-decoration: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .cta-marketplace-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(79, 70, 229, 0.35);
+    }
+
+    /* ========================================================
+       MAIN LAYOUT
+       ======================================================== */
+    .main-wrapper {
+      max-width: 1520px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      width: 100%;
+      flex: 1;
+    }
+
+    .interactive-grid {
+      display: grid;
+      grid-template-columns: 1fr 410px;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    @media (max-width: 1180px) {
+      .interactive-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ========================================================
+       STORE & CATALOG EXPERIENCE
+       ======================================================== */
+    .view-panel {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .view-panel.active {
+      display: flex;
+    }
+
+    .hero-banner-card {
+      background: linear-gradient(135deg, #1E1B4B 0%, #312E81 50%, #4338CA 100%);
+      border-radius: 16px;
+      padding: 1.75rem 2rem;
+      color: white;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .hero-banner-card::before {
+      content: '';
+      position: absolute;
+      top: -50px;
+      left: -50px;
+      width: 180px;
+      height: 180px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.4) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    .hero-banner-card h2 {
+      font-size: 1.35rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+
+    .hero-banner-card p {
+      font-size: 0.88rem;
+      color: #E0E7FF;
+      line-height: 1.6;
+      max-width: 750px;
+    }
+
+    .hero-tags {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .hero-tag {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(8px);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* B2B Products Grid */
+    .catalog-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .catalog-header h3 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .product-box {
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.25s ease;
+      position: relative;
+    }
+
+    .product-box:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--border-focus);
+    }
+
+    .product-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #EEF2FF;
+      color: var(--primary);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    .product-visual {
+      height: 130px;
+      background: #F8FAFC;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      border: 1px dashed #CBD5E1;
+    }
+
+    .product-visual svg {
+      width: 68px;
+      height: 68px;
+    }
+
+    .product-category {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .product-name {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+
+    .product-meta {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-add-quote {
+      margin-top: auto;
+      background: #F8FAFC;
+      color: var(--primary);
+      border: 1.5px solid #C7D2FE;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-add-quote:hover {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .btn-add-quote.added {
+      background: var(--success);
+      color: white;
+      border-color: var(--success);
+    }
+
+    /* Quote Drawer / Submission Card */
+    .quote-flow-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.75rem;
+      box-shadow: var(--shadow-md);
+      position: relative;
+    }
+
+    .quote-flow-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1.25rem;
+    }
+
+    .quote-flow-header h3 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .item-counter-pill {
+      background: var(--primary-light);
+      color: var(--primary);
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 2px 10px;
+      border-radius: 20px;
+    }
+
+    .quote-items-tray {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 1.5rem;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .quote-item-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      background: #F8FAFC;
+      border: 1px solid #F1F5F9;
+      border-radius: 10px;
+      transition: background 0.2s;
+    }
+
+    .quote-item-row:hover {
+      background: #F1F5F9;
+    }
+
+    .quote-item-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .quote-item-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .quote-item-cat {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .quote-item-ctrl {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .qty-badge {
+      font-size: 0.8rem;
+      font-weight: 700;
+      background: white;
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+
+    .btn-del-item {
+      color: #94A3B8;
+      cursor: pointer;
+      font-size: 1.1rem;
+      border: none;
+      background: transparent;
+      transition: color 0.2s;
+    }
+
+    .btn-del-item:hover {
+      color: var(--danger);
+    }
+
+    /* Form Fields */
+    .form-row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 640px) {
+      .form-row-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .field-box {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .field-box label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .field-box input, .field-box textarea {
+      border: 1px solid var(--border);
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: var(--text-main);
+      background: #FFFFFF;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .field-box input:focus, .field-box textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .btn-main-submit {
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+      border: none;
+      padding: 13px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .btn-main-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4);
+    }
+
+    .btn-main-submit:active {
+      transform: translateY(0);
+    }
+
+    /* ========================================================
+       ULTRA REALISTIC SMARTPHONE SIMULATOR (RIGHT COLUMN)
+       ======================================================== */
+    .simulator-pane {
+      position: sticky;
+      top: 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .device-shell {
+      width: 100%;
+      max-width: 390px;
+      height: 740px;
+      background: #18181B;
+      border-radius: 46px;
+      padding: 11px;
+      box-shadow: 
+        0 25px 50px -12px rgba(15, 23, 42, 0.35),
+        0 0 0 1px rgba(255, 255, 255, 0.1),
+        inset 0 0 0 2px #27272A;
+      position: relative;
+    }
+
+    .device-screen {
+      width: 100%;
+      height: 100%;
+      background: #E5E7EB;
+      border-radius: 36px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Dynamic Island */
+    .dynamic-island {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 105px;
+      height: 26px;
+      background: #000000;
+      border-radius: 20px;
+      z-index: 50;
+      transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+      color: white;
+      font-size: 0.65rem;
+    }
+
+    .dynamic-island.expanded {
+      width: 300px;
+      height: 48px;
+      background: #0F172A;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      padding: 0 14px;
+    }
+
+    /* Status Bar */
+    .phone-status-bar {
+      height: 42px;
+      padding: 0 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #FFFFFF;
+      z-index: 40;
+      background: transparent;
+    }
+
+    /* Messenger Interface */
+    .messenger-top {
+      padding: 6px 14px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: background 0.3s;
+    }
+
+    .messenger-top.bale-mode {
+      background: var(--bale);
+    }
+
+    .messenger-top.eitaa-mode {
+      background: var(--eitaa);
+    }
+
+    .messenger-top.tg-mode {
+      background: var(--telegram);
+    }
+
+    .messenger-agent {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .agent-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 900;
+      color: var(--text-main);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .agent-meta h4 {
+      font-size: 0.82rem;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .agent-meta span {
+      font-size: 0.68rem;
+      opacity: 0.85;
+    }
+
+    .messenger-selector-pills {
+      display: flex;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 20px;
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .selector-pill {
+      border: none;
+      background: transparent;
+      color: white;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .selector-pill.active {
+      background: white;
+      color: var(--text-main);
+    }
+
+    /* Chat Messages Stream */
+    .chat-stream {
+      flex: 1;
+      padding: 12px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: #F1F5F9;
+    }
+
+    .system-date-chip {
+      align-self: center;
+      background: rgba(0,0,0,0.08);
+      color: #64748B;
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 2px 10px;
+      border-radius: 10px;
+      margin: 4px 0;
+    }
+
+    .msg-incoming {
+      background: #FFFFFF;
+      border-radius: 16px 16px 4px 16px;
+      padding: 12px 14px;
+      max-width: 94%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+      border-right: 4px solid var(--primary);
+      animation: msgPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes msgPop {
+      0% { opacity: 0; transform: translateY(12px) scale(0.95); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .msg-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #F1F5F9;
+    }
+
+    .msg-tag-badge {
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .msg-tag-bale { background: var(--bale-light); color: var(--bale); }
+    .msg-tag-eitaa { background: var(--eitaa-light); color: var(--eitaa); }
+
+    .msg-body-text {
+      font-size: 0.8rem;
+      line-height: 1.6;
+      color: #1E293B;
+    }
+
+    .msg-body-text b {
+      color: #0F172A;
+    }
+
+    /* PDF Attachment Card in Chat */
+    .msg-pdf-card {
+      background: #F8FAFC;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 9px 11px;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .msg-pdf-card:hover {
+      background: #EEF2FF;
+      border-color: #C7D2FE;
+    }
+
+    .pdf-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pdf-meta svg {
+      width: 28px;
+      height: 28px;
+      color: #DC2626;
+    }
+
+    .pdf-title {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: #1E293B;
+    }
+
+    .pdf-size {
+      font-size: 0.65rem;
+      color: #64748B;
+    }
+
+    .pdf-view-badge {
+      background: var(--primary);
+      color: white;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    .msg-quick-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .quick-act-btn {
+      flex: 1;
+      background: #F1F5F9;
+      border: none;
+      padding: 6px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #334155;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: all 0.2s;
+    }
+
+    .quick-act-btn:hover {
+      background: #E2E8F0;
+    }
+
+    .msg-footer {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.65rem;
+      color: #94A3B8;
+      margin-top: 6px;
+    }
+
+    /* Typing bubble simulation */
+    .typing-indicator {
+      display: none;
+      align-items: center;
+      gap: 4px;
+      background: white;
+      padding: 8px 12px;
+      border-radius: 12px;
+      width: fit-content;
+      margin-top: 4px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .typing-dot {
+      width: 6px;
+      height: 6px;
+      background: #94A3B8;
+      border-radius: 50%;
+      animation: bounce 1.2s infinite ease-in-out;
+    }
+
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-5px); }
+    }
+
+    /* ========================================================
+       MODAL: OFFICIAL B2B PRE-INVOICE (پیش‌فاکتور رسمی)
+       ======================================================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      padding: 1.5rem;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .invoice-document-sheet {
+      background: #FFFFFF;
+      width: 100%;
+      max-width: 780px;
+      max-height: 92vh;
+      border-radius: 16px;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3);
+      overflow-y: auto;
+      padding: 2.5rem;
+      position: relative;
+      border: 1px solid #CBD5E1;
+    }
+
+    .invoice-top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 2.5px solid var(--primary);
+      padding-bottom: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .invoice-seller-title {
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .invoice-meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      background: #F8FAFC;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+      font-size: 0.82rem;
+      line-height: 1.8;
+      margin-bottom: 1.5rem;
+    }
+
+    .invoice-data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1.5rem;
+      font-size: 0.85rem;
+    }
+
+    .invoice-data-table th, .invoice-data-table td {
+      border: 1px solid #CBD5E1;
+      padding: 10px 12px;
+      text-align: right;
+    }
+
+    .invoice-data-table th {
+      background: #F1F5F9;
+      font-weight: 800;
+      color: #334155;
+    }
+
+    .invoice-footer-stamps {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 2rem;
+      padding-top: 1.25rem;
+      border-top: 1px dashed #CBD5E1;
+    }
+
+    .official-stamp {
+      width: 140px;
+      height: 140px;
+      border: 3px double #DC2626;
+      border-radius: 50%;
+      color: #DC2626;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transform: rotate(-12deg);
+      font-weight: 800;
+      font-size: 0.75rem;
+      text-align: center;
+      line-height: 1.4;
+      opacity: 0.85;
+      padding: 6px;
+      box-shadow: inset 0 0 10px rgba(220, 38, 38, 0.15);
+    }
+
+    .invoice-actions-bar {
+      position: sticky;
+      bottom: 0;
+      background: #FFFFFF;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .btn-inv-print {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-inv-close {
+      background: #F1F5F9;
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* ========================================================
+       PRINT STYLES FOR OFFICIAL A4 INVOICE SHEET
+       ======================================================== */
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 10mm 15mm;
+      }
+
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+      }
+
+      html, body {
+        background: #FFFFFF !important;
+        color: #0F172A !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        font-family: 'Vazirmatn', Tahoma, sans-serif !important;
+        height: auto !important;
+        overflow: visible !important;
+      }
+
+      /* Hide entire site UI during print */
+      header, 
+      .main-wrapper, 
+      .simulator-pane, 
+      .nav-tabs,
+      #pricing-modal,
+      #customer-sms-modal,
+      .invoice-actions-bar,
+      .close-modal,
+      .btn-inv-close {
+        display: none !important;
+      }
+
+      /* Render invoice sheet as full clean A4 document */
+      #invoice-modal.modal-backdrop {
+        position: static !important;
+        inset: auto !important;
+        background: transparent !important;
+        backdrop-filter: none !important;
+        display: block !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        box-shadow: none !important;
+        overflow: visible !important;
+      }
+
+      .invoice-document-sheet {
+        position: static !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: none !important;
+        overflow: visible !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        border-radius: 0 !important;
+      }
+
+      .invoice-top-bar {
+        border-bottom: 2.5px solid #4F46E5 !important;
+        padding-bottom: 10px !important;
+        margin-bottom: 14px !important;
+      }
+
+      .invoice-meta-grid {
+        background: #F8FAFC !important;
+        border: 1px solid #CBD5E1 !important;
+        padding: 10px 14px !important;
+        margin-bottom: 16px !important;
+        border-radius: 8px !important;
+        font-size: 11px !important;
+        line-height: 1.8 !important;
+      }
+
+      .invoice-data-table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        margin-bottom: 18px !important;
+      }
+
+      .invoice-data-table th,
+      .invoice-data-table td {
+        border: 1px solid #94A3B8 !important;
+        padding: 8px 10px !important;
+        font-size: 11px !important;
+      }
+
+      .invoice-data-table th {
+        background: #F1F5F9 !important;
+        color: #0F172A !important;
+        font-weight: 800 !important;
+      }
+
+      .invoice-data-table tr {
+        page-break-inside: avoid !important;
+      }
+
+      .invoice-footer-stamps {
+        page-break-inside: avoid !important;
+        margin-top: 25px !important;
+        padding-top: 15px !important;
+        border-top: 1px dashed #94A3B8 !important;
+      }
+
+      .official-stamp {
+        border: 3px double #DC2626 !important;
+        color: #DC2626 !important;
+        box-shadow: none !important;
+        -webkit-print-color-adjust: exact !important;
+      }
+    }
+
+
+    /* ========================================================
+       TAB 2: ADMIN & CATEGORY ROUTING PREVIEW
+       ======================================================== */
+    .admin-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .routing-visual-matrix {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin: 1.5rem 0;
+    }
+
+    .route-node {
+      background: #F8FAFC;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+    }
+
+    .route-node.active-route {
+      border-color: var(--primary);
+      background: #EEF2FF;
+    }
+
+    .route-node-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      font-weight: 800;
+    }
+
+    .route-target-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      background: white;
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    /* ========================================================
+       TAB 3: ROI & PROFIT CALCULATOR
+       ======================================================== */
+    .roi-calc-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    @media (max-width: 900px) {
+      .roi-calc-grid { grid-template-columns: 1fr; }
+    }
+
+    .calc-slider-box {
+      margin-bottom: 1.5rem;
+    }
+
+    .calc-slider-box label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .calc-slider-box input[type="range"] {
+      width: 100%;
+      accent-color: var(--primary);
+      height: 6px;
+      background: #CBD5E1;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .roi-stat-result {
+      background: linear-gradient(135deg, #0F172A, #1E1B4B);
+      border-radius: 16px;
+      padding: 2rem;
+      color: white;
+      box-shadow: var(--shadow-xl);
+      text-align: center;
+    }
+
+    .roi-stat-result .roi-number {
+      font-size: 2.8rem;
+      font-weight: 900;
+      color: #38BDF8;
+      margin: 10px 0;
+      font-family: inherit;
+    }
+
+    /* ========================================================
+       TAB 4: AD & PROMOTIONAL MEDIA KIT
+       ======================================================== */
+    .media-kit-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .ad-banner-mockup {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      background: white;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ad-banner-canvas {
+      padding: 2rem;
+      background: linear-gradient(135deg, #312E81, #4F46E5);
+      color: white;
+      text-align: center;
+      position: relative;
+    }
+
+    .ad-banner-canvas h3 {
+      font-size: 1.25rem;
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+
+    .ad-banner-canvas p {
+      font-size: 0.85rem;
+      color: #E0E7FF;
+      line-height: 1.6;
+    }
+
+    .ad-banner-info {
+      padding: 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #F8FAFC;
+    }
+
+    .btn-copy-code {
+      background: white;
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP HEADER -->
+  <header>
+    <div class="header-inner">
+      <div class="brand-section">
+        <div class="brand-logo-badge">Q</div>
+        <div class="brand-text">
+          <h1>WooCommerce Smart Quote</h1>
+          <p>سیستم استعلام قیمت هوشمند، اتصال بومی بله/ایتا و صدور پیش‌فاکتور رسمی PDF</p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="nav-tabs">
+        <button class="nav-tab-btn active" onclick="switchView('store', this)">
+          🛒 فروشگاه و تست استعلام
+        </button>
+        <button class="nav-tab-btn" onclick="switchView('admin', this)">
+          ⚙️ مدیریت و مسیریابی هوشمند
+        </button>
+        <button class="nav-tab-btn" onclick="switchView('roi', this)">
+          📊 ماشین‌حساب بازگشت سرمایه
+        </button>
+        <button class="nav-tab-btn" onclick="switchView('media', this)">
+          🎨 کیت تبلیغاتی و بنرها
+        </button>
+      </nav>
+
+      <!-- Quick Actions -->
+      <div class="header-quick-actions">
+        <button class="sound-toggle active" id="btn-sound-toggle" onclick="toggleAudioChime()">
+          <span id="sound-icon">🔔</span> صدای اعلان: فعال
+        </button>
+        <a href="marketing-and-demo-strategy.md" class="cta-marketplace-btn" target="_blank">
+          📄 مشاهده استراتژی محصول
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN WRAPPER -->
+  <main class="main-wrapper">
+    
+    <div class="interactive-grid">
+      
+      <!-- LEFT COLUMN: DYNAMIC TABS -->
+      <div class="left-content-area">
+        
+        <!-- ==============================================
+             PANEL 1: STOREFRONT & QUOTE FLOW
+             ============================================== -->
+        <div class="view-panel active" id="panel-store">
+          
+          <!-- Hero Notice Card -->
+          <div class="hero-banner-card">
+            <h2>تجربه خرید سازمانی و استعلام قیمت آنی (۳۰ ثانیه‌ای)</h2>
+            <p>
+              در این دمو مانند یک مشتری واقعی، محصولات B2B زیر را به لیست استعلام اضافه کنید؛ با ثبت فرم، شبیه‌ساز گوشی در سمت چپ فوراً به صدا درمی‌آید و پیام متنی به همراه پیش‌فاکتور رسمی PDF تحویل داده می‌شود!
+            </p>
+            <div class="hero-tags">
+              <span class="hero-tag">⚡ اتصال نیتیو بله و ایتا</span>
+              <span class="hero-tag">📄 بدون باگ فونت فارسی در PDF</span>
+              <span class="hero-tag">🔄 پردازش ناهمگام Action Scheduler</span>
+              <span class="hero-tag">🎯 مسیریابی کارشناسان بر اساس دسته کالا</span>
+            </div>
+          </div>
+
+          <!-- Catalog Header -->
+          <div class="catalog-header">
+            <h3>کاتالوگ نمونه محصولات صنعتی و عمده‌فروشی</h3>
+            <span style="font-size:0.8rem; color:var(--text-muted);">روی دکمه استعلام هر محصول کلیک کنید</span>
+          </div>
+
+          <!-- Products Grid -->
+          <div class="catalog-grid">
+            
+            <!-- Product 1 -->
+            <div class="product-box">
+              <span class="product-badge">پرفروش صنعتی</span>
+              <div class="product-visual">
+                <!-- SVG Motor -->
+                <svg viewBox="0 0 64 64" fill="none" stroke="#4F46E5" stroke-width="2">
+                  <rect x="12" y="18" width="36" height="30" rx="4"/>
+                  <line x1="48" y1="33" x2="58" y2="33" stroke-width="4"/>
+                  <circle cx="30" cy="33" r="8"/>
+                  <line x1="8" y1="26" x2="12" y2="26"/>
+                  <line x1="8" y1="33" x2="12" y2="33"/>
+                  <line x1="8" y1="40" x2="12" y2="40"/>
+                </svg>
+              </div>
+              <span class="product-category">دسته: ماشین‌آلات صنعتی</span>
+              <h4 class="product-name">الکتروموتور ۳ فاز موتوژن ۲۵ اسب</h4>
+              <div class="product-meta">کد کالا: MOT-1403 | موجود در انبار</div>
+              <button class="btn-add-quote" onclick="addProductToQuote(this, 'الکتروموتور ۳ فاز موتوژن ۲۵ اسب', 'ماشین‌آلات صنعتی', 1)">
+                + افزودن به لیست استعلام
+              </button>
+            </div>
+
+            <!-- Product 2 -->
+            <div class="product-box">
+              <span class="product-badge">قیمت روز فلزات</span>
+              <div class="product-visual">
+                <!-- SVG Rebar -->
+                <svg viewBox="0 0 64 64" fill="none" stroke="#7C3AED" stroke-width="2.5">
+                  <line x1="16" y1="12" x2="48" y2="44"/>
+                  <line x1="22" y1="18" x2="16" y2="24"/>
+                  <line x1="30" y1="26" x2="24" y2="32"/>
+                  <line x1="38" y1="34" x2="32" y2="40"/>
+                  <line x1="24" y1="20" x2="56" y2="52"/>
+                </svg>
+              </div>
+              <span class="product-category">دسته: آهن‌آلات و فولاد</span>
+              <h4 class="product-name">میلگرد ۱۴ اصفهان A3 (بندیل ۲ تنی)</h4>
+              <div class="product-meta">تحویل درب کارخانه ذوب‌آهن</div>
+              <button class="btn-add-quote" onclick="addProductToQuote(this, 'میلگرد ۱۴ اصفهان A3 (بندیل)', 'آهن‌آلات و فولاد', 2)">
+                + افزودن به لیست استعلام
+              </button>
+            </div>
+
+            <!-- Product 3 -->
+            <div class="product-box">
+              <span class="product-badge">پروژه‌ای / مناقصه</span>
+              <div class="product-visual">
+                <!-- SVG Transformer -->
+                <svg viewBox="0 0 64 64" fill="none" stroke="#0284C7" stroke-width="2">
+                  <circle cx="24" cy="32" r="14"/>
+                  <circle cx="40" cy="32" r="14"/>
+                  <path d="M24 18V8M40 18V8M24 46V56M40 46V56"/>
+                </svg>
+              </div>
+              <span class="product-category">دسته: تجهیزات برق قدرت</span>
+              <h4 class="product-name">ترانسفورماتور ۵۰ کاوا ایران ترانسفو</h4>
+              <div class="product-meta">ضمانت‌نامه ۳ ساله رسمی</div>
+              <button class="btn-add-quote" onclick="addProductToQuote(this, 'ترانسفورماتور ۵۰ کاوا', 'تجهیزات برق قدرت', 1)">
+                + افزودن به لیست استعلام
+              </button>
+            </div>
+
+          </div>
+
+          <!-- Quote Cart & Checkout Form -->
+          <div class="quote-flow-card">
+            <div class="quote-flow-header">
+              <h3>
+                <span>📋 اقلام انتخابی در سبد استعلام</span>
+                <span class="item-counter-pill" id="tray-count">۱ قلم کالا</span>
+              </h3>
+              <span style="font-size:0.8rem; color:var(--success); font-weight:700;">
+                ✓ فرم خودکار متصل به بازوی بله و ربات ایتا
+              </span>
+            </div>
+
+            <!-- Items List -->
+            <div class="quote-items-tray" id="tray-items-container">
+              <!-- Dynamically populated -->
+            </div>
+
+            <!-- User Info Form -->
+            <form onsubmit="handleQuoteSubmit(event)">
+              <div class="form-row-2">
+                <div class="field-box">
+                  <label>نام و نام خانوادگی / نام سازمان خریدار *</label>
+                  <input type="text" id="input-buyer-name" value="دکتر حسینی (پتروشیمی نگین زاگرس)" required>
+                </div>
+                <div class="field-box">
+                  <label>شماره همراه خریدار (جهت دریافت پیش‌فاکتور) *</label>
+                  <input type="text" id="input-buyer-phone" value="09123456789" required style="direction:ltr;">
+                </div>
+              </div>
+              <div class="form-row-2" style="margin-bottom:0.75rem;">
+                <div class="field-box">
+                  <label>نحوه دریافت پیش‌فاکتور قیمت‌دار *</label>
+                  <select id="input-buyer-channel" style="width:100%; border:1px solid #CBD5E1; padding:8px 12px; border-radius:8px; font-weight:700; font-size:0.85rem; background:white; color:#0F172A;">
+                    <option value="all">پیامک + بله و ایتا (شماره همراه)</option>
+                    <option value="bale">پیام‌رسان بله (Bale)</option>
+                    <option value="eitaa">پیام‌رسان ایتا (Eitaa)</option>
+                    <option value="sms">فقط پیامک عادی</option>
+                  </select>
+                </div>
+                <div class="field-box">
+                  <label>توضیحات اختصاصی استعلام و تحویل</label>
+                  <input type="text" id="input-buyer-note" value="پیش‌فاکتور رسمی با اعمال تخفیف خرید عمده صادر شود.">
+                </div>
+              </div>
+
+              <button type="submit" class="btn-main-submit" id="btn-submit-action">
+                <span>🚀 ثبت استعلام و ارسال لحظه‌ای به کارشناس مربوطه</span>
+              </button>
+            </form>
+          </div>
+
+        </div>
+
+        <!-- ==============================================
+             PANEL 2: ADMIN & SMART CATEGORY ROUTING
+             ============================================== -->
+        <div class="view-panel" id="panel-admin">
+          
+          <div class="admin-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:1rem; margin-bottom:1.5rem;">
+              <div>
+                <h2 style="font-size:1.2rem; font-weight:900;">مسیریابی هوشمند کارشناسان (Category Routing Matrix)</h2>
+                <p style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;">
+                  استعلام‌ها به جای سردرگمی، مستقیماً بر اساس دسته کالا به حساب اختصاصی کارشناس همان حوزه در بله یا ایتا ارسال می‌شوند!
+                </p>
+              </div>
+              <span style="background:var(--primary-light); color:var(--primary); font-weight:800; font-size:0.75rem; padding:4px 10px; border-radius:6px;">
+                فعال در نسخه ۱.۰
+              </span>
+            </div>
+
+            <!-- Visual Flowchart Matrix -->
+            <div class="routing-visual-matrix">
+              
+              <div class="route-node active-route">
+                <div class="route-node-header">
+                  <span>دسته: ماشین‌آلات صنعتی</span>
+                  <span style="color:var(--bale); font-size:0.75rem;">پیام‌رسان بله</span>
+                </div>
+                <p style="font-size:0.8rem; color:var(--text-muted);">محصولات مکانیکی و موتورها</p>
+                <div class="route-target-pill">
+                  <span>👤</span>
+                  <b>مهندس اکبری (کارشناس ارشد فنی)</b>
+                  <span style="margin-right:auto; color:var(--bale); font-size:0.7rem;">ID: @akbari_bale</span>
+                </div>
+              </div>
+
+              <div class="route-node active-route">
+                <div class="route-node-header">
+                  <span>دسته: آهن‌آلات و فولاد</span>
+                  <span style="color:var(--eitaa); font-size:0.75rem;">پیام‌رسان ایتا</span>
+                </div>
+                <p style="font-size:0.8rem; color:var(--text-muted);">میلگرد، تیرآهن، ورق و فلزات</p>
+                <div class="route-target-pill">
+                  <span>👥</span>
+                  <b>دپارتمان بازرگانی فلزات</b>
+                  <span style="margin-right:auto; color:var(--eitaa); font-size:0.7rem;">کانال/گروه ایتا</span>
+                </div>
+              </div>
+
+              <div class="route-node">
+                <div class="route-node-header">
+                  <span>سایر دسته‌بندی‌ها (پیش‌فرض)</span>
+                  <span style="color:var(--text-muted); font-size:0.75rem;">مدیر فروشگاه</span>
+                </div>
+                <p style="font-size:0.8rem; color:var(--text-muted);">استعلام‌های بدون قانون خاص</p>
+                <div class="route-target-pill">
+                  <span>🛡️</span>
+                  <b>حساب مدیریت مرکزی</b>
+                  <span style="margin-right:auto; font-size:0.7rem;">Fallback</span>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Settings Fields Simulation -->
+            <div style="background:#F8FAFC; border:1px solid var(--border); border-radius:12px; padding:1.5rem; margin-top:1.5rem;">
+              <h4 style="font-size:0.9rem; font-weight:800; margin-bottom:1rem;">تنظیمات وب‌هوک و امنیت توکن‌ها</h4>
+              <div class="form-row-2">
+                <div class="field-box">
+                  <label>توکن امنیتی بازوی بله (رمزنگاری شده در دیتابیس)</label>
+                  <input type="text" value="bot784920:AAGK_bale_secure_token_live" readonly style="background:#FFFFFF; font-family:monospace; direction:ltr;">
+                </div>
+                <div class="field-box">
+                  <label>توکن ربات رسمی ایتا</label>
+                  <input type="text" value="bot_eitaa_live_token_789412" readonly style="background:#FFFFFF; font-family:monospace; direction:ltr;">
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- ==============================================
+             PANEL 3: ROI & PROFIT CALCULATOR
+             ============================================== -->
+        <div class="view-panel" id="panel-roi">
+          
+          <div class="admin-card">
+            <h2 style="font-size:1.25rem; font-weight:900; margin-bottom:6px;">ماشین‌حساب بازگشت سرمایه و نجات معاملات B2B</h2>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:2rem;">
+              ببینید کاهش زمان پاسخگویی به استعلام‌ها از ۴ ساعت به کمتر از ۳۰ ثانیه، چقدر به درآمد ماهانه فروشگاه شما اضافه می‌کند:
+            </p>
+
+            <div class="roi-calc-grid">
+              <div>
+                <div class="calc-slider-box">
+                  <label>
+                    <span>تعداد استعلام‌های ماهانه فروشگاه:</span>
+                    <b id="val-quotes-count">۱۵۰ استعلام</b>
+                  </label>
+                  <input type="range" id="range-quotes" min="20" max="1000" step="10" value="150" oninput="calculateROI()">
+                </div>
+
+                <div class="calc-slider-box">
+                  <label>
+                    <span>میانگین ارزش هر سفارش B2B (تومان):</span>
+                    <b id="val-avg-deal">۲۵,۰۰۰,۰۰۰ تومان</b>
+                  </label>
+                  <input type="range" id="range-deal" min="5000000" max="200000000" step="5000000" value="25000000" oninput="calculateROI()">
+                </div>
+
+                <div style="background:#F1F5F9; border-radius:10px; padding:1rem; font-size:0.8rem; line-height:1.7; color:#475569;">
+                  💡 طبق آمار مارکتینگ B2B، پاسخ در زیر ۵ دقیقه احتمال نهایی شدن معامله و صدور فاکتور را تا <b>۳۹۰ درصد</b> نسبت به پاسخ بعد از ۲ ساعت افزایش می‌دهد!
+                </div>
+              </div>
+
+              <div class="roi-stat-result">
+                <span style="font-size:0.9rem; opacity:0.85;">افزایش تخمینی فروش ماهانه با Smart Quote:</span>
+                <div class="roi-number" id="roi-profit-display">+۱۱۲,۵۰۰,۰۰۰</div>
+                <div style="font-size:0.95rem; font-weight:700; color:#93C5FD;">تومان در ماه</div>
+                <hr style="border:none; border-top:1px solid rgba(255,255,255,0.15); margin:1.25rem 0;">
+                <div style="font-size:0.8rem; opacity:0.8;">
+                  صرفه‌جویی در زمان کارشناس فروش: <b>۵۲ ساعت در ماه</b>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- ==============================================
+             PANEL 4: MARKETING BANNER & MEDIA KIT
+             ============================================== -->
+        <div class="view-panel" id="panel-media">
+          
+          <div class="admin-card">
+            <h2 style="font-size:1.25rem; font-weight:900; margin-bottom:6px;">کیت گرافیکی و بنرهای تبلیغاتی آماده برای مارکت‌پلیس</h2>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.5rem;">
+              نمونه بنرهای رسمی طراحی‌شده برای اسلایدر ژاکت، راست‌چین و پست‌های اینستاگرام با پیام‌های پربازده:
+            </p>
+
+            <div class="media-kit-grid">
+              
+              <!-- Banner 1: Main Slider -->
+              <div class="ad-banner-mockup">
+                <div class="ad-banner-canvas" style="background:linear-gradient(135deg, #1E1B4B, #4338CA);">
+                  <span style="font-size:0.7rem; background:rgba(255,255,255,0.2); padding:3px 8px; border-radius:20px;">اسلایدر اصلی مارکت‌پلیس (800x500)</span>
+                  <h3 style="margin-top:10px;">استعلام در سایت، پیش‌فاکتور رسمی در بله و ایتا!</h3>
+                  <p>اتصال بدون فیلترشکن، صدور آنی PDF و مسیریابی به کارشناسان متخصص</p>
+                  <div style="margin-top:14px; font-weight:800; font-size:0.8rem; background:#10B981; color:white; display:inline-block; padding:4px 12px; border-radius:6px;">
+                    رونمایی با ۴۰٪ تخفیف ویژه
+                  </div>
+                </div>
+                <div class="ad-banner-info">
+                  <span style="font-size:0.8rem; font-weight:700;">بنر معرفی رسمی محصول</span>
+                  <button class="btn-copy-code" onclick="copyAdText('بنر اسلایدر')">کپی متن بنر</button>
+                </div>
+              </div>
+
+              <!-- Banner 2: Instagram Square -->
+              <div class="ad-banner-mockup">
+                <div class="ad-banner-canvas" style="background:linear-gradient(135deg, #065F46, #059669);">
+                  <span style="font-size:0.7rem; background:rgba(255,255,255,0.2); padding:3px 8px; border-radius:20px;">پست مربعی اینستاگرام (1080x1080)</span>
+                  <h3 style="margin-top:10px;">۶۰٪ خریداران عمده و سازمانی معطل قیمت نمی‌مانند!</h3>
+                  <p>چگونه فروشگاه‌های ووکامرسی پیشرو در کمتر از ۳۰ ثانیه پیش‌فاکتور می‌دهند؟</p>
+                </div>
+                <div class="ad-banner-info">
+                  <span style="font-size:0.8rem; font-weight:700;">هوک روانشناسی فروش</span>
+                  <button class="btn-copy-code" onclick="copyAdText('پست اینستاگرام')">کپی متن بنر</button>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ==============================================
+           RIGHT COLUMN: REALISTIC SMARTPHONE SIMULATOR
+           ============================================== -->
+      <aside class="simulator-pane">
+        
+        <div class="device-shell" id="phone-shell">
+          <div class="device-screen">
+            
+            <!-- Dynamic Island -->
+            <div class="dynamic-island" id="dyn-island">
+              <span style="font-size:0.6rem;">● SQ Bot</span>
+              <span id="island-status">آماده دریافت</span>
+            </div>
+
+            <!-- Status Bar -->
+            <div class="phone-status-bar">
+              <span>14:03</span>
+              <div style="display:flex; gap:5px; align-items:center;">
+                <span>5G</span>
+                <span>100%</span>
+              </div>
+            </div>
+
+            <!-- Messenger Header -->
+            <div class="messenger-top bale-mode" id="chat-header">
+              <div class="messenger-agent">
+                <div class="agent-avatar" id="agent-avatar-icon">Q</div>
+                <div class="agent-meta">
+                  <h4 id="agent-title-text">بازوی بله (Bale Bot)</h4>
+                  <span id="agent-sub-text">آنلاین | کارشناس تجهیزات صنعتی</span>
+                </div>
+              </div>
+
+              <!-- Tabs to toggle messengers -->
+              <div class="messenger-selector-pills">
+                <button class="selector-pill active" id="btn-app-bale" onclick="selectMessengerApp('bale')">بله</button>
+                <button class="selector-pill" id="btn-app-eitaa" onclick="selectMessengerApp('eitaa')">ایتا</button>
+              </div>
+            </div>
+
+            <!-- Chat Stream -->
+            <div class="chat-stream" id="chat-stream-box">
+              
+              <div class="system-date-chip">امروز - لحظه‌ای</div>
+
+              <!-- Initial Welcome Bubble -->
+              <div class="msg-incoming">
+                <div class="msg-header-row">
+                  <span class="msg-tag-badge msg-tag-bale">سیستم اتوماسیون Smart Quote</span>
+                  <span style="font-size:0.65rem; color:#94A3B8;">14:00</span>
+                </div>
+                <div class="msg-body-text">
+                  سلام مهندس اکبری عزیز! ربات استعلام فعال است. به محض ثبت فرم در سایت، نوتیفیکیشن و پیش‌فاکتور PDF اینجا ظاهر می‌شود.
+                </div>
+              </div>
+
+              <!-- Live Typing Indicator -->
+              <div class="typing-indicator" id="typing-indicator-box">
+                <span style="font-size:0.68rem; color:#64748B; margin-left:4px;">در حال ساخت پیش‌فاکتور...</span>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+      </aside>
+
+    </div>
+
+  </main>
+
+  <!-- ==============================================
+       MODAL: ULTRA-REALISTIC OFFICIAL B2B INVOICE (PDF)
+       ============================================== -->
+  <div class="modal-backdrop" id="invoice-modal">
+    <div class="invoice-document-sheet">
+      
+      <!-- Top Title Bar -->
+      <div class="invoice-top-bar">
+        <div>
+          <div class="invoice-seller-title">
+            <span>شرکت مهندسی و بازرگانی توسعه پارس (سهامی خاص)</span>
+          </div>
+          <span style="font-size:0.8rem; color:var(--text-muted);">پیش‌فاکتور رسمی استعلام قیمت کالا و خدمات B2B</span>
+        </div>
+        <div style="text-align:left; font-size:0.82rem; line-height:1.6;">
+          <div><b>شماره سند:</b> <span id="inv-num-display">SQ-1403-9214</span></div>
+          <div><b>تاریخ صدور:</b> <span id="inv-date-display">۱۴۰۳/۰۶/۲۰</span></div>
+          <div><b>اعتبار پیش‌فاکتور:</b> ۷ روز کاری</div>
+        </div>
+      </div>
+
+      <!-- Seller & Buyer Info -->
+      <div class="invoice-meta-grid">
+        <div>
+          <div><b>فروشنده:</b> تجهیزات و بازرگانی پارس</div>
+          <div><b>شناسه ملی:</b> ۱۰۳۲۰۰۴۹۱۸۲</div>
+          <div><b>کد اقتصادی:</b> ۴۱۱۳۷۶۹۵۸۲۱۴</div>
+          <div><b>آدرس:</b> تهران، شهرک صنعتی شمس‌آباد، بلوار بوستان</div>
+        </div>
+        <div>
+          <div><b>خریدار:</b> <span id="inv-cust-name">دکتر حسینی</span></div>
+          <div><b>شماره تماس:</b> <span id="inv-cust-phone">09123456789</span></div>
+          <div><b>توضیحات:</b> <span id="inv-cust-note">تحویل درب کارخانه</span></div>
+          <div><b>وضعیت مالیاتی:</b> رسمی با کد شناسه سامانه مؤدیان</div>
+        </div>
+      </div>
+
+      <!-- Items Table -->
+      <table class="invoice-data-table">
+        <thead>
+          <tr>
+            <th style="width:40px;">ردیف</th>
+            <th>شرح کامل کالا یا خدمات درخواستی</th>
+            <th style="width:120px;">دسته‌بندی</th>
+            <th style="width:70px;">تعداد</th>
+            <th style="width:110px;">وضعیت مظنه</th>
+          </tr>
+        </thead>
+        <tbody id="inv-table-body">
+          <!-- Dynamically inserted rows -->
+        </tbody>
+      </table>
+
+      <!-- Bottom Signatures & Red Seal -->
+      <div class="invoice-footer-stamps">
+        <div style="font-size:0.78rem; color:#64748B; max-width:340px; line-height:1.6;">
+          * این پیش‌فاکتور توسط موتور افزونه <b>WooCommerce Smart Quote</b> به صورت آنی و خودکار رندر شده و نیازی به تایپ دستی ندارد.
+        </div>
+
+        <!-- Red Rubber Stamp -->
+        <div class="official-stamp">
+          <div>★ تأیید شد ★</div>
+          <div>استعلام قیمت رسمی</div>
+          <div style="font-size:0.65rem; margin-top:2px;">شرکت توسعه پارس</div>
+          <div style="font-size:0.6rem;">کد رهگیری معتبر</div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="invoice-actions-bar">
+        <button class="btn-inv-print" onclick="window.print()">
+          🖨️ پرینت مستقیم / ذخیره PDF
+        </button>
+        <button class="btn-inv-close" onclick="closeInvoiceModal()">
+          بستن پیش‌نمایش
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL: ITEM-BY-ITEM PRICING (قیمت‌گذاری تفکیکی اقلام) -->
+  <div class="modal-backdrop" id="pricing-modal">
+    <div class="invoice-document-sheet" style="max-width: 620px;">
+      <div class="invoice-top-bar" style="margin-bottom:1rem; padding-bottom:8px;">
+        <div>
+          <h3 style="font-size:1.15rem; font-weight:900; color:var(--primary);">💰 قیمت‌گذاری تفکیکی اقلام استعلام</h3>
+          <span style="font-size:0.75rem; color:var(--text-muted);" id="pricing-modal-subtitle">تعیین مظنه اختصاصی برای هر قلم کالا</span>
+        </div>
+        <button class="btn-inv-close" style="padding:4px 10px;" onclick="closePricingModal()">✕</button>
+      </div>
+
+      <p style="font-size:0.82rem; color:#475569; margin-bottom:1rem; line-height:1.6;">
+        برای هر کالا قیمت واحد مورد نظرتان را وارد کنید. سیستم به صورت خودکار مبالغ ردیف، جمع کل، پیش‌فاکتور رسمی و پیامک حاوی لینک پرداخت را برای خریدار آماده می‌کند:
+      </p>
+
+      <!-- Table of items for pricing -->
+      <div id="pricing-items-wrapper" style="display:flex; flex-direction:column; gap:10px; margin-bottom:1.25rem;">
+        <!-- Dynamically rendered -->
+      </div>
+
+      <!-- Settings & Channels -->
+      <div style="background:#F8FAFC; border:1px solid var(--border); border-radius:10px; padding:12px; margin-bottom:1.25rem; font-size:0.82rem;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span>⏳ مهلت اعتبار این قیمت:</span>
+          <b>۲۴ ساعت کاری (تا پایان فردا)</b>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span>📲 نحوه ارسال برای خریدار:</span>
+          <span style="color:var(--success); font-weight:800;">✓ ارسال خودکار پیامک حاوی لینک پرداخت + ایمیل PDF</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:1rem; font-weight:900; color:var(--primary); padding-top:8px; border-top:1px dashed #CBD5E1;">
+          <span>جمع کل استعلام:</span>
+          <span id="pricing-modal-total-display">۰ تومان</span>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:8px;">
+        <button class="btn-inv-close" onclick="closePricingModal()">انصراف</button>
+        <button class="btn-main-submit" style="width:auto; padding:10px 22px; background:linear-gradient(135deg, #059669, #10B981);" onclick="confirmItemizedProposal()">
+          🚀 صدور پیش‌فاکتور و ارسال برای خریدار
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CUSTOMER PHONE & MULTI-MESSENGER PROPOSAL VIEW (نمای گوشی خریدار) -->
+  <div class="modal-backdrop" id="customer-sms-modal">
+    <div class="invoice-document-sheet" style="max-width: 540px; background:#0F172A; color:white; border-radius:28px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);">
+      <!-- Header -->
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #334155; padding-bottom:12px; margin-bottom:1rem;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg, #3B82F6, #1D4ED8); display:flex; align-items:center; justify-content:center; font-size:18px;">📱</div>
+          <div>
+            <h4 style="font-size:0.95rem; font-weight:800; color:#F8FAFC;">گوشی تلفن همراه خریدار (<span id="buyer-modal-name">دکتر حسینی</span>)</h4>
+            <div style="font-size:0.72rem; color:#94A3B8; display:flex; gap:8px; align-items:center; margin-top:2px;">
+              <span>شماره استخراج‌شده از فرم:</span>
+              <strong style="color:#38BDF8; direction:ltr; font-family:monospace;" id="buyer-modal-phone">09123456789</strong>
+            </div>
+          </div>
+        </div>
+        <button class="btn-inv-close" style="background:#1E293B; color:white; border-color:#334155;" onclick="closeCustomerSmsModal()">✕</button>
+      </div>
+
+      <!-- WooCommerce Order Status Banner -->
+      <div style="background:#1E293B; border:1px solid #334155; border-radius:10px; padding:10px 14px; margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center;">
+        <div style="font-size:0.75rem; color:#94A3B8;">
+          وضعیت سفارش در ووکامرس:
+        </div>
+        <span style="background:#059669; color:white; font-size:0.72rem; font-weight:800; padding:3px 10px; border-radius:6px; display:inline-flex; align-items:center; gap:4px;">
+          <span>✓</span> پیش‌فاکتور صادر شد (Quote Sent)
+        </span>
+      </div>
+
+      <!-- Channel Switcher Tabs -->
+      <div style="display:flex; gap:6px; margin-bottom:1rem; background:#1E293B; padding:4px; border-radius:10px; border:1px solid #334155;">
+        <button type="button" class="buyer-chan-btn active" id="btn-chan-bale" onclick="switchBuyerChannel('bale')" style="flex:1; padding:6px 10px; border:none; border-radius:7px; font-size:0.75rem; font-weight:700; cursor:pointer; background:#0284C7; color:white; display:flex; align-items:center; justify-content:center; gap:5px;">
+          <span>🔵</span> بله (Bale)
+        </button>
+        <button type="button" class="buyer-chan-btn" id="btn-chan-eitaa" onclick="switchBuyerChannel('eitaa')" style="flex:1; padding:6px 10px; border:none; border-radius:7px; font-size:0.75rem; font-weight:700; cursor:pointer; background:transparent; color:#94A3B8; display:flex; align-items:center; justify-content:center; gap:5px;">
+          <span>🟠</span> ایتا (Eitaa)
+        </button>
+        <button type="button" class="buyer-chan-btn" id="btn-chan-sms" onclick="switchBuyerChannel('sms')" style="flex:1; padding:6px 10px; border:none; border-radius:7px; font-size:0.75rem; font-weight:700; cursor:pointer; background:transparent; color:#94A3B8; display:flex; align-items:center; justify-content:center; gap:5px;">
+          <span>💬</span> پیامک خدماتی
+        </button>
+      </div>
+
+      <!-- Channel 1: Bale View -->
+      <div id="view-buyer-bale" class="buyer-view-content" style="background:#1E293B; border-radius:14px; padding:14px; margin-bottom:1.25rem; font-size:0.83rem; line-height:1.8; border-right:4px solid #0284C7;">
+        <div style="display:flex; justify-content:space-between; color:#38BDF8; font-size:0.72rem; margin-bottom:6px; font-weight:700;">
+          <span>پیام‌رسان بله ➔ چت با شماره همراه خریدار</span>
+          <span>همین الان</span>
+        </div>
+        <div>
+          سلام جناب <span class="buyer-placeholder-name">دکتر حسینی</span> عزیز!<br>
+          پیشنهاد قیمت رسمی استعلام شما صادر شد:<br>
+          <div class="sms-items-text-box" style="color:#38BDF8; font-size:0.8rem; margin:6px 0; background:#0F172A; padding:8px 12px; border-radius:8px;"></div>
+          💰 <b>جمع کل نهایی:</b> <span class="sms-total-text-box" style="color:#34D399; font-weight:800;"></span><br>
+          ⏳ مهلت اعتبار: ۲۴ ساعت کاری<br>
+          📄 پیش‌فاکتور رسمی با مهر دیجیتال پیوست گردید.<br>
+          جهت تایید و پرداخت آنلاین درگاه شاپرک کلیک کنید:<br>
+          <span style="color:#60A5FA; text-decoration:underline; font-family:monospace;">https://site.com/checkout/pay/9214</span>
+        </div>
+      </div>
+
+      <!-- Channel 2: Eitaa View (hidden initially) -->
+      <div id="view-buyer-eitaa" class="buyer-view-content" style="display:none; background:#1E293B; border-radius:14px; padding:14px; margin-bottom:1.25rem; font-size:0.83rem; line-height:1.8; border-right:4px solid #EA580C;">
+        <div style="display:flex; justify-content:space-between; color:#FB923C; font-size:0.72rem; margin-bottom:6px; font-weight:700;">
+          <span>پیام‌رسان ایتا ➔ تحویل به حساب کاربری خریدار</span>
+          <span>همین الان</span>
+        </div>
+        <div>
+          پیش‌فاکتور تفکیکی استعلام شماره #9214 صادر گردید:<br>
+          <div class="sms-items-text-box" style="color:#FB923C; font-size:0.8rem; margin:6px 0; background:#0F172A; padding:8px 12px; border-radius:8px;"></div>
+          💵 <b>مبلغ قابل پرداخت:</b> <span class="sms-total-text-box" style="color:#34D399; font-weight:800;"></span><br>
+          🔗 پرداخت مستقیم شاپرک:<br>
+          <span style="color:#60A5FA; text-decoration:underline; font-family:monospace;">https://site.com/checkout/pay/9214</span>
+        </div>
+      </div>
+
+      <!-- Channel 3: SMS View (hidden initially) -->
+      <div id="view-buyer-sms" class="buyer-view-content" style="display:none; background:#1E293B; border-radius:14px; padding:14px; margin-bottom:1.25rem; font-size:0.83rem; line-height:1.8; border-right:4px solid #10B981;">
+        <div style="display:flex; justify-content:space-between; color:#94A3B8; font-size:0.7rem; margin-bottom:6px;">
+          <span>پیامک خدماتی از: خط ۳۰۰۰۵۰۵</span>
+          <span>همین الان</span>
+        </div>
+        <div>
+          جناب <span class="buyer-placeholder-name">دکتر حسینی</span>، پیش‌فاکتور استعلام شما صادر شد.<br>
+          مبلغ کل: <span class="sms-total-text-box" style="color:#34D399; font-weight:800;"></span><br>
+          مشاهده پیش‌فاکتور و پرداخت آنلاین شاپرک:<br>
+          <span style="color:#60A5FA; text-decoration:underline; font-family:monospace;">https://site.com/checkout/pay/9214</span>
+        </div>
+      </div>
+
+      <!-- 1-Click Pay Action & PDF View -->
+      <div style="background:#1E293B; border:1px solid #334155; border-radius:12px; padding:14px; text-align:center;">
+        <div style="font-size:0.85rem; font-weight:700; color:#E2E8F0; margin-bottom:4px;">
+          💳 اقدام نهایی خریدار: پرداخت آنلاین شاپرک و قطعی‌سازی خرید
+        </div>
+        <p style="font-size:0.75rem; color:#94A3B8; margin-bottom:12px;">
+          خریدار با کلیک روی لینک، بدون نیاز به ثبت‌نام مجدد مستقیماً به درگاه پرداخت متصل می‌شود:
+        </p>
+        <div style="display:flex; gap:8px;">
+          <button class="btn-main-submit" style="background:linear-gradient(135deg, #10B981, #059669); flex:1; padding:10px; font-weight:800;" onclick="executeFinalCheckout()">
+            💳 شبیه‌سازی پرداخت آنلاین درگاه شاپرک
+          </button>
+          <button class="btn-inv-close" style="background:#334155; color:white; border-color:#475569; font-weight:700;" onclick="closeCustomerSmsModal(); openInvoiceModal(currentBuyerName, currentBuyerPhone, 'قیمت تفکیکی اقلام صادر شد', currentOrderSerial, true);">
+            📄 مشاهده PDF رسمی
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // State
+    let cartItems = [
+      { name: 'الکتروموتور ۳ فاز موتوژن ۲۵ اسب', category: 'ماشین‌آلات صنعتی', qty: 1 }
+    ];
+    let currentMessenger = 'bale';
+    let audioEnabled = true;
+
+    // Render Tray on page load
+    function renderTray() {
+      const container = document.getElementById('tray-items-container');
+      const counter = document.getElementById('tray-count');
+      counter.innerText = cartItems.length + ' قلم کالا';
+
+      if (cartItems.length === 0) {
+        container.innerHTML = '<div style="text-align:center; color:var(--text-muted); font-size:0.85rem; padding:1.5rem;">سبد استعلام شما خالی است. از بالا کالا اضافه کنید.</div>';
+        return;
+      }
+
+      container.innerHTML = cartItems.map((item, idx) => `
+        <div class="quote-item-row">
+          <div class="quote-item-info">
+            <span class="quote-item-title">${item.name}</span>
+            <span class="quote-item-cat">دسته: ${item.category}</span>
+          </div>
+          <div class="quote-item-ctrl">
+            <span class="qty-badge">${item.qty} دستگاه/واحد</span>
+            <button type="button" class="btn-del-item" onclick="removeTrayItem(${idx})" title="حذف">&times;</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addProductToQuote(btn, name, category, qty) {
+      cartItems.push({ name, category, qty });
+      renderTray();
+
+      // Button micro-interaction
+      const origText = btn.innerHTML;
+      btn.classList.add('added');
+      btn.innerHTML = '✓ به استعلام اضافه شد';
+      setTimeout(() => {
+        btn.classList.remove('added');
+        btn.innerHTML = origText;
+      }, 1500);
+
+      // Sound feedback
+      playTone(660, 0.1);
+    }
+
+    function removeTrayItem(index) {
+      cartItems.splice(index, 1);
+      renderTray();
+    }
+
+    // Handle Quote Form Submit
+    function handleQuoteSubmit(e) {
+      e.preventDefault();
+
+      if (cartItems.length === 0) {
+        alert('لطفاً حداقل یک محصول به سبد استعلام اضافه کنید!');
+        return;
+      }
+
+      const name = document.getElementById('input-buyer-name').value;
+      const phone = document.getElementById('input-buyer-phone').value;
+      const note = document.getElementById('input-buyer-note').value;
+      const orderSerial = Math.floor(1000 + Math.random() * 9000);
+
+      // Submit Button Loading state
+      const submitBtn = document.getElementById('btn-submit-action');
+      submitBtn.innerHTML = '⏳ در حال ارتباط با وب‌هوک و تولید PDF...';
+      submitBtn.style.opacity = '0.8';
+
+      // Expand Dynamic Island
+      const island = document.getElementById('dyn-island');
+      const islandStatus = document.getElementById('island-status');
+      island.classList.add('expanded');
+      islandStatus.innerText = '⚡ دریافت استعلام جدید #' + orderSerial;
+
+      // Show typing indicator in phone
+      const typing = document.getElementById('typing-indicator-box');
+      typing.style.display = 'flex';
+      const stream = document.getElementById('chat-stream-box');
+      stream.scrollTop = stream.scrollHeight;
+
+      // Simulate network + PDF generation delay (1.2 seconds)
+      setTimeout(() => {
+        typing.style.display = 'none';
+        island.classList.remove('expanded');
+        islandStatus.innerText = 'آماده دریافت';
+
+        // Play luxury chime
+        playNotificationChime();
+
+        // Device haptic shake simulation
+        const phone = document.getElementById('phone-shell');
+        phone.style.transform = 'translateY(-4px)';
+        setTimeout(() => phone.style.transform = '', 200);
+
+        // Detect appropriate routing based on category
+        const hasSteel = cartItems.some(i => i.category.includes('آهن'));
+        if (hasSteel) {
+          selectMessengerApp('eitaa');
+        } else {
+          selectMessengerApp('bale');
+        }
+
+        // Append chat bubble
+        const bubble = document.createElement('div');
+        bubble.className = 'msg-incoming';
+        const tagClass = currentMessenger === 'bale' ? 'msg-tag-bale' : 'msg-tag-eitaa';
+        const tagLabel = currentMessenger === 'bale' ? 'بازوی بله | مهندس اکبری' : 'ربات ایتا | بازرگانی فلزات';
+
+        bubble.innerHTML = `
+          <div class="msg-header-row">
+            <span class="msg-tag-badge ${tagClass}">📋 استعلام جدید #${orderSerial} (${tagLabel})</span>
+            <span style="font-size:0.65rem; color:#94A3B8;">لحظه‌ای</span>
+          </div>
+          <div class="msg-body-text">
+            <div>👤 <b>خریدار:</b> ${name}</div>
+            <div>📞 <b>تلفن تماس:</b> ${phone}</div>
+            <div>🛒 <b>اقلام درخواستی:</b> ${cartItems.map(i => i.name + ' (' + i.qty + ')').join('، ')}</div>
+            ${note ? `<div style="margin-top:4px; font-size:0.75rem; color:#475569;">📝 <b>یادداشت:</b> ${note}</div>` : ''}
+          </div>
+
+          <!-- Clickable PDF Attachment -->
+          <div class="msg-pdf-card" onclick="openInvoiceModal('${name}', '${phone}', '${note}', '${orderSerial}')">
+            <div class="pdf-meta">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM13 9V3.5L18.5 9H13z"/>
+              </svg>
+              <div>
+                <div class="pdf-title">پیش‌فاکتور_رسمی_${orderSerial}.pdf</div>
+                <div class="pdf-size">حجم: ۱۲۸ کیلوبایت | فونت فارسی استاندارد</div>
+              </div>
+            </div>
+            <span class="pdf-view-badge">مشاهده و پرینت</span>
+          </div>
+
+          <!-- Quick Action Buttons -->
+          <div class="msg-quick-actions">
+            <button class="quick-act-btn" onclick="alert('شماره‌گیری تلفنی با خریدار: ' + '${phone}')">📞 تماس با خریدار</button>
+            <button class="quick-act-btn" style="background:var(--primary); color:white;" onclick="promptPricingProposal('${name}', '${phone}', '${orderSerial}')">💰 اعلام قیمت و ارسال پیش‌فاکتور</button>
+          </div>
+
+          <div class="msg-footer">
+            <span>در انتظار قیمت‌گذاری کارشناس</span>
+            <span style="color:#0284C7;">✓✓</span>
+          </div>
+        `;
+
+        stream.appendChild(bubble);
+        stream.scrollTop = stream.scrollHeight;
+
+        // Reset Submit Button
+        submitBtn.innerHTML = '✓ استعلام با موفقیت ارسال شد!';
+        submitBtn.style.background = 'var(--success)';
+        setTimeout(() => {
+          submitBtn.innerHTML = '<span>🚀 ثبت استعلام و ارسال لحظه‌ای به کارشناس مربوطه</span>';
+          submitBtn.style.background = '';
+          submitBtn.style.opacity = '1';
+        }, 2500);
+
+      }, 1200);
+    }
+
+    // Toggle Messengers inside Phone
+    function selectMessengerApp(app) {
+      currentMessenger = app;
+      const header = document.getElementById('chat-header');
+      const title = document.getElementById('agent-title-text');
+      const sub = document.getElementById('agent-sub-text');
+      const btnBale = document.getElementById('btn-app-bale');
+      const btnEitaa = document.getElementById('btn-app-eitaa');
+
+      if (app === 'bale') {
+        header.className = 'messenger-top bale-mode';
+        title.innerText = 'بازوی بله (Bale Bot)';
+        sub.innerText = 'کارشناس ارشد فنی و مهندسی';
+        btnBale.classList.add('active');
+        btnEitaa.classList.remove('active');
+      } else {
+        header.className = 'messenger-top eitaa-mode';
+        title.innerText = 'ربات ایتا (Eitaa Bot)';
+        sub.innerText = 'دپارتمان بازرگانی و فروش فلزات';
+        btnEitaa.classList.add('active');
+        btnBale.classList.remove('active');
+      }
+    }
+
+    // Tab Navigation
+    function switchView(viewName, btn) {
+      document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
+
+      document.getElementById('panel-' + viewName).classList.add('active');
+      btn.classList.add('active');
+    }
+
+    // Open Official Invoice PDF Modal
+    let currentBuyerName = '';
+    let currentBuyerPhone = '';
+    let currentOrderSerial = '';
+    let itemizedPrices = {}; // { itemIdx: unitPrice }
+
+    function openInvoiceModal(name, phone, note, orderNum, isPriced) {
+      document.getElementById('inv-cust-name').innerText = name;
+      document.getElementById('inv-cust-phone').innerText = phone;
+      document.getElementById('inv-cust-note').innerText = note || '—';
+      document.getElementById('inv-num-display').innerText = 'SQ-1403-' + orderNum;
+
+      let grandTotal = 0;
+      const tbody = document.getElementById('inv-table-body');
+      tbody.innerHTML = cartItems.map((item, idx) => {
+        const unit = isPriced && itemizedPrices[idx] ? itemizedPrices[idx] : 0;
+        const lineTotal = unit * item.qty;
+        grandTotal += lineTotal;
+
+        const unitText = unit > 0 ? unit.toLocaleString('fa-IR') + ' تومان' : 'مظنه استعلامی';
+        const lineText = lineTotal > 0 ? lineTotal.toLocaleString('fa-IR') + ' تومان' : 'استعلام قیمت اولیه';
+
+        return `
+          <tr>
+            <td style="text-align:center;">${idx + 1}</td>
+            <td><b>${item.name}</b></td>
+            <td>${item.category}</td>
+            <td style="text-align:center;">${item.qty} واحد</td>
+            <td style="text-align:left; font-weight:bold; color:${unit > 0 ? '#4F46E5' : '#059669'};">${unitText}</td>
+          </tr>
+        `;
+      }).join('');
+
+      document.getElementById('invoice-modal').classList.add('active');
+    }
+
+    function closeInvoiceModal() {
+      document.getElementById('invoice-modal').classList.remove('active');
+    }
+
+    // Prompt Itemized Pricing Proposal
+    function promptPricingProposal(name, phone, orderSerial) {
+      currentBuyerName = name;
+      currentBuyerPhone = phone;
+      currentOrderSerial = orderSerial;
+
+      document.getElementById('pricing-modal-subtitle').innerText = 'استعلام شماره #' + orderSerial + ' برای خریدار: ' + name;
+
+      const container = document.getElementById('pricing-items-wrapper');
+      container.innerHTML = cartItems.map((item, idx) => {
+        let defPrice = 18500000;
+        if (item.category.includes('آهن')) defPrice = 7500000;
+        if (item.category.includes('برق')) defPrice = 24000000;
+        itemizedPrices[idx] = defPrice;
+
+        return `
+          <div style="background:#F8FAFC; border:1px solid var(--border); border-radius:8px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center;">
+            <div style="flex:1;">
+              <b style="font-size:0.85rem; color:#0F172A;">${item.name}</b>
+              <div style="font-size:0.75rem; color:#64748B;">تعداد درخواستی: <b>${item.qty} واحد</b> (${item.category})</div>
+            </div>
+            <div style="width:200px; text-align:left;">
+              <label style="font-size:0.7rem; color:#475569; display:block; margin-bottom:2px;">قیمت واحد پیشنهادی (تومان):</label>
+              <input type="number" 
+                     value="${defPrice}" 
+                     step="500000" 
+                     class="wsq-demo-unit-input" 
+                     data-idx="${idx}" 
+                     data-qty="${item.qty}" 
+                     style="width:100%; border:1px solid #CBD5E1; padding:6px 10px; border-radius:6px; font-weight:bold; font-size:0.85rem; direction:ltr;"
+                     oninput="updatePricingModalTotal()">
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      updatePricingModalTotal();
+      document.getElementById('pricing-modal').classList.add('active');
+    }
+
+    function closePricingModal() {
+      document.getElementById('pricing-modal').classList.remove('active');
+    }
+
+    function updatePricingModalTotal() {
+      let grandTotal = 0;
+      document.querySelectorAll('.wsq-demo-unit-input').forEach(input => {
+        const idx = input.getAttribute('data-idx');
+        const qty = parseFloat(input.getAttribute('data-qty')) || 1;
+        const val = parseFloat(input.value) || 0;
+        itemizedPrices[idx] = val;
+        grandTotal += (val * qty);
+      });
+      document.getElementById('pricing-modal-total-display').innerText = grandTotal.toLocaleString('fa-IR') + ' تومان';
+      return grandTotal;
+    }
+
+    function confirmItemizedProposal() {
+      closePricingModal();
+      const grandTotal = updatePricingModalTotal();
+      const totalFormatted = grandTotal.toLocaleString('fa-IR') + ' تومان';
+
+      const stream = document.getElementById('chat-stream-box');
+      const typing = document.getElementById('typing-indicator-box');
+      typing.style.display = 'flex';
+      stream.scrollTop = stream.scrollHeight;
+
+      // Build breakdown lines
+      let breakdownHtml = '';
+      let smsItemsHtml = '';
+      cartItems.forEach((item, idx) => {
+        const unit = itemizedPrices[idx] || 0;
+        const sub = unit * item.qty;
+        breakdownHtml += `<div>▫️ <b>${item.name}:</b> ${unit.toLocaleString('fa-IR')} تومان × ${item.qty} = <b style="color:#059669;">${sub.toLocaleString('fa-IR')} تومان</b></div>`;
+        smsItemsHtml += `▫️ ${item.name}: ${sub.toLocaleString('fa-IR')} تومان<br>`;
+      });
+
+      setTimeout(() => {
+        typing.style.display = 'none';
+        playNotificationChime();
+
+        const proposalBubble = document.createElement('div');
+        proposalBubble.className = 'msg-incoming';
+        proposalBubble.style.borderColor = '#10B981';
+        proposalBubble.innerHTML = `
+          <div class="msg-header-row">
+            <span class="msg-tag-badge" style="background:#ECFDF5; color:#059669;">💰 پیشنهاد قیمت تفکیکی برای خریدار صادر و ارسال شد</span>
+            <span style="font-size:0.65rem; color:#94A3B8;">لحظه‌ای</span>
+          </div>
+          <div class="msg-body-text">
+            <div>👤 <b>خریدار:</b> ${currentBuyerName} (${currentBuyerPhone})</div>
+            <div style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:8px; padding:8px 10px; margin:8px 0; font-size:0.75rem; line-height:1.8;">
+              <div style="font-weight:bold; margin-bottom:4px; color:#334155;">📋 ریز مبالغ اقلام استعلام شده:</div>
+              ${breakdownHtml}
+            </div>
+            <div style="font-size:0.95rem; color:#059669; font-weight:900; margin:6px 0;">
+              💵 جمع کل نهایی: ${totalFormatted}
+            </div>
+            <div style="font-size:0.72rem; color:#64748B;">⏳ مهلت اعتبار: ۲۴ ساعت کاری | 📲 پیامک + ایمیل ارسال گردید</div>
+          </div>
+
+          <!-- Clickable Itemized PDF Attachment -->
+          <div class="msg-pdf-card" onclick="openInvoiceModal('${currentBuyerName}', '${currentBuyerPhone}', 'قیمت تفکیکی اقلام صادر شد', '${currentOrderSerial}', true)">
+            <div class="pdf-meta">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM13 9V3.5L18.5 9H13z"/></svg>
+              <div>
+                <div class="pdf-title">پیش‌فاکتور_رسمی_قیمت‌دار_${currentOrderSerial}.pdf</div>
+                <div class="pdf-size">حجم: ۱۴۸ کیلوبایت | حاوی قیمت تک‌تک اقلام و مهر دیجیتال</div>
+              </div>
+            </div>
+            <span class="pdf-view-badge" style="background:#059669;">مشاهده PDF رسمی</span>
+          </div>
+
+          <div style="margin-top:10px; display:flex; flex-direction:column; gap:6px;">
+            <button class="quick-act-btn" style="background:#0284C7; color:white; font-weight:800; padding:8px;" onclick="openCustomerSmsModal('${currentBuyerName}', '${totalFormatted}', '${smsItemsHtml}')">
+              📲 مشاهده نحوه دریافت در گوشی خریدار (بله / ایتا / پیامک با شماره فرم)
+            </button>
+            <button class="quick-act-btn" style="background:linear-gradient(135deg, #059669, #10B981); color:white; font-weight:800; padding:10px; box-shadow:0 4px 10px rgba(16,185,129,0.3);" onclick="executeFinalCheckout()">
+              💳 شبیه‌سازی پرداخت آنلاین ووکامرس (پذیرش خریدار)
+            </button>
+          </div>
+
+          <div class="msg-footer">
+            <span style="color:#059669; font-weight:bold;">پیش‌فاکتور تفکیکی به دست مشتری رسید</span>
+            <span style="color:#10B981;">✓✓</span>
+          </div>
+        `;
+
+        stream.appendChild(proposalBubble);
+        stream.scrollTop = stream.scrollHeight;
+      }, 700);
+    }
+
+    function openCustomerSmsModal(name, totalFormatted, itemsHtml) {
+      const bName = currentBuyerName || name || 'دکتر حسینی';
+      const bPhone = currentBuyerPhone || '09123456789';
+
+      const nameEl = document.getElementById('buyer-modal-name');
+      if (nameEl) nameEl.innerText = bName;
+
+      const phoneEl = document.getElementById('buyer-modal-phone');
+      if (phoneEl) phoneEl.innerText = bPhone;
+
+      document.querySelectorAll('.buyer-placeholder-name').forEach(el => el.innerText = bName);
+      document.querySelectorAll('.sms-items-text-box').forEach(el => el.innerHTML = itemsHtml);
+      document.querySelectorAll('.sms-total-text-box').forEach(el => el.innerText = totalFormatted);
+
+      switchBuyerChannel('bale');
+      document.getElementById('customer-sms-modal').classList.add('active');
+    }
+
+    function switchBuyerChannel(chan) {
+      const btnBale = document.getElementById('btn-chan-bale');
+      const btnEitaa = document.getElementById('btn-chan-eitaa');
+      const btnSms = document.getElementById('btn-chan-sms');
+
+      const viewBale = document.getElementById('view-buyer-bale');
+      const viewEitaa = document.getElementById('view-buyer-eitaa');
+      const viewSms = document.getElementById('view-buyer-sms');
+
+      if (!btnBale || !btnEitaa || !btnSms) return;
+
+      [btnBale, btnEitaa, btnSms].forEach(b => {
+        b.style.background = 'transparent';
+        b.style.color = '#94A3B8';
+      });
+
+      if (viewBale) viewBale.style.display = 'none';
+      if (viewEitaa) viewEitaa.style.display = 'none';
+      if (viewSms) viewSms.style.display = 'none';
+
+      if (chan === 'bale') {
+        btnBale.style.background = '#0284C7';
+        btnBale.style.color = 'white';
+        if (viewBale) viewBale.style.display = 'block';
+      } else if (chan === 'eitaa') {
+        btnEitaa.style.background = '#EA580C';
+        btnEitaa.style.color = 'white';
+        if (viewEitaa) viewEitaa.style.display = 'block';
+      } else {
+        btnSms.style.background = '#10B981';
+        btnSms.style.color = 'white';
+        if (viewSms) viewSms.style.display = 'block';
+      }
+    }
+
+    function closeCustomerSmsModal() {
+      document.getElementById('customer-sms-modal').classList.remove('active');
+    }
+
+    function executeFinalCheckout() {
+      closeCustomerSmsModal();
+      playNotificationChime();
+      alert('🎉 پرداخت آنلاین درگاه شاپرک/ووکامرس با موفقیت انجام شد!\n\nمبلغ استعلام به حساب فروشگاه واریز گردید.\n\nوضعیت سفارش در ووکامرس از حالت «استعلام» به «در حال پردازش (Processing)» ارتقا یافت و فاکتور فروش رسمی صادر گردید.');
+    }
+
+
+
+    // ROI Calculator
+    function calculateROI() {
+      const count = parseInt(document.getElementById('range-quotes').value);
+      const deal = parseInt(document.getElementById('range-deal').value);
+
+      document.getElementById('val-quotes-count').innerText = count + ' استعلام';
+      document.getElementById('val-avg-deal').innerText = deal.toLocaleString('fa-IR') + ' تومان';
+
+      // Assuming conservative 3% boost in closing rate due to sub-minute response
+      const additionalDeals = Math.round(count * 0.03);
+      const extraProfit = (additionalDeals * deal * 0.15); // 15% margin
+      document.getElementById('roi-profit-display').innerText = '+' + Math.round(extraProfit).toLocaleString('fa-IR');
+    }
+
+    // Web Audio Synthesizer (No external audio files required!)
+    function playTone(freq, duration) {
+      if (!audioEnabled) return;
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        gain.gain.setValueAtTime(0.1, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function playNotificationChime() {
+      if (!audioEnabled) return;
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const now = ctx.currentTime;
+        
+        const osc1 = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc1.type = 'sine';
+        osc2.type = 'triangle';
+
+        osc1.frequency.setValueAtTime(587.33, now); // D5
+        osc1.frequency.exponentialRampToValueAtTime(880, now + 0.12); // A5
+
+        osc2.frequency.setValueAtTime(880, now);
+        osc2.frequency.exponentialRampToValueAtTime(1174.66, now + 0.15); // D6
+
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc1.start(now);
+        osc2.start(now);
+        osc1.stop(now + 0.45);
+        osc2.stop(now + 0.45);
+      } catch (e) {}
+    }
+
+    function toggleAudioChime() {
+      audioEnabled = !audioEnabled;
+      const btn = document.getElementById('btn-sound-toggle');
+      const icon = document.getElementById('sound-icon');
+      if (audioEnabled) {
+        btn.classList.add('active');
+        btn.innerHTML = '<span id="sound-icon">🔔</span> صدای اعلان: فعال';
+        playTone(700, 0.1);
+      } else {
+        btn.classList.remove('active');
+        btn.innerHTML = '<span id="sound-icon">🔕</span> صدای اعلان: خاموش';
+      }
+    }
+
+    function copyAdText(bannerType) {
+      const text = `🔥 با افزونه WooCommerce Smart Quote دیگر هیچ معامله عمده‌ای را از دست ندهید! استعلام در سایت ➔ پیش‌فاکتور رسمی در بله و ایتا در کمتر از ۳۰ ثانیه. بدون فیلترشکن و کاملاً خودکار.`;
+      navigator.clipboard.writeText(text);
+      alert('متن تبلیغاتی ' + bannerType + ' با موفقیت در کلیپ‌بورد کپی شد!');
+    }
+
+    // Initial Tray setup
+    renderTray();
+    // Pre-populate invoice table so print view is immediately ready
+    openInvoiceModal('دکتر حسینی (پتروشیمی نگین)', '09123456789', 'لطفاً پیش‌فاکتور رسمی با اعمال تخفیف عمده صادر شود.', '9214', false);
+    closeInvoiceModal();
+  </script>
+
+</body>
+</html>

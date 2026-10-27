@@ -1,0 +1,2514 @@
+# Copyright (C) 2026 WooCommerce Smart Quote
+# This file is distributed under the GPL-2.0+.
+msgid ""
+msgstr ""
+"Project-Id-Version: WooCommerce Smart Quote 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/woo-smart-quote\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-10-25T17:42:13+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: woo-smart-quote\n"
+
+#. Plugin Name of the plugin
+#. Author of the plugin
+#: woo-smart-quote.php
+msgid "WooCommerce Smart Quote"
+msgstr ""
+
+#. Description of the plugin
+#: woo-smart-quote.php
+msgid "سیستم پیشرفته استعلام قیمت ووکامرس با اتصال بومی به بله و ایتا و تولید PDF رسمی."
+msgstr ""
+
+#: includes/class-wsq-admin.php:43
+msgid "در حال ارسال پیام تست…"
+msgstr ""
+
+#: includes/class-wsq-admin.php:44
+msgid "پیام تست با موفقیت ارسال شد!"
+msgstr ""
+
+#: includes/class-wsq-admin.php:45
+msgid "خطا در ارسال پیام تست: "
+msgstr ""
+
+#: includes/class-wsq-admin.php:46
+msgid "پاسخی از سرور دریافت نشد؛ دوباره تلاش کنید."
+msgstr ""
+
+#: includes/class-wsq-admin.php:47
+msgid "لطفاً حداقل یک شناسه چت (Chat ID) و توکن وارد کنید."
+msgstr ""
+
+#: includes/class-wsq-admin.php:48
+#: includes/class-wsq-admin.php:387
+#: includes/class-wsq-order.php:356
+#: includes/class-wsq-order.php:493
+msgid "خطا در ارتباط با سرور."
+msgstr ""
+
+#: includes/class-wsq-admin.php:49
+msgid "خطا"
+msgstr ""
+
+#: includes/class-wsq-admin.php:50
+msgid "در حال ارتباط با بله…"
+msgstr ""
+
+#: includes/class-wsq-admin.php:51
+msgid "وبهوک بله حذف شود؟ پیام‌ها از این پس با پولینگ دریافت می‌شوند."
+msgstr ""
+
+#. translators: %s: chat id
+#: includes/class-wsq-admin.php:52
+#: includes/class-wsq-admin.php:1030
+msgid "ارسال"
+msgstr ""
+
+#: includes/class-wsq-admin.php:53
+#: includes/class-wsq-frontend.php:108
+msgid "در حال ارسال…"
+msgstr ""
+
+#: includes/class-wsq-admin.php:54
+msgid "متن پاسخ را بنویسید."
+msgstr ""
+
+#: includes/class-wsq-admin.php:55
+#: includes/class-wsq-admin.php:454
+msgid "پاسخ ارسال شد."
+msgstr ""
+
+#: includes/class-wsq-admin.php:56
+msgid "خطا در ارسال پاسخ: "
+msgstr ""
+
+#. translators: %s: chat id
+#: includes/class-wsq-admin.php:57
+#: includes/class-wsq-admin.php:1014
+#: includes/class-wsq-frontend.php:106
+#: templates/quote-list.php:60
+msgid "کپی"
+msgstr ""
+
+#: includes/class-wsq-admin.php:58
+msgid "کپی شد"
+msgstr ""
+
+#: includes/class-wsq-admin.php:59
+msgid "کپی نشد؛ متن را دستی انتخاب کنید."
+msgstr ""
+
+#. translators: %s: chat id
+#: includes/class-wsq-admin.php:60
+#: includes/class-wsq-admin.php:1014
+#, php-format
+msgid "کپی شناسه چت %s"
+msgstr ""
+
+#: includes/class-wsq-admin.php:61
+msgid "همه پیام‌های خوانده‌نشده به‌عنوان خوانده‌شده علامت بخورند؟"
+msgstr ""
+
+#: includes/class-wsq-admin.php:62
+msgid "همه پیام‌ها خوانده شدند."
+msgstr ""
+
+#: includes/class-wsq-admin.php:63
+msgid "پیام خوانده‌شده علامت خورد."
+msgstr ""
+
+#: includes/class-wsq-admin.php:64
+msgid "خطا در علامت‌گذاری پیام‌ها."
+msgstr ""
+
+#: includes/class-wsq-admin.php:65
+#: includes/class-wsq-admin.php:996
+msgid "همه پیام‌ها خوانده شده‌اند. پیام جدیدی برای بررسی وجود ندارد."
+msgstr ""
+
+#: includes/class-wsq-admin.php:66
+msgid "هنوز پیامی دریافت نشده است."
+msgstr ""
+
+#: includes/class-wsq-admin.php:67
+msgid "هیچ دسته‌بندی مطابق با جستجوی شما یافت نشد."
+msgstr ""
+
+#: includes/class-wsq-admin.php:68
+#, php-format
+msgid "%s دسته‌بندی یافت شد."
+msgstr ""
+
+#: includes/class-wsq-admin.php:69
+#, php-format
+msgid "توکن %s در متن درج شد."
+msgstr ""
+
+#: includes/class-wsq-admin.php:70
+msgid "تغییرات ذخیره‌نشده دارید."
+msgstr ""
+
+#: includes/class-wsq-admin.php:71
+#: includes/class-wsq-admin.php:1430
+#: includes/class-wsq-admin.php:1488
+#: includes/class-wsq-frontend.php:195
+#: includes/class-wsq-frontend.php:197
+msgid "افزودن به لیست استعلام قیمت"
+msgstr ""
+
+#: includes/class-wsq-admin.php:72
+#: includes/class-wsq-admin.php:1212
+#: includes/class-wsq-admin.php:1221
+#: includes/class-wsq-pdf-generator.php:73
+msgid "تأیید شد - استعلام قیمت رسمی"
+msgstr ""
+
+#: includes/class-wsq-admin.php:83
+msgid "Smart Quote"
+msgstr ""
+
+#: includes/class-wsq-admin.php:90
+msgid "پیام خوانده‌نشده"
+msgstr ""
+
+#: includes/class-wsq-admin.php:95
+msgid "Smart Quote Settings"
+msgstr ""
+
+#: includes/class-wsq-admin.php:295
+msgid "مدت اعتبار پیش‌فاکتور"
+msgstr ""
+
+#: includes/class-wsq-admin.php:299
+msgid "مدت نگهداری فایل PDF"
+msgstr ""
+
+#. translators: 1: field label, 2: maximum allowed days
+#: includes/class-wsq-admin.php:313
+#, php-format
+msgid "%1$s نمی‌تواند بیش از %2$s روز باشد؛ مقدار مجاز حداکثر ثبت شد."
+msgstr ""
+
+#. translators: %d: product category term ID
+#: includes/class-wsq-admin.php:341
+#, php-format
+msgid "دسته‌بندی با شناسه %d پیدا نشد و مسیر آن ذخیره نشد."
+msgstr ""
+
+#: includes/class-wsq-admin.php:371
+#: includes/class-wsq-admin.php:403
+#: includes/class-wsq-admin.php:438
+#: includes/class-wsq-admin.php:468
+#: includes/class-wsq-buyer-notifier.php:530
+#: includes/class-wsq-order.php:535
+#: includes/class-wsq-order.php:607
+#: includes/class-wsq-order.php:608
+msgid "دسترسی غیرمجاز."
+msgstr ""
+
+#: includes/class-wsq-admin.php:379
+msgid "توکن و شناسه چت نباید خالی باشند."
+msgstr ""
+
+#: includes/class-wsq-admin.php:385
+msgid "پیام آزمایشی با موفقیت ارسال شد!"
+msgstr ""
+
+#: includes/class-wsq-admin.php:409
+msgid "عملیات نامعتبر."
+msgstr ""
+
+#: includes/class-wsq-admin.php:416
+msgid "وبهوک با موفقیت در بله ثبت شد."
+msgstr ""
+
+#: includes/class-wsq-admin.php:418
+msgid "وبهوک حذف شد؛ پولینگ فعال می‌شود."
+msgstr ""
+
+#: includes/class-wsq-admin.php:420
+msgid "خطا در ارتباط با سرور بله."
+msgstr ""
+
+#: includes/class-wsq-admin.php:446
+msgid "پارامترهای پاسخ ناقص است."
+msgstr ""
+
+#: includes/class-wsq-admin.php:456
+msgid "خطا در ارسال."
+msgstr ""
+
+#: includes/class-wsq-admin.php:476
+msgid "پیام‌ها به‌عنوان خوانده‌شده علامت خوردند."
+msgstr ""
+
+#: includes/class-wsq-admin.php:476
+msgid "پیام خوانده‌نشده‌ای وجود ندارد."
+msgstr ""
+
+#: includes/class-wsq-admin.php:514
+#: includes/class-wsq-admin.php:1318
+msgid "توکن‌های قابل استفاده — برای درج در متن کلیک کنید"
+msgstr ""
+
+#: includes/class-wsq-admin.php:516
+#: includes/class-wsq-admin.php:1323
+msgid "کلیک کنید تا توکن در قالب درج شود"
+msgstr ""
+
+#: includes/class-wsq-admin.php:551
+msgid "بدون مبنای مقایسه"
+msgstr ""
+
+#: includes/class-wsq-admin.php:555
+msgid "بدون تغییر"
+msgstr ""
+
+#. translators: %s: percentage
+#: includes/class-wsq-admin.php:568
+#, php-format
+msgid "افزایش %s درصد نسبت به دوره قبل"
+msgstr ""
+
+#. translators: %s: percentage
+#: includes/class-wsq-admin.php:570
+#, php-format
+msgid "کاهش %s درصد نسبت به دوره قبل"
+msgstr ""
+
+#. translators: %s: number of days
+#: includes/class-wsq-admin.php:597
+#, php-format
+msgid "%s روز اخیر"
+msgstr ""
+
+#: includes/class-wsq-admin.php:602
+msgid "در انتظار بررسی"
+msgstr ""
+
+#: includes/class-wsq-admin.php:603
+msgid "پیش‌فاکتور ارسال شد"
+msgstr ""
+
+#: includes/class-wsq-admin.php:604
+msgid "در حال پردازش"
+msgstr ""
+
+#: includes/class-wsq-admin.php:605
+msgid "تکمیل شده"
+msgstr ""
+
+#: includes/class-wsq-admin.php:606
+msgid "سایر وضعیت‌ها"
+msgstr ""
+
+#. translators: 1: total quotes, 2: date, 3: busiest day count
+#: includes/class-wsq-admin.php:623
+#, php-format
+msgid "نمودار استعلام‌های ۱۴ روز اخیر: در مجموع %1$s استعلام، بیشترین روز %2$s با %3$s استعلام."
+msgstr ""
+
+#: includes/class-wsq-admin.php:629
+msgid "نمودار استعلام‌های ۱۴ روز اخیر: در این بازه استعلامی ثبت نشده است."
+msgstr ""
+
+#: includes/class-wsq-admin.php:640
+msgid "تعداد سفارش‌های این بازه از سقف پویش داشبورد بیشتر است؛ اعداد بر اساس جدیدترین سفارش‌ها محاسبه شده‌اند."
+msgstr ""
+
+#: includes/class-wsq-admin.php:647
+msgid "استعلام‌های امروز"
+msgstr ""
+
+#: includes/class-wsq-admin.php:649
+#, php-format
+msgid "دیروز: %s"
+msgstr ""
+
+#: includes/class-wsq-admin.php:655
+msgid "استعلام‌های این هفته"
+msgstr ""
+
+#: includes/class-wsq-admin.php:657
+#, php-format
+msgid "هفته قبل: %s"
+msgstr ""
+
+#: includes/class-wsq-admin.php:663
+msgid "در انتظار بررسی (کل صف)"
+msgstr ""
+
+#. translators: %s: number of days
+#: includes/class-wsq-admin.php:669
+#, php-format
+msgid "قدیمی‌ترین: %s روز در صف"
+msgstr ""
+
+#: includes/class-wsq-admin.php:671
+msgid "صف بررسی خالی است"
+msgstr ""
+
+#: includes/class-wsq-admin.php:675
+msgid "مشاهده صف"
+msgstr ""
+
+#: includes/class-wsq-admin.php:680
+msgid "نرخ تبدیل به سفارش"
+msgstr ""
+
+#. translators: 1: converted orders, 2: total quotes, 3: period
+#: includes/class-wsq-admin.php:687
+#, php-format
+msgid "%1$s سفارش از %2$s استعلام — %3$s"
+msgstr ""
+
+#: includes/class-wsq-admin.php:695
+#, php-format
+msgid "نرخ تبدیل: %s درصد"
+msgstr ""
+
+#: includes/class-wsq-admin.php:702
+msgid "روند استعلام‌های ۱۴ روز اخیر"
+msgstr ""
+
+#: includes/class-wsq-admin.php:704
+msgid "هر ستون تعداد استعلام‌های یک روز است؛ بخش پررنگ آن‌هایی که به سفارش تبدیل شده‌اند."
+msgstr ""
+
+#: includes/class-wsq-admin.php:708
+msgid "کل استعلام"
+msgstr ""
+
+#: includes/class-wsq-admin.php:709
+msgid "تبدیل به سفارش"
+msgstr ""
+
+#. translators: 1: date, 2: quote count, 3: converted count
+#: includes/class-wsq-admin.php:730
+#, php-format
+msgid "%1$s — %2$s استعلام، %3$s تبدیل به سفارش"
+msgstr ""
+
+#: includes/class-wsq-admin.php:751
+msgid "توزیع وضعیت استعلام‌ها"
+msgstr ""
+
+#. translators: %s: period label
+#: includes/class-wsq-admin.php:757
+#, php-format
+msgid "بر اساس %s — روی هر ردیف بزنید تا لیست سفارش‌ها باز شود."
+msgstr ""
+
+#: includes/class-wsq-admin.php:765
+msgid "در این بازه استعلامی ثبت نشده است."
+msgstr ""
+
+#. translators: 1: status name, 2: quote count, 3: percentage
+#: includes/class-wsq-admin.php:773
+#, php-format
+msgid "%1$s: %2$s استعلام، %3$s درصد — مشاهده در لیست سفارش‌ها"
+msgstr ""
+
+#: includes/class-wsq-admin.php:786
+msgid "قدیمی‌ترین استعلام‌های در انتظار بررسی"
+msgstr ""
+
+#: includes/class-wsq-admin.php:789
+msgid "هیچ استعلامی در انتظار بررسی نیست."
+msgstr ""
+
+#: includes/class-wsq-admin.php:791
+msgid "صف استعلام‌های در انتظار بررسی"
+msgstr ""
+
+#: includes/class-wsq-admin.php:793
+msgid "صف استعلام‌های در انتظار بررسی، به ترتیب قدیمی‌ترین"
+msgstr ""
+
+#: includes/class-wsq-admin.php:796
+msgid "استعلام"
+msgstr ""
+
+#: includes/class-wsq-admin.php:797
+msgid "خریدار"
+msgstr ""
+
+#: includes/class-wsq-admin.php:798
+msgid "تلفن"
+msgstr ""
+
+#: includes/class-wsq-admin.php:799
+msgid "اقلام"
+msgstr ""
+
+#: includes/class-wsq-admin.php:800
+msgid "در انتظار"
+msgstr ""
+
+#: includes/class-wsq-admin.php:801
+msgid "اقدام"
+msgstr ""
+
+#: includes/class-wsq-admin.php:816
+msgid "امروز"
+msgstr ""
+
+#: includes/class-wsq-admin.php:818
+#, php-format
+msgid "%s روز"
+msgstr ""
+
+#. translators: %s: order number
+#: includes/class-wsq-admin.php:823
+#, php-format
+msgid "قیمت‌گذاری استعلام #%s"
+msgstr ""
+
+#. translators: %s: order number
+#: includes/class-wsq-admin.php:823
+msgid "قیمت‌گذاری"
+msgstr ""
+
+#. translators: %s: number of quotes
+#: includes/class-wsq-admin.php:838
+#, php-format
+msgid "مشاهده همه %s استعلام در انتظار"
+msgstr ""
+
+#: includes/class-wsq-admin.php:860
+msgid "دریافت پیام از بله و ایتا"
+msgstr ""
+
+#: includes/class-wsq-admin.php:862
+msgid "ربات فروشگاه می‌تواند پیام‌های خریداران را دریافت کند، با آن‌ها تعامل کند (استعلام، پیش‌فاکتور، لینک پرداخت) و پیام‌های پشتیبانی را به کارشناسان برساند."
+msgstr ""
+
+#: includes/class-wsq-admin.php:867
+msgid "وبهوک بله (Bale Webhook)"
+msgstr ""
+
+#: includes/class-wsq-admin.php:871
+msgid "ثبت وبهوک در بله"
+msgstr ""
+
+#: includes/class-wsq-admin.php:872
+msgid "حذف وبهوک"
+msgstr ""
+
+#: includes/class-wsq-admin.php:875
+msgid "با ثبت وبهوک، پیام‌های بله بلافاصله دریافت می‌شود (بهتر از پولینگ). برای ایتا از پولینگ استفاده می‌شود."
+msgstr ""
+
+#: includes/class-wsq-admin.php:879
+msgid "فعال‌سازی پولینگ (Polling)"
+msgstr ""
+
+#: includes/class-wsq-admin.php:885
+msgid "هر دقیقه پیام‌های جدید از بله و ایتا بررسی شود."
+msgstr ""
+
+#: includes/class-wsq-admin.php:887
+msgid "اگر وبهوک بله ثبت شده باشد، پولینگ فقط برای ایتا به کار می‌رود."
+msgstr ""
+
+#: includes/class-wsq-admin.php:889
+msgid "پنل ایتای شما"
+msgstr ""
+
+#: includes/class-wsq-admin.php:889
+msgid "را پشتیبانی نمی‌کند؛ پولینگ برای ایتا غیرفعال شده است. فقط ارسال فعال می‌ماند."
+msgstr ""
+
+#: includes/class-wsq-admin.php:897
+msgid "چت‌های مدیریتی (Admin)"
+msgstr ""
+
+#: includes/class-wsq-admin.php:898
+msgid "شناسه چت‌هایی که پیام‌های خریداران به آن‌ها ارسال می‌شود و فرمان‌های مدیریتی (/pending, /order) را می‌پذیرند. هر شناسه در یک سطر."
+msgstr ""
+
+#: includes/class-wsq-admin.php:901
+msgid "چت‌های مدیر بله"
+msgstr ""
+
+#: includes/class-wsq-admin.php:904
+msgid "برای گرفتن شناسه چت، در همان چت دستور /start را به ربات بفرستید و به لاگ‌ها مراجعه کنید."
+msgstr ""
+
+#: includes/class-wsq-admin.php:908
+msgid "چت‌های مدیر ایتا"
+msgstr ""
+
+#: includes/class-wsq-admin.php:917
+msgid "ربات تعاملی خریدار"
+msgstr ""
+
+#: includes/class-wsq-admin.php:920
+msgid "فعال‌سازی ربات خریدار"
+msgstr ""
+
+#: includes/class-wsq-admin.php:926
+msgid "خریداران بتوانند با /start شماره‌شان را لینک کنند و استعلام/پیش‌فاکتور بگیرند."
+msgstr ""
+
+#: includes/class-wsq-admin.php:931
+msgid "متن خوش‌آمد (Welcome)"
+msgstr ""
+
+#: includes/class-wsq-admin.php:935
+msgid "خالی بگذارید تا متن پیش‌فرض استفاده شود."
+msgstr ""
+
+#: includes/class-wsq-admin.php:939
+msgid "قالب فهرست استعلام‌ها (/orders)"
+msgstr ""
+
+#: includes/class-wsq-admin.php:943
+msgid "متن بین"
+msgstr ""
+
+#: includes/class-wsq-admin.php:943
+msgid "و"
+msgstr ""
+
+#: includes/class-wsq-admin.php:943
+msgid "برای هر استعلام یک‌بار تکرار می‌شود. خالی = قالب پیش‌فرض."
+msgstr ""
+
+#: includes/class-wsq-admin.php:947
+msgid "کارت استعلام (وضعیت + پیش‌فاکتور)"
+msgstr ""
+
+#: includes/class-wsq-admin.php:951
+msgid "خالی = کارت پیش‌فرض."
+msgstr ""
+
+#: includes/class-wsq-admin.php:977
+msgid "صندوق ورودی پیام"
+msgstr ""
+
+#: includes/class-wsq-admin.php:978
+msgid "فیلتر صندوق ورودی"
+msgstr ""
+
+#: includes/class-wsq-admin.php:980
+msgid "همه"
+msgstr ""
+
+#: includes/class-wsq-admin.php:984
+msgid "خوانده‌نشده"
+msgstr ""
+
+#: includes/class-wsq-admin.php:989
+msgid "خواندن همه"
+msgstr ""
+
+#: includes/class-wsq-admin.php:998
+msgid "هنوز پیامی دریافت نشده است. با ثبت وبهوک یا فعال‌سازی پولینگ، پیام‌های خریداران اینجا نمایش داده می‌شود."
+msgstr ""
+
+#: includes/class-wsq-admin.php:1012
+#: includes/class-wsq-admin.php:1122
+#: includes/class-wsq-order.php:111
+#: includes/class-wsq-order.php:459
+#: includes/class-wsq-order.php:548
+#: includes/class-wsq-queue.php:381
+msgid "بله"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1012
+#: includes/class-wsq-admin.php:1123
+#: includes/class-wsq-order.php:115
+#: includes/class-wsq-order.php:459
+#: includes/class-wsq-order.php:549
+#: includes/class-wsq-queue.php:381
+msgid "ایتا"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1014
+msgid "کپی شناسه چت"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1020
+msgid "سفارش"
+msgstr ""
+
+#. translators: %s: chat id
+#: includes/class-wsq-admin.php:1024
+#, php-format
+msgid "علامت‌گذاری پیام گفتگو با شناسه %s به‌عنوان خوانده‌شده"
+msgstr ""
+
+#. translators: %s: chat id
+#: includes/class-wsq-admin.php:1024
+msgid "خوانده شد"
+msgstr ""
+
+#. translators: %s: chat id
+#: includes/class-wsq-admin.php:1029
+#, php-format
+msgid "پاسخ به گفتگو با شناسه %s"
+msgstr ""
+
+#. translators: %s: chat id
+#: includes/class-wsq-admin.php:1029
+msgid "پاسخ خود را بنویسید…"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1069
+msgid "داشبورد استعلام‌ها"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1073
+msgid "تنظیمات و مشخصات رسمی PDF"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1077
+msgid "پیام‌رسان‌ها (اعلان کارشناسان)"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1081
+msgid "ارسال به خریدار (بله، ایتا، پیامک)"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1085
+msgid "ربات تعاملی و دریافت پیام"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1089
+msgid "مسیریابی کارشناسان (Routing)"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1093
+msgid "دکمه و ویجت شناور"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1113
+msgid "هوشمند استعلام قیمت ووکامرس"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1114
+msgid "اتصال بومی به بله و ایتا + صدور پیش‌فاکتور رسمی PDF"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1118
+#, php-format
+msgid "نسخه %s"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1122
+#: includes/class-wsq-admin.php:1123
+msgid "متصل"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1122
+#: includes/class-wsq-admin.php:1123
+msgid "تنظیم نشده"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1124
+msgid "ارسال خودکار به خریدار"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1124
+msgid "فعال"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1124
+msgid "غیرفعال"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1127
+msgid "پیشرفت راه‌اندازی"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1127
+#, php-format
+msgid "%s٪ تکمیل شده"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1128
+#, php-format
+msgid "%s درصد تکمیل شده"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1136
+msgid "بخش‌های تنظیمات"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1153
+msgid "مشخصات حقوقی و سربرگ پیش‌فاکتور رسمی"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1154
+msgid "این اطلاعات در سربرگ فایل PDF پیش‌فاکتور ارسالی برای خریدار درج می‌شوند."
+msgstr ""
+
+#: includes/class-wsq-admin.php:1157
+msgid "آدرس لوگوی فروشگاه (URL)"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1160
+msgid "آدرس مستقیم تصویر لوگو جهت درج در بالای پیش‌فاکتور رسمی."
+msgstr ""
+
+#: includes/class-wsq-admin.php:1164
+msgid "نام رسمی واحد تجاری / شرکت"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1170
+msgid "شناسه ملی"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1172
+msgid "مثال: ۱۰۳۲۰۰۴۹۱۸۲"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1176
+msgid "شماره ثبت"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1178
+msgid "مثال: ۵۴۳۲۱۰"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1182
+msgid "کد اقتصادی"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1184
+msgid "مثال: ۴۱۱۳۷۶۹۵۸۲۱۴"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1188
+msgid "تلفن تماس شرکت"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1194
+msgid "نشانی رسمی کارخانه یا دفتر"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1200
+msgid "مهر دیجیتال رسمی"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1206
+msgid "درج مهر قرمز رنگ رسمی در انتهای پیش‌فاکتور"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1214
+msgid "پیش‌نمایش نمادین مهر رسمی که به‌صورت وکتور با حاشیه دایره‌ای دوخط قرمز در انتهای سند PDF الصاق می‌شود."
+msgstr ""
+
+#: includes/class-wsq-admin.php:1219
+msgid "متن داخل مهر دیجیتال"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1225
+msgid "شعار زیر لوگو (هدر PDF)"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1227
+#: includes/class-wsq-pdf-generator.php:76
+#: templates/pdf/quote-fa.php:42
+msgid "سیستم جامع استعلام و سفارشات سازمانی"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1228
+msgid "متن کوچکی که در بالای پیش‌فاکتور زیر نام و لوگوی شرکت درج می‌شود."
+msgstr ""
+
+#: includes/class-wsq-admin.php:1232
+msgid "مدت اعتبار پیش‌فاکتور (روز کاری)"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1235
+msgid "در بخش اطلاعات سند («مدت اعتبار») نمایش داده می‌شود؛ مقدار خالی یا صفر = ۷ روز."
+msgstr ""
+
+#: includes/class-wsq-admin.php:1239
+msgid "مدت نگهداری فایل PDF (روز)"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1242
+msgid "فایل‌های PDF قدیمی‌تر از این مدت به‌صورت خودکار حذف می‌شوند؛ مقدار خالی یا صفر = ۳۰ روز."
+msgstr ""
+
+#: includes/class-wsq-admin.php:1246
+msgid "متن دلخواه پانویس پیش‌فاکتور"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1248
+msgid "اگر خالی بگذارید، جمله پیش‌فرض کد رهگیری نمایش داده می‌شود."
+msgstr ""
+
+#: includes/class-wsq-admin.php:1249
+msgid "برای لینک‌دار کردن از تگ <a> یا شکست خط از Enter استفاده کنید."
+msgstr ""
+
+#: includes/class-wsq-admin.php:1258
+msgid "تنظیمات بازوی بله (Bale Bot API)"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1263
+msgid "توکن بازوی بله"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1266
+msgid "توکن دریافت شده از بازوی بات‌ساز بله (@botfather یا @balebot)."
+msgstr ""
+
+#: includes/class-wsq-admin.php:1270
+#: includes/class-wsq-admin.php:1297
+msgid "شناسه‌های چت پیش‌فرض (Chat IDs)"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1273
+msgid "هر شناسه در یک سطر (مثال: 123456789). برای گروه‌ها معمولاً با علامت منفی شروع می‌شود."
+msgstr ""
+
+#: includes/class-wsq-admin.php:1275
+msgid "ارسال پیام تست به بله"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1285
+msgid "تنظیمات ربات رسمی ایتا (Eitaa Bot API)"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1290
+msgid "توکن ربات ایتا"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1293
+msgid "توکن دریافتی از پنل ربات‌ساز ایتا یا ایتایار."
+msgstr ""
+
+#: includes/class-wsq-admin.php:1300
+msgid "هر شناسه در یک سطر."
+msgstr ""
+
+#: includes/class-wsq-admin.php:1302
+msgid "ارسال پیام تست به ایتا"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1311
+msgid "قالب پیام متنی استعلام"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1312
+msgid "این متن به‌همراه پیش‌فاکتور PDF برای کارشناسان ارسال می‌شود. برای درج توکن در متن، روی آن کلیک کنید."
+msgstr ""
+
+#: includes/class-wsq-admin.php:1315
+msgid "متن پیام ارسالی"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1317
+msgid ""
+"📋 استعلام جدید #{{order_number}}\n"
+"👤 {{customer_name}}\n"
+"📞 {{customer_phone}}\n"
+"🛒 {{items_count}} محصول — جمع: {{total}}\n"
+"📅 تاریخ: {{date_fa}}\n"
+"📝 {{note}}"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1335
+msgid "تنظیمات ارسال پیش‌فاکتور و لینک پرداخت برای خریدار"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1337
+msgid "هنگامی که کارشناس قیمت اقلام را وارد کرده و وضعیت سفارش به"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1337
+#: includes/class-wsq-bot.php:883
+msgid "پیش‌فاکتور صادر شد"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1337
+msgid "تغییر می‌کند، پیش‌فاکتور با لینک پرداخت مستقیم برای شماره خریدار ارسال می‌شود."
+msgstr ""
+
+#: includes/class-wsq-admin.php:1343
+msgid "سازوکار هوشمند ارسال به شماره خریدار در ایران:"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1345
+msgid "برداشت مستقیم شماره: شماره موبایل خریدار بدون نیاز به ثبت‌نام، از فرم استعلام قیمت استخراج و در سفارش ذخیره می‌شود."
+msgstr ""
+
+#: includes/class-wsq-admin.php:1346
+msgid "ارسال به بله و ایتا با شماره موبایل: با فعال‌سازی وب‌سرویس فراز اس‌ام‌اس (IPPanel)، پیام‌ها بر اساس شماره موبایل خریدار، علاوه بر پیامک، در پیام‌رسان‌های داخلی (بله و ایتا) نیز تحویل داده می‌شوند."
+msgstr ""
+
+#: includes/class-wsq-admin.php:1347
+msgid "سرویس سفیر بله: اتصال مستقیم به وب‌سرویس رسمی بازوی بله جهت ارسال به شماره موبایل کاربر."
+msgstr ""
+
+#: includes/class-wsq-admin.php:1348
+msgid "دکمه‌های اقدام سریع در سفارش: علاوه بر ارسال خودکار، در صفحه ویرایش سفارش ووکامرس، دکمه‌های ۱-کلیکی برای باز کردن چت بله، ایتا و واتساپ خریدار با متن آماده تعبیه شده است."
+msgstr ""
+
+#: includes/class-wsq-admin.php:1355
+msgid "فعال‌سازی ارسال خودکار"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1361
+msgid "با تغییر وضعیت سفارش به «پیش‌فاکتور صادر شد»، پیام خودکار برای شماره خریدار ارسال شود."
+msgstr ""
+
+#: includes/class-wsq-admin.php:1366
+msgid "سامانه وب‌سرویس خریدار"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1369
+msgid "غیرفعال (فقط ایمیل و دکمه‌های دستی ادمین)"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1370
+msgid "فراز اس‌ام‌اس / IPPanel (با ارسال هوشمند به بله و ایتا بر اساس شماره)"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1371
+msgid "IPPanel (ارسال مستقیم پیامک خدماتی)"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1372
+msgid "کاوه‌نگار (Kavenegar Verify Lookup)"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1373
+msgid "سفیر بله (وب‌سرویس سازمانی بله برای شماره‌های همراه)"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1375
+msgid "سامانه مورد استفاده جهت پیامک خدماتی سریع و تحویل در پیام‌رسان‌ها."
+msgstr ""
+
+#: includes/class-wsq-admin.php:1379
+msgid "کلید API / توکن دسترسی"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1382
+msgid "API Key پنل پیامک (فراز / IPPanel / کاوه‌نگار)."
+msgstr ""
+
+#: includes/class-wsq-admin.php:1386
+msgid "توکن بله برای اطلاع‌رسانی به خریدار"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1389
+msgid "در صورت انتخاب «سفیر بله» استفاده می‌شود؛ در غیر این صورت توکن اصلی بله به کار می‌رود."
+msgstr ""
+
+#: includes/class-wsq-admin.php:1393
+msgid "کد پترن / قالب تایید شده (Pattern)"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1395
+msgid "مثال: wsq-proposal"
+msgstr ""
+
+#. translators: 1: name placeholder, 2: order placeholder, 3: price placeholder, 4: link placeholder
+#: includes/class-wsq-admin.php:1400
+#, php-format
+msgid "متغیرهای ارسالی به پترن: نام خریدار (%1$s)، شماره استعلام (%2$s)، مبلغ کل (%3$s)، لینک پرداخت مستقیم (%4$s)."
+msgstr ""
+
+#: includes/class-wsq-admin.php:1411
+msgid "شماره خط ارسال‌کننده (Sender)"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1425
+msgid "شخصی‌سازی دکمه استعلام و ویجت شناور"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1428
+msgid "متن دکمه استعلام"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1431
+msgid "متنی که روی دکمه استعلام در صفحات محصول نمایش داده می‌شود."
+msgstr ""
+
+#: includes/class-wsq-admin.php:1435
+msgid "نمایش در آرشیو فروشگاه"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1441
+msgid "نمایش دکمه استعلام در صفحات دسته‌بندی و لیست محصولات (علاوه بر صفحه تکی محصول)"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1446
+msgid "ویجت شناور سبد استعلام"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1452
+msgid "نمایش نشانگر شناور سبد استعلام در گوشه تصویر همراه با شمارنده اقلام"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1457
+msgid "محصولات بدون قیمت"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1463
+msgid "پنهان کردن خودکار دکمه «افزودن به سبد خرید» برای محصولاتی که قیمت صفر دارند یا قیمت وارد نشده است"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1470
+msgid "پیش‌نمایش زنده المان‌ها در فروشگاه"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1472
+msgid "پیش‌نمایش زنده در فروشگاه"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1481
+msgid "کالای نمونه برای استعلام"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1482
+msgid "قیمت: تماس بگیرید / استعلام"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1492
+msgid "ویجت شناور گوشه صفحه:"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1495
+msgid "سبد استعلام:"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1505
+msgid "تغییرات این برگه ذخیره می‌شود. برای ذخیره تنظیمات سایر برگه‌ها، همان برگه را باز کنید."
+msgstr ""
+
+#: includes/class-wsq-admin.php:1506
+#: includes/class-wsq-admin.php:1580
+msgid "تغییرات ذخیره‌نشده دارید"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1507
+msgid "ذخیره تغییرات این برگه"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1518
+msgid "ماتریس مسیریابی هوشمند کارشناسان (Category Routing)"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1520
+msgid "با استفاده از این جدول، تعیین کنید هر دسته‌بندی محصول به کدام کارشناس یا گروه در بله یا ایتا ارسال شود. در صورت خالی ماندن، استعلام به شناسه‌های پیش‌فرض ارسال خواهد شد."
+msgstr ""
+
+#: includes/class-wsq-admin.php:1527
+msgid "جستجوی دسته‌بندی محصول"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1528
+msgid "جستجوی دسته‌بندی محصول…"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1529
+msgid "پاک کردن جستجو"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1534
+msgid "جدول مسیریابی دسته‌بندی‌ها"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1536
+msgid "تعیین شناسه‌های چت بله و ایتا برای هر دسته‌بندی محصول"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1539
+msgid "دسته‌بندی محصول"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1540
+msgid "شناسه‌های چت بله (با کاما جدا کنید)"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1541
+msgid "شناسه‌های چت ایتا (با کاما جدا کنید)"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1557
+msgid "شناسه دسته:"
+msgstr ""
+
+#. translators: %s: product category name
+#: includes/class-wsq-admin.php:1560
+#, php-format
+msgid "شناسه‌های چت بله برای دسته‌بندی %s"
+msgstr ""
+
+#. translators: %s: product category name
+#: includes/class-wsq-admin.php:1561
+msgid "مثال: 987654321,12345678"
+msgstr ""
+
+#. translators: %s: product category name
+#: includes/class-wsq-admin.php:1564
+#, php-format
+msgid "شناسه‌های چت ایتا برای دسته‌بندی %s"
+msgstr ""
+
+#. translators: %s: product category name
+#: includes/class-wsq-admin.php:1565
+msgid "مثال: 55443322"
+msgstr ""
+
+#: includes/class-wsq-admin.php:1571
+msgid "هیچ دسته‌بندی محصولی در ووکامرس یافت نشد."
+msgstr ""
+
+#: includes/class-wsq-admin.php:1579
+msgid "قوانین مسیریابی برای کارشناسان و گروه‌های بله و ایتا تنظیم می‌شود."
+msgstr ""
+
+#: includes/class-wsq-admin.php:1581
+msgid "ذخیره قوانین مسیریابی کارشناسان"
+msgstr ""
+
+#: includes/class-wsq-bot.php:65
+msgid ""
+"✅ شماره شما با موفقیت ثبت شد.\n"
+"\n"
+"حالا می‌توانید با ارسال شماره استعلام، وضعیت و پیش‌فاکتور خود را دریافت کنید. برای مشاهده استعلام‌هایتان دستور /orders را بفرستید."
+msgstr ""
+
+#: includes/class-wsq-bot.php:162
+#: includes/class-wsq-bot.php:222
+#: includes/class-wsq-bot.php:307
+#: includes/class-wsq-bot.php:608
+#: includes/class-wsq-bot.php:664
+#: includes/class-wsq-bot.php:686
+msgid "عزیز"
+msgstr ""
+
+#: includes/class-wsq-bot.php:168
+msgid "📋 استعلام‌های من"
+msgstr ""
+
+#: includes/class-wsq-bot.php:169
+msgid "📲 ثبت شماره تماس"
+msgstr ""
+
+#: includes/class-wsq-bot.php:170
+msgid "💬 پشتیبانی"
+msgstr ""
+
+#: includes/class-wsq-bot.php:193
+msgid "برای مشاهده استعلام‌هایتان ابتدا شماره تماس خود را با دکمه «📲 ثبت شماره تماس» ثبت کنید، یا شماره استعلام را مستقیم ارسال کنید."
+msgstr ""
+
+#. translators: %s: linked phone number
+#: includes/class-wsq-bot.php:206
+#, php-format
+msgid ""
+"📭 هنوز استعلامی ثبت‌شده با شماره %s پیدا نشد.\n"
+"\n"
+"🛍 پس از ثبت استعلام از سایت، فهرست آن در همین بخش نمایش داده می‌شود."
+msgstr ""
+
+#: includes/class-wsq-bot.php:220
+msgid "🧾 #{order_number} {status_icon} {status_label} — {total}"
+msgstr ""
+
+#: includes/class-wsq-bot.php:245
+msgid "🔎 برای جزئیات و پیش‌فاکتور، دکمه استعلام یا شماره آن را بفرستید."
+msgstr ""
+
+#. translators: %s: quote order number
+#: includes/class-wsq-bot.php:282
+#, php-format
+msgid ""
+"استعلامی با شماره #%s یافت نشد.\n"
+"برای دسترسی به استعلام‌های خودتان، ابتدا شماره تماس را ثبت کنید."
+msgstr ""
+
+#. translators: %s: quote order number
+#: includes/class-wsq-bot.php:292
+#, php-format
+msgid "استعلامی با شماره #%s برای شما یافت نشد."
+msgstr ""
+
+#: includes/class-wsq-bot.php:319
+#: includes/class-wsq-bot.php:368
+msgid "💳 پرداخت آنلاین"
+msgstr ""
+
+#. translators: %s: quote order number
+#: includes/class-wsq-bot.php:331
+#, php-format
+msgid "🧾 استعلام #%s"
+msgstr ""
+
+#. translators: %s: creation date
+#: includes/class-wsq-bot.php:337
+#, php-format
+msgid "📅 تاریخ ثبت: %s"
+msgstr ""
+
+#. translators: 1: status icon, 2: status label
+#: includes/class-wsq-bot.php:342
+#, php-format
+msgid "📊 وضعیت: %1$s %2$s"
+msgstr ""
+
+#. translators: %s: total amount
+#: includes/class-wsq-bot.php:348
+#, php-format
+msgid "💰 مبلغ کل: %s"
+msgstr ""
+
+#: includes/class-wsq-bot.php:355
+msgid "⏳ پیش‌فاکتور در حال صدور است؛ به‌محض آماده‌شدن همین‌جا خبرتان می‌کنیم."
+msgstr ""
+
+#. translators: %s: payment URL
+#: includes/class-wsq-bot.php:361
+#, php-format
+msgid ""
+"💳 پرداخت آنلاین:\n"
+"%s\n"
+"\n"
+"📄 پیش‌فاکتور رسمی نیز برایتان ارسال می‌شود."
+msgstr ""
+
+#. translators: %s: quote order number
+#: includes/class-wsq-bot.php:385
+#, php-format
+msgid "پیش‌فاکتور رسمی استعلام #%s"
+msgstr ""
+
+#. translators: 1: order number, 2: buyer name, 3: phone, 4: status icon, 5: status label, 6: total, 7: items summary, 8: admin URL
+#: includes/class-wsq-bot.php:424
+#, php-format
+msgid ""
+"🧾 استعلام #%1$s\n"
+"──────────────\n"
+"👤 %2$s\n"
+"📞 %3$s\n"
+"📊 وضعیت: %4$s %5$s\n"
+"💰 مبلغ: %6$s\n"
+"%7$s──────────────\n"
+"🛒 مدیریت:\n"
+"%8$s"
+msgstr ""
+
+#. translators: %s: quote order number
+#: includes/class-wsq-bot.php:441
+#, php-format
+msgid "استعلامی با شماره #%s یافت نشد."
+msgstr ""
+
+#: includes/class-wsq-bot.php:458
+msgid "در حال حاضر استعلام درانتظاری نیست. ✅"
+msgstr ""
+
+#. translators: %s: number of pending quotes
+#: includes/class-wsq-bot.php:465
+#, php-format
+msgid "⏳ استعلام‌های درانتظار بررسی (%s مورد)"
+msgstr ""
+
+#: includes/class-wsq-bot.php:480
+msgid "🔎 جزئیات هر مورد: /order شماره_استعلام"
+msgstr ""
+
+#: includes/class-wsq-bot.php:490
+msgid ""
+"🧑‍💼 پنل مدیریت ربات\n"
+"\n"
+"/pending — استعلام‌های درانتظار\n"
+"/order <شماره> — جزئیات یک استعلام\n"
+"\n"
+"پیام‌های خریداران به‌صورت خودکار به این چت ارسال می‌شود."
+msgstr ""
+
+#: includes/class-wsq-bot.php:519
+msgid "پیام شما ثبت شد و کارشناسان ما به‌زودی پاسخ می‌دهند. 🙏"
+msgstr ""
+
+#. translators: %s: messenger icon
+#: includes/class-wsq-bot.php:525
+#, php-format
+msgid "💬 پیام جدید خریدار — %s"
+msgstr ""
+
+#: includes/class-wsq-bot.php:528
+msgid "نامشخص"
+msgstr ""
+
+#: includes/class-wsq-bot.php:544
+msgid "پیام شما برای کارشناسان ما ارسال شد. به‌زودی پاسخ می‌دهیم. 🙏"
+msgstr ""
+
+#: includes/class-wsq-bot.php:546
+msgid "پیام شما ثبت شد. 🙏"
+msgstr ""
+
+#: includes/class-wsq-bot.php:562
+msgid ""
+"سلام {name} عزیز! 👋\n"
+"\n"
+"به ربات فروشگاه خوش آمدید. از همین‌جا، بدون مراجعه به سایت، استعلام‌های خود را دنبال کنید:\n"
+"\n"
+"📋 استعلام‌های من — فهرست استعلام‌های اخیر\n"
+"🧾 شماره استعلام یا #100 — وضعیت، پیش‌فاکتور و لینک پرداخت\n"
+"💬 پیام آزاد — سؤال شما مستقیم برای کارشناسان ارسال می‌شود\n"
+"\n"
+"⏳ به‌محض صدور پیش‌فاکتور، همین‌جا خبرتان می‌کنیم."
+msgstr ""
+
+#: includes/class-wsq-bot.php:563
+msgid ""
+"📋 استعلام‌های اخیر شما ({count} مورد)\n"
+"──────────────\n"
+"{#items}\n"
+"──────────────\n"
+"🔎 برای جزئیات و پیش‌فاکتور، دکمه استعلام یا شماره آن را بفرستید."
+msgstr ""
+
+#: includes/class-wsq-bot.php:564
+msgid ""
+"🧾 استعلام #{order_number}\n"
+"──────────────\n"
+"📅 تاریخ ثبت: {date}\n"
+"📊 وضعیت: {status_icon} {status}\n"
+"💰 مبلغ کل: {total}\n"
+"🛒 اقلام:\n"
+"{items}\n"
+"──────────────{payment_section}"
+msgstr ""
+
+#: includes/class-wsq-bot.php:565
+msgid "استعلامی با شماره #{order_number} برای شما یافت نشد."
+msgstr ""
+
+#: includes/class-wsq-bot.php:626
+msgid "💳 پرداخت آنلاین:"
+msgstr ""
+
+#. translators: %s: number of additional items
+#: includes/class-wsq-bot.php:735
+#: includes/class-wsq-bot.php:921
+#, php-format
+msgid "و %s مورد دیگر…"
+msgstr ""
+
+#: includes/class-wsq-bot.php:882
+msgid "در انتظار بررسی کارشناس"
+msgstr ""
+
+#: includes/class-wsq-bot.php:884
+msgid "در انتظار پرداخت"
+msgstr ""
+
+#: includes/class-wsq-bot.php:885
+msgid "در حال آماده‌سازی"
+msgstr ""
+
+#: includes/class-wsq-bot.php:886
+msgid "موقتاً متوقف"
+msgstr ""
+
+#: includes/class-wsq-bot.php:887
+msgid "تکمیل شد"
+msgstr ""
+
+#: includes/class-wsq-bot.php:888
+msgid "لغو شد"
+msgstr ""
+
+#: includes/class-wsq-bot.php:889
+msgid "بازگشت وجه"
+msgstr ""
+
+#: includes/class-wsq-bot.php:890
+msgid "ناموفق"
+msgstr ""
+
+#: includes/class-wsq-bot.php:926
+msgid "🛒 اقلام:"
+msgstr ""
+
+#: includes/class-wsq-bot.php:936
+msgid "💙 بله"
+msgstr ""
+
+#: includes/class-wsq-bot.php:936
+msgid "🧡 ایتا"
+msgstr ""
+
+#: includes/class-wsq-bot.php:945
+msgid ""
+"من پیام شما را کامل متوجه نشدم. 😅\n"
+"\n"
+"راهنمای سریع:\n"
+"• 📋 /orders یا «استعلام‌های من» — فهرست استعلام‌های اخیر\n"
+"• 🧾 #100 یا «استعلام 100» — جزئیات و پیش‌فاکتور یک استعلام\n"
+"• 💬 هر متن دیگری — ارسال سؤال برای کارشناسان"
+msgstr ""
+
+#: includes/class-wsq-buyer-notifier.php:116
+msgid "مشتری گرامی"
+msgstr ""
+
+#: includes/class-wsq-buyer-notifier.php:123
+#: includes/class-wsq-order.php:98
+#: includes/class-wsq-order.php:621
+msgid "۲۴ ساعت کاری"
+msgstr ""
+
+#: includes/class-wsq-buyer-notifier.php:170
+#, php-format
+msgid "پیش‌فاکتور قیمت‌دار برای خریدار (%s - %s) ارسال شد. ایمیل: %s | پیامک/پیام‌رسان: %s | ربات بله: %s | ربات ایتا: %s"
+msgstr ""
+
+#: includes/class-wsq-buyer-notifier.php:173
+#: includes/class-wsq-buyer-notifier.php:174
+#: includes/class-wsq-buyer-notifier.php:175
+#: includes/class-wsq-buyer-notifier.php:176
+#: includes/class-wsq-buyer-notifier.php:549
+#: includes/class-wsq-buyer-notifier.php:550
+msgid "موفق"
+msgstr ""
+
+#: includes/class-wsq-buyer-notifier.php:173
+msgid "ناموفق یا خالی"
+msgstr ""
+
+#: includes/class-wsq-buyer-notifier.php:174
+msgid "عدم پیکربندی یا در انتظار"
+msgstr ""
+
+#: includes/class-wsq-buyer-notifier.php:175
+#: includes/class-wsq-buyer-notifier.php:176
+msgid "بدون چت لینک‌شده"
+msgstr ""
+
+#. translators: 1: product name, 2: quantity, 3: line price
+#: includes/class-wsq-buyer-notifier.php:219
+#, php-format
+msgid "▫️ %1$s (%2$s عدد) ➔ %3$s"
+msgstr ""
+
+#. translators: 1: customer name, 2: order number, 3: items breakdown, 4: total, 5: validity, 6: payment URL
+#: includes/class-wsq-buyer-notifier.php:228
+#, php-format
+msgid ""
+"سلام جناب %1$s عزیز!\n"
+"\n"
+"پیشنهاد قیمت استعلام شماره #%2$s آماده شد:\n"
+"\n"
+"📋 ریز مبالغ اقلام استعلام:\n"
+"%3$s\n"
+"💰 جمع کل پیش‌فاکتور: %4$s\n"
+"⏳ مهلت اعتبار این قیمت: %5$s\n"
+"📄 پیش‌فاکتور رسمی با مهر دیجیتال صادر گردید.\n"
+"\n"
+"جهت تایید، پرداخت آنلاین درگاه شاپرک و نهایی‌سازی سفارش، روی لینک زیر کلیک فرمایید:\n"
+"%6$s\n"
+"\n"
+"با احترام، واحد فروش"
+msgstr ""
+
+#. translators: %s: order number
+#: includes/class-wsq-buyer-notifier.php:252
+#, php-format
+msgid "پیشنهاد قیمت رسمی استعلام #%s"
+msgstr ""
+
+#. translators: 1: buyer name, 2: quote order number, 3: formatted total, 4: payment URL
+#: includes/class-wsq-buyer-notifier.php:433
+#, php-format
+msgid ""
+"سلام %1$s عزیز!\n"
+"پیشنهاد قیمت استعلام #%2$s صادر شد.\n"
+"مبلغ کل: %3$s\n"
+"پرداخت آنلاین: %4$s"
+msgstr ""
+
+#. translators: %s: order number
+#: includes/class-wsq-buyer-notifier.php:505
+#, php-format
+msgid "پیش‌فاکتور استعلام #%s"
+msgstr ""
+
+#: includes/class-wsq-buyer-notifier.php:535
+msgid "شناسه سفارش نامعتبر است."
+msgstr ""
+
+#. translators: 1: email channel status, 2: SMS/messenger channel status
+#: includes/class-wsq-buyer-notifier.php:548
+#, php-format
+msgid "پیش‌فاکتور ارسال شد — ایمیل: %1$s، پیامک/پیام‌رسان: %2$s"
+msgstr ""
+
+#: includes/class-wsq-buyer-notifier.php:549
+#: includes/class-wsq-buyer-notifier.php:550
+msgid "مقصدی نداشت"
+msgstr ""
+
+#: includes/class-wsq-buyer-notifier.php:556
+msgid "هیچ کانالی برای ارسال برقرار نشد. لاگ‌ها را در ووکامرس > وضعیت > گزارش‌ها بررسی کنید."
+msgstr ""
+
+#: includes/class-wsq-frontend.php:83
+msgid "محصول به لیست استعلام اضافه شد."
+msgstr ""
+
+#: includes/class-wsq-frontend.php:84
+#: includes/class-wsq-frontend.php:389
+msgid "خطا در افزودن محصول به استعلام."
+msgstr ""
+
+#: includes/class-wsq-frontend.php:85
+msgid "ارتباط با سرور برقرار نشد. دوباره تلاش کنید."
+msgstr ""
+
+#: includes/class-wsq-frontend.php:86
+msgid "مشاهده لیست استعلام"
+msgstr ""
+
+#: includes/class-wsq-frontend.php:87
+#: templates/quote-list.php:310
+msgid "قلم کالا"
+msgstr ""
+
+#: includes/class-wsq-frontend.php:88
+#: includes/class-wsq-frontend.php:248
+#: includes/class-wsq-frontend.php:268
+msgid "در لیست استعلام"
+msgstr ""
+
+#: includes/class-wsq-frontend.php:89
+msgid "کالا از لیست استعلام حذف شد."
+msgstr ""
+
+#: includes/class-wsq-frontend.php:90
+msgid "بازگردانی"
+msgstr ""
+
+#: includes/class-wsq-frontend.php:91
+#: includes/class-wsq-frontend.php:453
+msgid "تعداد کالا به‌روزرسانی شد."
+msgstr ""
+
+#: includes/class-wsq-frontend.php:92
+msgid "نام و نام خانوادگی را وارد کنید."
+msgstr ""
+
+#: includes/class-wsq-frontend.php:93
+msgid "یک نشانی پست الکترونیک معتبر وارد کنید."
+msgstr ""
+
+#: includes/class-wsq-frontend.php:94
+msgid "شماره موبایل معتبر (مثال: 09123456789) وارد کنید."
+msgstr ""
+
+#: includes/class-wsq-frontend.php:95
+msgid "لطفاً خطاهای فرم را برطرف کنید."
+msgstr ""
+
+#: includes/class-wsq-frontend.php:96
+#: templates/quote-list.php:54
+msgid "درخواست استعلام با موفقیت ثبت شد"
+msgstr ""
+
+#: includes/class-wsq-frontend.php:97
+#: templates/quote-list.php:57
+msgid "کد پیگیری استعلام:"
+msgstr ""
+
+#: includes/class-wsq-frontend.php:98
+#: templates/quote-list.php:69
+msgid "مشاهده جزئیات استعلام"
+msgstr ""
+
+#: includes/class-wsq-frontend.php:99
+#: templates/quote-list.php:100
+msgid "لیست استعلام قیمت شما خالی است."
+msgstr ""
+
+#: includes/class-wsq-frontend.php:100
+#: templates/quote-list.php:101
+msgid "هنوز محصولی را برای دریافت پیش‌فاکتور یا استعلام قیمت انتخاب نکرده‌اید."
+msgstr ""
+
+#: includes/class-wsq-frontend.php:101
+#: templates/quote-list.php:102
+msgid "مشاهده کاتالوگ محصولات و استعلام"
+msgstr ""
+
+#: includes/class-wsq-frontend.php:102
+#: includes/class-wsq-frontend.php:113
+#: includes/class-wsq-frontend.php:521
+msgid "همه اقلام از لیست استعلام حذف شدند."
+msgstr ""
+
+#: includes/class-wsq-frontend.php:103
+#: includes/class-wsq-frontend.php:540
+msgid "تمامی اقلام استعلام بازگردانده شدند."
+msgstr ""
+
+#: includes/class-wsq-frontend.php:104
+#: templates/quote-list.php:59
+msgid "کپی کد پیگیری"
+msgstr ""
+
+#: includes/class-wsq-frontend.php:105
+msgid "کپی شد!"
+msgstr ""
+
+#: includes/class-wsq-frontend.php:107
+msgid "کپی نشد؛ کد را دستی انتخاب کنید."
+msgstr ""
+
+#: includes/class-wsq-frontend.php:109
+msgid "نوع کالا"
+msgstr ""
+
+#: includes/class-wsq-frontend.php:110
+#: templates/quote-list.php:150
+#, php-format
+msgid "%1$s قلم کالا · %2$s نوع کالا"
+msgstr ""
+
+#: includes/class-wsq-frontend.php:111
+#, php-format
+msgid "تعداد اقلام استعلام: %1$s قلم کالا در %2$s نوع."
+msgstr ""
+
+#: includes/class-wsq-frontend.php:112
+msgid "همه اقلام از لیست استعلام حذف شوند؟"
+msgstr ""
+
+#: includes/class-wsq-frontend.php:114
+msgid "تعداد کالا ذخیره نشد. مقدار قبلی بازگردانده شد."
+msgstr ""
+
+#: includes/class-wsq-frontend.php:115
+msgid "تعداد باید بین ۱ تا ۹۹۹۹ باشد."
+msgstr ""
+
+#: includes/class-wsq-frontend.php:116
+msgid "لطفاً خطاهای زیر را برطرف کنید:"
+msgstr ""
+
+#: includes/class-wsq-frontend.php:117
+msgid "بستن"
+msgstr ""
+
+#: includes/class-wsq-frontend.php:118
+#: templates/quote-list.php:67
+msgid "مشاهده رسید استعلام"
+msgstr ""
+
+#: includes/class-wsq-frontend.php:119
+#: templates/quote-list.php:64
+msgid "کد پیگیری را برای پیگیری وضعیت استعلام نگه دارید."
+msgstr ""
+
+#: includes/class-wsq-frontend.php:120
+#: templates/quote-list.php:312
+msgid "تکمیل و ارسال درخواست"
+msgstr ""
+
+#: includes/class-wsq-frontend.php:121
+#: includes/class-wsq-frontend.php:243
+msgid "انتخاب گزینه‌ها و استعلام"
+msgstr ""
+
+#: includes/class-wsq-frontend.php:122
+msgid "مشاهده سبد استعلام قیمت"
+msgstr ""
+
+#: includes/class-wsq-frontend.php:212
+msgid "افزودن به لیست استعلام"
+msgstr ""
+
+#: includes/class-wsq-frontend.php:214
+msgid "افزودن به استعلام"
+msgstr ""
+
+#: includes/class-wsq-frontend.php:321
+#, php-format
+msgid "مشاهده سبد استعلام قیمت؛ %s قلم کالا"
+msgstr ""
+
+#: includes/class-wsq-frontend.php:323
+msgid "سبد استعلام قیمت:"
+msgstr ""
+
+#: includes/class-wsq-frontend.php:349
+msgid "شناسه محصول نامعتبر است."
+msgstr ""
+
+#: includes/class-wsq-frontend.php:361
+msgid "این محصول برای استعلام در دسترس نیست."
+msgstr ""
+
+#: includes/class-wsq-frontend.php:378
+msgid "حداکثر تعداد اقلام استعلام تکمیل شده است."
+msgstr ""
+
+#: includes/class-wsq-frontend.php:385
+msgid "محصول با موفقیت به لیست استعلام اضافه شد."
+msgstr ""
+
+#: includes/class-wsq-frontend.php:440
+#: includes/class-wsq-frontend.php:470
+#: includes/class-wsq-frontend.php:494
+msgid "کلید کالا نامعتبر است."
+msgstr ""
+
+#: includes/class-wsq-frontend.php:448
+msgid "این کالا در لیست استعلام نیست."
+msgstr ""
+
+#: includes/class-wsq-frontend.php:476
+msgid "امکان بازگردانی این کالا وجود ندارد."
+msgstr ""
+
+#: includes/class-wsq-frontend.php:480
+msgid "کالا به لیست استعلام بازگردانده شد."
+msgstr ""
+
+#: includes/class-wsq-frontend.php:502
+msgid "کالا با موفقیت حذف شد."
+msgstr ""
+
+#: includes/class-wsq-frontend.php:506
+msgid "خطا در حذف کالا."
+msgstr ""
+
+#: includes/class-wsq-frontend.php:525
+msgid "لیست استعلام از قبل خالی است."
+msgstr ""
+
+#: includes/class-wsq-frontend.php:544
+msgid "اقلامی برای بازگردانی یافت نشد."
+msgstr ""
+
+#: includes/class-wsq-messenger-api.php:170
+msgid "⚠️ پیوست PDF ارسال نشد؛ سند در پنل فروشگاه موجود است."
+msgstr ""
+
+#: includes/class-wsq-order.php:75
+msgid "قیمت‌گذاری تفکیکی اقلام و ارسال به خریدار (Smart Quote)"
+msgstr ""
+
+#: includes/class-wsq-order.php:124
+msgid "توکن تنظیم نشده"
+msgstr ""
+
+#: includes/class-wsq-order.php:125
+msgid "توکن این ربات در تنظیمات افزونه خالی است؛ ارسال از این پیام‌رسان انجام نمی‌شود."
+msgstr ""
+
+#: includes/class-wsq-order.php:128
+msgid "چت متصل"
+msgstr ""
+
+#: includes/class-wsq-order.php:129
+msgid "خریدار در این ربات چت لینک‌شده دارد و پیش‌فاکتور به آن ارسال می‌شود."
+msgstr ""
+
+#: includes/class-wsq-order.php:132
+msgid "بدون چت"
+msgstr ""
+
+#: includes/class-wsq-order.php:133
+msgid "خریدار با این شماره در ربات شماره‌اش را ثبت نکرده است."
+msgstr ""
+
+#: includes/class-wsq-order.php:165
+msgid "وضعیت فعلی استعلام:"
+msgstr ""
+
+#: includes/class-wsq-order.php:167
+msgid "در انتظار اعلام قیمت کارشناس"
+msgstr ""
+
+#: includes/class-wsq-order.php:169
+msgid "پیشنهاد قیمت برای مشتری ارسال شد"
+msgstr ""
+
+#: includes/class-wsq-order.php:175
+msgid "خریدار:"
+msgstr ""
+
+#: includes/class-wsq-order.php:183
+msgid "سفارش شماره موبایل ندارد؛ نه چتی لینک می‌شود نه پیامکی ارسال می‌شود."
+msgstr ""
+
+#: includes/class-wsq-order.php:183
+msgid "بدون شماره موبایل"
+msgstr ""
+
+#: includes/class-wsq-order.php:187
+msgid "بررسی اتصال ربات"
+msgstr ""
+
+#: includes/class-wsq-order.php:188
+msgid "توکن‌ها را بدون ارسال پیام از پنل بله و ایتا می‌پرسد."
+msgstr ""
+
+#: includes/class-wsq-order.php:200
+msgid "قیمت‌ها ذخیره و پیش‌فاکتور برای خریدار ارسال شد."
+msgstr ""
+
+#: includes/class-wsq-order.php:209
+msgid "شرح کالا / خدمات استعلام شده"
+msgstr ""
+
+#: includes/class-wsq-order.php:210
+msgid "تعداد درخواستی"
+msgstr ""
+
+#: includes/class-wsq-order.php:211
+msgid "قیمت واحد پیشنهادی (تومان)"
+msgstr ""
+
+#: includes/class-wsq-order.php:212
+msgid "مبلغ ردیف (تومان)"
+msgstr ""
+
+#: includes/class-wsq-order.php:249
+msgid "قیمت واحد را وارد کنید"
+msgstr ""
+
+#: includes/class-wsq-order.php:263
+msgid "مهلت اعتبار این پیشنهاد قیمت:"
+msgstr ""
+
+#: includes/class-wsq-order.php:264
+msgid "مثال: ۲۴ ساعت کاری / تا پایان وقت اداری"
+msgstr ""
+
+#: includes/class-wsq-order.php:265
+msgid "این مهلت در پیش‌فاکتور رسمی و پیام خریدار درج خواهد شد."
+msgstr ""
+
+#: includes/class-wsq-order.php:269
+msgid "لینک پرداخت مستقیم خریدار (Order Pay Link):"
+msgstr ""
+
+#: includes/class-wsq-order.php:271
+msgid "خریدار با این لینک مستقیماً به درگاه پرداخت شاپرک متصل می‌شود."
+msgstr ""
+
+#: includes/class-wsq-order.php:280
+msgid "جمع کل محاسبه‌شده استعلام:"
+msgstr ""
+
+#: includes/class-wsq-order.php:281
+#: templates/pdf/quote-fa.php:18
+msgid "تومان"
+msgstr ""
+
+#: includes/class-wsq-order.php:286
+msgid "ذخیره قیمت‌ها و تغییر وضعیت به پیش‌فاکتور صادر شد"
+msgstr ""
+
+#: includes/class-wsq-order.php:309
+msgid "ارسال سریع پیش‌فاکتور به خریدار (شماره استخراج‌شده از فرم):"
+msgstr ""
+
+#: includes/class-wsq-order.php:311
+msgid "شماره تلفن ثبت نشده"
+msgstr ""
+
+#: includes/class-wsq-order.php:314
+msgid "با تغییر وضعیت به «پیش‌فاکتور صادر شد»، پیامک/وب‌سرویس نیز خودکار ارسال می‌شود."
+msgstr ""
+
+#: includes/class-wsq-order.php:320
+msgid "باز کردن چت در بله خریدار"
+msgstr ""
+
+#: includes/class-wsq-order.php:325
+msgid "باز کردن ایتا خریدار"
+msgstr ""
+
+#: includes/class-wsq-order.php:330
+msgid "باز کردن واتساپ با متن آماده"
+msgstr ""
+
+#: includes/class-wsq-order.php:335
+msgid "کپی متن کامل پیشنهاد قیمت"
+msgstr ""
+
+#: includes/class-wsq-order.php:340
+msgid "ارسال دستی وب‌سرویس (پیامک/سفیر بله)"
+msgstr ""
+
+#: includes/class-wsq-order.php:354
+msgid "در حال ذخیره و ارسال…"
+msgstr ""
+
+#: includes/class-wsq-order.php:355
+msgid "خطای نامشخص در ذخیره‌سازی."
+msgstr ""
+
+#: includes/class-wsq-order.php:357
+msgid "✓ متن کامل پیشنهاد قیمت کپی شد"
+msgstr ""
+
+#: includes/class-wsq-order.php:358
+msgid "کپی نشد؛ متن را انتخاب و دستی کپی کنید."
+msgstr ""
+
+#: includes/class-wsq-order.php:359
+msgid "در حال ارسال..."
+msgstr ""
+
+#: includes/class-wsq-order.php:456
+msgid "در حال بررسی اتصال…"
+msgstr ""
+
+#: includes/class-wsq-order.php:460
+msgid "در حال بررسی…"
+msgstr ""
+
+#: includes/class-wsq-order.php:472
+msgid "خطای نامشخص در بررسی."
+msgstr ""
+
+#: includes/class-wsq-order.php:561
+msgid "توکن تنظیم نشده است."
+msgstr ""
+
+#. translators: %s: bot username when the panel returns one.
+#: includes/class-wsq-order.php:581
+#, php-format
+msgid "ربات متصل است%s"
+msgstr ""
+
+#: includes/class-wsq-order.php:589
+msgid "پاسخ نامعتبر از سرور پنل."
+msgstr ""
+
+#: includes/class-wsq-order.php:616
+#: includes/class-wsq-order.php:617
+msgid "سفارش یافت نشد."
+msgstr ""
+
+#: includes/class-wsq-order.php:648
+msgid "قیمت تک‌تک اقلام توسط کارشناس تعیین شد و پیش‌فاکتور نهایی برای خریدار ارسال گردید."
+msgstr ""
+
+#: includes/class-wsq-order.php:676
+msgid "لطفاً تمامی فیلدهای الزامی را پر نمایید."
+msgstr ""
+
+#: includes/class-wsq-order.php:680
+msgid "آدرس ایمیل وارد شده معتبر نیست."
+msgstr ""
+
+#: includes/class-wsq-order.php:693
+msgid "شماره تماس معتبر نمی‌باشد."
+msgstr ""
+
+#: includes/class-wsq-order.php:711
+msgid "لیست استعلام شما خالی است."
+msgstr ""
+
+#: includes/class-wsq-order.php:722
+msgid "خطا در ایجاد استعلام."
+msgstr ""
+
+#: includes/class-wsq-order.php:769
+#: templates/quote-list.php:55
+msgid "استعلام شما با موفقیت ثبت شد. کارشناسان ما پس از بررسی، پیش‌فاکتور تفکیکی قیمت‌دار را برای شما ارسال خواهند کرد."
+msgstr ""
+
+#: includes/class-wsq-plugin.php:217
+msgctxt "Order status"
+msgid "New Quote Request"
+msgstr ""
+
+#. translators: %s: count
+#: includes/class-wsq-plugin.php:223
+#, php-format
+msgid "Quote Request <span class=\"count\">(%s)</span>"
+msgid_plural "Quote Requests <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-wsq-plugin.php:227
+#: includes/class-wsq-plugin.php:251
+msgctxt "Order status"
+msgid "Quote Sent"
+msgstr ""
+
+#. translators: %s: count
+#: includes/class-wsq-plugin.php:233
+#, php-format
+msgid "Quote Sent <span class=\"count\">(%s)</span>"
+msgid_plural "Quotes Sent <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-wsq-plugin.php:250
+msgctxt "Order status"
+msgid "Quote Request"
+msgstr ""
+
+#: includes/class-wsq-queue.php:122
+msgid "تلاش مجدد اعلان کارشناسان با موفقیت انجام شد."
+msgstr ""
+
+#: includes/class-wsq-queue.php:229
+msgid ""
+"📋 استعلام جدید #{{order_number}}\n"
+"👤 {{customer_name}}\n"
+"📞 {{customer_phone}}\n"
+"🛒 {{items_count}} محصول — جمع: {{total}}\n"
+"📝 {{note}}"
+msgstr ""
+
+#: includes/class-wsq-queue.php:340
+#, php-format
+msgid "تحویل موفق: %s"
+msgstr ""
+
+#: includes/class-wsq-queue.php:344
+#, php-format
+msgid "بدون پیوست PDF (فقط متن): %s"
+msgstr ""
+
+#: includes/class-wsq-queue.php:347
+#, php-format
+msgid "نیازمند تلاش مجدد: %s"
+msgstr ""
+
+#: includes/class-wsq-queue.php:350
+msgid "فایل PDF تولید نشد"
+msgstr ""
+
+#: includes/class-wsq-queue.php:353
+msgid "هیچ توکن یا شناسه چتی برای بله/ایتا تنظیم نشده است"
+msgstr ""
+
+#: includes/class-wsq-queue.php:357
+#, php-format
+msgid "اعلان استعلام برای کارشناسان ارسال نشد. %s"
+msgstr ""
+
+#: includes/class-wsq-queue.php:358
+#, php-format
+msgid "اعلان استعلام برای کارشناسان ارسال شد. %s"
+msgstr ""
+
+#. translators: 1: messenger name (Bale or Eitaa), 2: test date
+#: includes/class-wsq-queue.php:380
+#, php-format
+msgid ""
+"🔔 پیام آزمایشی اتصال افزونه WooCommerce Smart Quote\n"
+"\n"
+"✅ اتصال به API %1$s با موفقیت برقرار شد!\n"
+"تاریخ تست: %2$s"
+msgstr ""
+
+#: includes/class-wsq-stats.php:78
+msgid "یک"
+msgstr ""
+
+#: includes/class-wsq-stats.php:79
+msgid "دو"
+msgstr ""
+
+#: includes/class-wsq-stats.php:80
+msgid "سه"
+msgstr ""
+
+#: includes/class-wsq-stats.php:81
+msgid "چهار"
+msgstr ""
+
+#: includes/class-wsq-stats.php:82
+msgid "پنج"
+msgstr ""
+
+#: includes/class-wsq-stats.php:83
+msgid "جمعه"
+msgstr ""
+
+#: includes/class-wsq-stats.php:84
+msgid "شنبه"
+msgstr ""
+
+#: includes/class-wsq-updates.php:181
+msgid "توکن بله تنظیم نشده است."
+msgstr ""
+
+#: templates/pdf/quote-fa.php:53
+msgid "پیش‌فاکتور"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:354
+msgid "پیش‌فاکتور رسمی"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:355
+msgid "استعلام بهای کالا و خدمات"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:362
+#: templates/pdf/quote-fa.php:634
+msgid "شماره سند:"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:366
+msgid "تاریخ صدور:"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:375
+msgid "مدت اعتبار:"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:376
+msgid "روز کاری"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:391
+msgid "مشخصات فروشنده"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:394
+msgid "نام واحد تجاری:"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:397
+msgid "کد اقتصادی:"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:404
+msgid "شناسه ملی:"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:409
+msgid "شماره ثبت:"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:415
+#: templates/pdf/quote-fa.php:449
+msgid "تلفن تماس:"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:420
+#: templates/pdf/quote-fa.php:465
+msgid "نشانی:"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:433
+msgid "مشخصات خریدار (متقاضی)"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:437
+msgid "نام شخص / شرکت:"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:454
+msgid "کد پستی:"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:460
+msgid "ایمیل:"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:478
+msgid "ردیف"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:479
+msgid "کد کالا"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:480
+msgid "شرح کالا یا خدمات"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:481
+#: templates/quote-list.php:162
+#: templates/quote-list.php:193
+msgid "تعداد"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:482
+msgid "مبلغ واحد"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:483
+msgid "مبلغ کل"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:502
+#: templates/pdf/quote-fa.php:503
+#: templates/quote-list.php:173
+msgid "استعلام قیمت"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:540
+msgid "توضیحات و شرایط درخواستی خریدار:"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:545
+msgid "شرایط و ضوابط عمومی:"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:546
+msgid "قیمت‌های درج‌شده تا پایان مهلت اعتبار پیش‌فاکتور معتبر بوده و پس از آن منوط به تأیید مجدد واحد فروش است."
+msgstr ""
+
+#: templates/pdf/quote-fa.php:547
+msgid "موجودی کالا در زمان قطعی شدن سفارش و واریز وجه ملاک عمل خواهد بود."
+msgstr ""
+
+#: templates/pdf/quote-fa.php:555
+msgid "جمع کل اقلام"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:557
+msgid "نیازمند بررسی"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:563
+msgid "کسر می‌شود: تخفیف"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:572
+msgid "هزینه حمل و نقل"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:579
+msgid "مالیات و عوارض"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:585
+msgid "مبلغ قابل پرداخت"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:591
+#: templates/pdf/quote-fa.php:597
+msgid "در انتظار قیمت‌گذاری"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:612
+msgid "مهر و امضای واحد فروش"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:613
+msgid "تأییدیه شرایط و بهای اعلام‌شده"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:618
+msgid "مهر و امضای خریدار"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:619
+msgid "تأیید مشخصات و شرایط پیش‌فاکتور"
+msgstr ""
+
+#: templates/pdf/quote-fa.php:633
+msgid "تاریخ:"
+msgstr ""
+
+#. translators: %s: seller name
+#: templates/pdf/quote-fa.php:652
+#, php-format
+msgid "این پیش‌فاکتور به‌صورت سیستمی صادر شده و دارای کد رهگیری در سامانه فروش %s می‌باشد."
+msgstr ""
+
+#: templates/quote-list.php:42
+msgid "پیامک + بله و ایتا (پیشنهادی)"
+msgstr ""
+
+#: templates/quote-list.php:43
+msgid "پیام‌رسان بله"
+msgstr ""
+
+#: templates/quote-list.php:44
+msgid "پیام‌رسان ایتا"
+msgstr ""
+
+#: templates/quote-list.php:45
+msgid "فقط پیامک عادی"
+msgstr ""
+
+#: templates/quote-list.php:73
+msgid "ثبت استعلام جدید"
+msgstr ""
+
+#: templates/quote-list.php:121
+msgid "پاسخ‌گویی مستقیم کارشناسان فروش"
+msgstr ""
+
+#: templates/quote-list.php:125
+msgid "پیش‌فاکتور رسمی و قابل استناد"
+msgstr ""
+
+#: templates/quote-list.php:129
+msgid "قیمت‌گذاری شفاف و مستند"
+msgstr ""
+
+#: templates/quote-list.php:139
+msgid "مراحل ثبت استعلام"
+msgstr ""
+
+#: templates/quote-list.php:140
+msgid "بازبینی اقلام"
+msgstr ""
+
+#: templates/quote-list.php:140
+msgid "اقلام زیر را بررسی و در صورت نیاز حذف کنید."
+msgstr ""
+
+#: templates/quote-list.php:141
+msgid "ثبت مشخصات"
+msgstr ""
+
+#: templates/quote-list.php:141
+msgid "نام، ایمیل و موبایل خود را وارد کنید."
+msgstr ""
+
+#: templates/quote-list.php:142
+msgid "دریافت پیش‌فاکتور"
+msgstr ""
+
+#: templates/quote-list.php:142
+msgid "کارشناسان قیمت تفکیکی را برای شما ارسال می‌کنند."
+msgstr ""
+
+#: templates/quote-list.php:147
+msgid "اقلام درخواستی شما"
+msgstr ""
+
+#: templates/quote-list.php:149
+msgid "خالی کردن تمام اقلام استعلام"
+msgstr ""
+
+#: templates/quote-list.php:149
+msgid "پاک کردن همه"
+msgstr ""
+
+#: templates/quote-list.php:153
+msgid "فهرست اقلام استعلام"
+msgstr ""
+
+#: templates/quote-list.php:155
+msgid "اقلامی که برای دریافت پیش‌فاکتور انتخاب کرده‌اید."
+msgstr ""
+
+#: templates/quote-list.php:158
+#: templates/quote-list.php:177
+#: templates/quote-list.php:178
+msgid "حذف"
+msgstr ""
+
+#: templates/quote-list.php:159
+#: templates/quote-list.php:180
+msgid "تصویر"
+msgstr ""
+
+#: templates/quote-list.php:160
+#: templates/quote-list.php:183
+msgid "شرح کالا"
+msgstr ""
+
+#: templates/quote-list.php:161
+#: templates/quote-list.php:189
+msgid "قیمت پایه"
+msgstr ""
+
+#: templates/quote-list.php:178
+#, php-format
+msgid "حذف %s از لیست استعلام"
+msgstr ""
+
+#: templates/quote-list.php:191
+msgid "قیمت نهایی توسط کارشناس اعلام می‌شود."
+msgstr ""
+
+#: templates/quote-list.php:195
+msgid "کاهش تعداد"
+msgstr ""
+
+#: templates/quote-list.php:196
+#, php-format
+msgid "تعداد %s"
+msgstr ""
+
+#: templates/quote-list.php:197
+msgid "افزایش تعداد"
+msgstr ""
+
+#: templates/quote-list.php:218
+msgid "مشخصات و ارسال درخواست استعلام"
+msgstr ""
+
+#: templates/quote-list.php:220
+msgid "پس از ثبت، کارشناسان فروش پیش‌فاکتور تفکیکی را همراه لینک پرداخت برای شما ارسال می‌کنند."
+msgstr ""
+
+#: templates/quote-list.php:240
+msgid "برای ارسال درخواست استعلام باید جاوااسکریپت مرورگر فعال باشد. در صورت غیرفعال بودن، لطفاً با پشتیبانی تماس بگیرید."
+msgstr ""
+
+#: templates/quote-list.php:243
+msgid "نام و نام خانوادگی"
+msgstr ""
+
+#: templates/quote-list.php:243
+#: templates/quote-list.php:251
+#: templates/quote-list.php:259
+msgid "ضروری"
+msgstr ""
+
+#: templates/quote-list.php:251
+msgid "پست الکترونیک"
+msgstr ""
+
+#: templates/quote-list.php:259
+msgid "شماره موبایل"
+msgstr ""
+
+#: templates/quote-list.php:265
+msgid "پیشنهاد قیمت تفکیکی و لینک پرداخت به این شماره (پیامک / بله / ایتا) ارسال خواهد شد."
+msgstr ""
+
+#: templates/quote-list.php:268
+#: templates/quote-list.php:269
+msgid "نحوه دریافت پیش‌فاکتور"
+msgstr ""
+
+#: templates/quote-list.php:284
+msgid "پیشنهادی"
+msgstr ""
+
+#: templates/quote-list.php:294
+msgid "توضیحات تکمیلی (اختیاری)"
+msgstr ""
+
+#: templates/quote-list.php:295
+msgid "مثال: لطفاً قیمت عمده و زمان تحویل را هم اعلام کنید."
+msgstr ""
+
+#: templates/quote-list.php:301
+msgid "ثبت و ارسال درخواست استعلام"
+msgstr ""
+
+#: woo-smart-quote.php:65
+msgid "WooCommerce Smart Quote requires WooCommerce to be installed and active."
+msgstr ""
