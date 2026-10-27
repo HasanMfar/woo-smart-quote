@@ -111,11 +111,11 @@ class _PdfPreviewScreenState extends State<PdfPreviewScreen> {
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: _isDownloading
-                ? Column(
+                ? const Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const CircularProgressIndicator(),
-                      const SizedBox(height: 16),
+                      CircularProgressIndicator(),
+                      SizedBox(height: 16),
                       Text(
                         'در حال دریافت پیش‌فاکتور رسمی PDF…',
                         style: TextStyle(color: AppColors.textSecondary),
