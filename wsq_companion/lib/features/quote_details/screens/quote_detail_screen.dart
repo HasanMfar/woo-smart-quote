@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/network/api_endpoints.dart';
@@ -33,6 +32,7 @@ class _QuoteDetailScreenState extends State<QuoteDetailScreen> {
     setState(() => _isLoading = true);
     try {
       final res = await _apiClient.get(ApiEndpoints.quoteDetail(widget.quoteId));
+      if (!mounted) return;
       if (res.statusCode == 200 && res.data != null) {
         setState(() {
           _quote = QuoteDetail.fromJson(res.data as Map<String, dynamic>);
@@ -40,6 +40,7 @@ class _QuoteDetailScreenState extends State<QuoteDetailScreen> {
         });
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() => _isLoading = false);
     }
   }
@@ -54,9 +55,9 @@ class _QuoteDetailScreenState extends State<QuoteDetailScreen> {
         data: {'channel': 'all'},
       );
 
+      if (!mounted) return;
       setState(() => _isNotifying = false);
 
-      if (!mounted) return;
       if (res.statusCode == 200 && res.data['success'] == true) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -71,8 +72,8 @@ class _QuoteDetailScreenState extends State<QuoteDetailScreen> {
         );
       }
     } catch (e) {
-      setState(() => _isNotifying = false);
       if (!mounted) return;
+      setState(() => _isNotifying = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('خطا در اتصال: $e'), backgroundColor: AppColors.error),
       );

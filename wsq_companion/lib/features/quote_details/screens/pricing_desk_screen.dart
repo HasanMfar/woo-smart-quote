@@ -52,6 +52,7 @@ class _PricingDeskScreenState extends State<PricingDeskScreen> {
     setState(() => _isLoading = true);
     try {
       final res = await _apiClient.get(ApiEndpoints.quoteDetail(widget.quoteId));
+      if (!mounted) return;
       if (res.statusCode == 200 && res.data != null) {
         final q = QuoteDetail.fromJson(res.data as Map<String, dynamic>);
         _validity = q.validity.isNotEmpty ? q.validity : '۲۴ ساعت کاری';
@@ -66,6 +67,7 @@ class _PricingDeskScreenState extends State<PricingDeskScreen> {
         });
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() => _isLoading = false);
     }
   }
@@ -103,10 +105,10 @@ class _PricingDeskScreenState extends State<PricingDeskScreen> {
         },
       );
 
+      if (!mounted) return;
       setState(() => _isSaving = false);
 
       if (res.statusCode == 200 && res.data['success'] == true) {
-        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(AppStrings.pricingSuccess),
@@ -130,14 +132,13 @@ class _PricingDeskScreenState extends State<PricingDeskScreen> {
           Navigator.pop(context, true);
         }
       } else {
-        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('خطا در ذخیره قیمت‌ها'), backgroundColor: AppColors.error),
         );
       }
     } catch (e) {
-      setState(() => _isSaving = false);
       if (!mounted) return;
+      setState(() => _isSaving = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('خطا در ارتباط با سرور: $e'), backgroundColor: AppColors.error),
       );

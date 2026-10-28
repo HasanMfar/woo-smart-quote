@@ -23,6 +23,8 @@ class WSQ_Updates {
 	/** Messages table (without prefix). */
 	const TABLE = 'wsq_messages';
 
+	const REST_NAMESPACE = 'woo-smart-quote/v1';
+
 	protected static $instance = null;
 
 	public static function instance() {
@@ -127,15 +129,18 @@ class WSQ_Updates {
 	 * @return string
 	 */
 	public function webhook_url() {
-		return add_query_arg( 's', $this->webhook_secret(), rest_url( 'woo-smart-quote/v1/bale-hook' ) );
+		return add_query_arg( 's', $this->webhook_secret(), rest_url( self::REST_NAMESPACE . '/bale-hook' ) );
 	}
 
 	public function register_routes() {
-		register_rest_route( 'woo-smart-quote', '/bale-hook', array(
+		$args = array(
 			'methods'             => 'POST',
 			'callback'            => array( $this, 'rest_webhook' ),
 			'permission_callback' => '__return_true',
-		) );
+		);
+		register_rest_route( self::REST_NAMESPACE, '/bale-hook', $args );
+		// Installations that registered the pre-v1 URL keep receiving updates.
+		register_rest_route( 'woo-smart-quote', '/bale-hook', $args );
 	}
 
 	/**
@@ -161,7 +166,19 @@ class WSQ_Updates {
 		}
 
 		if ( is_array( $raw ) ) {
+			// Bale retries a webhook until it observes a 200. Without this
+			// guard every retry would relay the buyer message again.
+			$update_id = isset( $raw['update_id'] ) ? (int) $raw['update_id'] : 0;
+			if ( $update_id > 0 && $update_id <= (int) get_option( 'wsq_bale_last_update_id', 0 ) ) {
+				return new WP_REST_Response( array( 'ok' => true, 'duplicate' => true ), 200 );
+			}
+
 			$count = $this->process_updates( 'bale', array( $raw ) );
+
+			if ( $update_id > 0 ) {
+				update_option( 'wsq_bale_last_update_id', $update_id, false );
+			}
+
 			WSQ_Logger::info( 'updates', 'Webhook update accepted.', array( 'events' => $count ) );
 		}
 
@@ -268,14 +285,15 @@ class WSQ_Updates {
 
 		$count = $this->process_updates( $messenger, $updates );
 
-		// Advance the offset past the highest update_id seen.
-		$max = $offset;
+		// Advance past the highest update_id seen. The API already returns
+		// updates from the stored offset, so an equal id must still advance.
+		$max = null;
 		foreach ( $updates as $update ) {
-			if ( isset( $update['update_id'] ) && (int) $update['update_id'] > $max ) {
+			if ( isset( $update['update_id'] ) && ( null === $max || (int) $update['update_id'] > $max ) ) {
 				$max = (int) $update['update_id'];
 			}
 		}
-		if ( $max > $offset ) {
+		if ( null !== $max && $max >= $offset ) {
 			update_option( 'wsq_' . $messenger . '_offset', $max + 1 );
 		}
 
@@ -356,12 +374,10 @@ class WSQ_Updates {
 		}
 
 		$chat = isset( $message['chat'] ) && is_array( $message['chat'] ) ? $message['chat'] : array();
-		$from = isset( $message['from'] ) && is_array( $message['from'] ) ? $message['from'] : array();
+		$sender = isset( $cb ) ? $cb : $message;
+		$from = isset( $sender['from'] ) && is_array( $sender['from'] ) ? $sender['from'] : array();
 
 		$chat_id = isset( $chat['id'] ) ? (string) $chat['id'] : '';
-		if ( '' === $chat_id && isset( $from['id'] ) ) {
-			$chat_id = (string) $from['id'];
-		}
 		if ( '' === $chat_id ) {
 			return null;
 		}
@@ -376,7 +392,7 @@ class WSQ_Updates {
 		}
 
 		$contact = null;
-		if ( isset( $message['contact'] ) && is_array( $message['contact'] ) ) {
+		if ( ! isset( $cb ) && isset( $message['contact'] ) && is_array( $message['contact'] ) ) {
 			$contact = array(
 				'phone' => isset( $message['contact']['phone_number'] ) ? (string) $message['contact']['phone_number'] : '',
 				'name'  => isset( $message['contact']['first_name'] ) ? (string) $message['contact']['first_name'] : '',
@@ -397,7 +413,7 @@ class WSQ_Updates {
 			'messenger'  => $messenger,
 			'message_id' => isset( $message['message_id'] ) ? (int) $message['message_id'] : 0,
 			'chat_id'    => $chat_id,
-			'chat_type'  => isset( $chat['type'] ) ? (string) $chat['type'] : 'private',
+			'chat_type'  => isset( $chat['type'] ) ? (string) $chat['type'] : '',
 			'from_id'    => isset( $from['id'] ) ? (string) $from['id'] : '',
 			'from_name'  => $name,
 			'username'   => isset( $from['username'] ) ? (string) $from['username'] : '',
@@ -620,9 +636,15 @@ class WSQ_Updates {
 	 * @param string $messenger
 	 * @param string $chat_id
 	 * @param string $phone Normalized phone.
-	 * @return void
+	 * @param string $messenger_user_id Verified self-contact sender.
+	 * @return bool
 	 */
-	public function link_chat( $messenger, $chat_id, $phone ) {
+	public function link_chat( $messenger, $chat_id, $phone, $messenger_user_id ) {
+		$row = array( 'phone' => $phone, 'messenger_user_id' => (string) $messenger_user_id );
+		if ( ! $this->is_verified_link( $messenger, $chat_id, $row ) ) {
+			return false;
+		}
+
 		$links   = (array) get_option( 'wsq_chat_links', array() );
 		$user_id = 0;
 
@@ -636,23 +658,34 @@ class WSQ_Updates {
 			$user_id = (int) $users[0];
 		}
 
-		$links[ $messenger . ':' . $chat_id ] = array(
-			'phone'   => $phone,
-			'user_id' => $user_id,
-			'created' => time(),
-		);
+		$row['user_id'] = $user_id;
+		$row['created'] = time();
+		$key = $messenger . ':' . $chat_id;
+		unset( $links[ $key ] );
 
 		// Keep the option from growing without bound.
-		if ( count( $links ) > 500 ) {
-			$oldest = array_slice( $links, 0, count( $links ) - 500, true );
-			foreach ( $oldest as $key => $row ) {
-				if ( isset( $row['created'] ) && ( time() - (int) $row['created'] ) > MONTH_IN_SECONDS ) {
-					unset( $links[ $key ] );
-				}
-			}
+		if ( count( $links ) >= 500 ) {
+			uksort( $links, function ( $a, $b ) use ( $links ) {
+				$a_created = isset( $links[ $a ]['created'] ) ? (int) $links[ $a ]['created'] : 0;
+				$b_created = isset( $links[ $b ]['created'] ) ? (int) $links[ $b ]['created'] : 0;
+				return $a_created === $b_created ? strcmp( (string) $a, (string) $b ) : ( $a_created <=> $b_created );
+			} );
+			$links = array_slice( $links, -499, null, true );
 		}
+		$links[ $key ] = $row;
 
 		update_option( 'wsq_chat_links', $links, false );
+		return true;
+	}
+
+	private function is_verified_link( $messenger, $chat_id, $row ) {
+		return in_array( $messenger, array( 'bale', 'eitaa' ), true )
+			&& preg_match( '/^[1-9][0-9]*$/D', (string) $chat_id )
+			&& is_array( $row )
+			&& isset( $row['messenger_user_id'], $row['phone'] )
+			&& (string) $row['messenger_user_id'] === (string) $chat_id
+			&& is_string( $row['phone'] )
+			&& preg_match( '/^09[0-9]{9}$/D', $row['phone'] );
 	}
 
 	/**
@@ -665,7 +698,7 @@ class WSQ_Updates {
 	public function find_link( $messenger, $chat_id ) {
 		$links = (array) get_option( 'wsq_chat_links', array() );
 		$key   = $messenger . ':' . $chat_id;
-		return isset( $links[ $key ] ) && is_array( $links[ $key ] ) ? $links[ $key ] : null;
+		return isset( $links[ $key ] ) && $this->is_verified_link( $messenger, $chat_id, $links[ $key ] ) ? $links[ $key ] : null;
 	}
 
 	/**
@@ -689,20 +722,18 @@ class WSQ_Updates {
 		$newest = 0;
 
 		foreach ( $links as $key => $row ) {
-			if ( ! is_array( $row ) || empty( $row['phone'] ) ) {
-				continue;
-			}
 			if ( 0 !== strpos( (string) $key, $messenger . ':' ) ) {
 				continue;
 			}
-			if ( preg_replace( '/[^0-9]/', '', (string) $row['phone'] ) !== $phone ) {
+			$chat_id = substr( (string) $key, strlen( $messenger ) + 1 );
+			if ( ! $this->is_verified_link( $messenger, $chat_id, $row ) || $row['phone'] !== $phone ) {
 				continue;
 			}
 
 			$created = isset( $row['created'] ) ? (int) $row['created'] : 0;
 			if ( $created >= $newest ) {
 				$newest = $created;
-				$best   = substr( (string) $key, strlen( $messenger ) + 1 );
+				$best   = $chat_id;
 			}
 		}
 

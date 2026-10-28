@@ -380,9 +380,9 @@ class WSQ_Admin {
 			wp_send_json_error( array( 'message' => __( 'دسترسی غیرمجاز.', 'woo-smart-quote' ) ) );
 		}
 
-		$messenger = isset( $_POST['messenger'] ) ? sanitize_text_field( $_POST['messenger'] ) : 'bale';
-		$token     = isset( $_POST['token'] ) ? sanitize_text_field( $_POST['token'] ) : '';
-		$chat_id   = isset( $_POST['chat_id'] ) ? sanitize_text_field( $_POST['chat_id'] ) : '';
+		$messenger = isset( $_POST['messenger'] ) ? sanitize_text_field( wp_unslash( $_POST['messenger'] ) ) : 'bale';
+		$token     = isset( $_POST['token'] ) ? sanitize_text_field( wp_unslash( $_POST['token'] ) ) : '';
+		$chat_id   = isset( $_POST['chat_id'] ) ? sanitize_text_field( wp_unslash( $_POST['chat_id'] ) ) : '';
 
 		if ( empty( $token ) || empty( $chat_id ) ) {
 			wp_send_json_error( array( 'message' => __( 'توکن و شناسه چت نباید خالی باشند.', 'woo-smart-quote' ) ) );
@@ -1782,7 +1782,7 @@ class WSQ_Admin {
 			wp_send_json_error( array( 'message' => __( 'دسترسی غیرمجاز.', 'woo-smart-quote' ) ) );
 		}
 
-		$device_id = isset( $_POST['device_id'] ) ? sanitize_text_field( $_POST['device_id'] ) : '';
+		$device_id = isset( $_POST['device_id'] ) ? sanitize_text_field( wp_unslash( $_POST['device_id'] ) ) : '';
 
 		if ( empty( $device_id ) ) {
 			wp_send_json_error( array( 'message' => __( 'شناسه دستگاه مشخص نشده است.', 'woo-smart-quote' ) ) );

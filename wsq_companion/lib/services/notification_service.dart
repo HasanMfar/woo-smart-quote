@@ -33,6 +33,13 @@ class NotificationService {
         ?.createNotificationChannel(androidChannel);
   }
 
+  /// Android 13+ requires an explicit runtime grant before any notification shows.
+  static Future<void> requestPermission() async {
+    await _notifications
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestNotificationsPermission();
+  }
+
   static Future<void> showNotification({
     required int id,
     required String title,

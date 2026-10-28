@@ -65,6 +65,7 @@ function wsq_uninstall_cleanup() {
 		'wsq_bale_offset',
 		'wsq_eitaa_offset',
 		'wsq_bale_webhook_url',
+		'wsq_bale_last_update_id',
 		// Companion app (1.0.0).
 		'wsq_paired_devices',
 	);
@@ -148,6 +149,31 @@ function wsq_uninstall_cleanup() {
 				wp_delete_file( $file );
 			}
 		}
+
+		// mPDF caches fonts and temp files here; leaving them behind both
+		// wastes space and blocks the rmdir below.
+		$tmp_dir = $pdf_dir . '/tmp';
+		if ( is_dir( $tmp_dir ) ) {
+			$tmp_files = glob( $tmp_dir . '/*' );
+			if ( is_array( $tmp_files ) ) {
+				foreach ( $tmp_files as $tmp_file ) {
+					if ( is_file( $tmp_file ) ) {
+						wp_delete_file( $tmp_file );
+					} elseif ( is_dir( $tmp_file ) ) {
+						array_map( 'wp_delete_file', (array) glob( $tmp_file . '/*' ) );
+						@rmdir( $tmp_file );
+					}
+				}
+			}
+			@rmdir( $tmp_dir );
+		}
+
+		foreach ( array( '.htaccess', 'index.php' ) as $guard_file ) {
+			if ( file_exists( $pdf_dir . '/' . $guard_file ) ) {
+				wp_delete_file( $pdf_dir . '/' . $guard_file );
+			}
+		}
+
 		@rmdir( $pdf_dir );
 	}
 }

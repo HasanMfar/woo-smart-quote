@@ -38,9 +38,131 @@ class WSQ_Order {
 		// Shared clipboard helper for the proposal metabox.
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
 
+		// A sent quote is a real invoice, but WooCommerce does not treat the
+		// custom status as payable by default.
+		add_filter( 'woocommerce_valid_order_statuses_for_payment', array( $this, 'allow_payment_for_issued_quote' ), 10, 2 );
+		add_filter( 'woocommerce_payment_complete_order_status', array( $this, 'payment_complete_status_for_quote' ), 10, 2 );
+
 		// Note: buyer notification on 'quote-sent' is handled solely by
 		// WSQ_Buyer_Notifier (which hooks the same status change); do not
 		// dispatch again here or the buyer receives duplicates.
+	}
+
+	/**
+	 * Let a priced, unpaid quote reach the payment gateway.
+	 *
+	 * @param string[] $statuses Payable statuses.
+	 * @param WC_Order $order    Order being checked.
+	 * @return string[]
+	 */
+	public function allow_payment_for_issued_quote( $statuses, $order = null ) {
+		if ( $order instanceof WC_Order && self::is_payable_quote( $order ) ) {
+			$statuses[] = 'quote-sent';
+		}
+		return $statuses;
+	}
+
+	/**
+	 * Settle a paid quote into a normal WooCommerce fulfilment status.
+	 *
+	 * @param string $status   Status chosen by WooCommerce.
+	 * @param int    $order_id Order id.
+	 * @return string
+	 */
+	public function payment_complete_status_for_quote( $status, $order_id = 0 ) {
+		$order = wc_get_order( $order_id );
+		if ( $order instanceof WC_Order && 'quote-sent' === $order->get_status() ) {
+			return $order->needs_processing() ? 'processing' : 'completed';
+		}
+		return $status;
+	}
+
+	/**
+	 * A quote may only be paid after it has been priced and while unpaid.
+	 *
+	 * @param WC_Order $order Order.
+	 * @return bool
+	 */
+	public static function is_payable_quote( $order ) {
+		return 'quote-sent' === $order->get_status()
+			&& ! $order->is_paid()
+			&& (float) $order->get_total() > 0;
+	}
+
+	/**
+	 * Whether line prices may still be changed on this order.
+	 *
+	 * @param WC_Order $order Order.
+	 * @return true|WP_Error
+	 */
+	public static function guard_priceable_order( $order ) {
+		if ( ! $order instanceof WC_Order ) {
+			return new WP_Error( 'wsq_invalid_order', __( 'سفارش یافت نشد.', 'woo-smart-quote' ), array( 'status' => 404 ) );
+		}
+		if ( ! in_array( $order->get_status(), array( 'quote-request', 'quote-sent' ), true ) ) {
+			return new WP_Error( 'wsq_not_quote', __( 'فقط استعلام‌های در انتظار یا پیش‌فاکتورهای صادرشده قابل قیمت‌گذاری هستند.', 'woo-smart-quote' ), array( 'status' => 409 ) );
+		}
+		if ( $order->is_paid() ) {
+			return new WP_Error( 'wsq_already_paid', __( 'این سفارش پرداخت شده و قیمت‌های آن قابل تغییر نیست.', 'woo-smart-quote' ), array( 'status' => 409 ) );
+		}
+		return true;
+	}
+
+	/**
+	 * Validate submitted line prices before anything is written.
+	 *
+	 * @param WC_Order $order       Order.
+	 * @param array    $prices      Map of item id => unit price.
+	 * @param bool     $require_all Whether every line must be present.
+	 * @return array|WP_Error Map of item id => nonnegative float.
+	 */
+	public static function validate_price_submission( $order, $prices, $require_all = true ) {
+		$items = array();
+		foreach ( $order->get_items() as $item_id => $item ) {
+			$items[ (int) $item_id ] = $item;
+		}
+		if ( empty( $items ) ) {
+			return new WP_Error( 'wsq_no_items', __( 'این استعلام قلمی برای قیمت‌گذاری ندارد.', 'woo-smart-quote' ), array( 'status' => 409 ) );
+		}
+
+		$normalized = array();
+		foreach ( (array) $prices as $item_id => $price ) {
+			$item_id = absint( $item_id );
+			if ( ! isset( $items[ $item_id ] ) ) {
+				return new WP_Error( 'wsq_unknown_item', __( 'یکی از اقلام ارسالی به این استعلام تعلق ندارد.', 'woo-smart-quote' ), array( 'status' => 400 ) );
+			}
+			if ( is_bool( $price ) || ! is_numeric( $price ) ) {
+				return new WP_Error( 'wsq_invalid_price', __( 'قیمت واردشده معتبر نیست.', 'woo-smart-quote' ), array( 'status' => 400 ) );
+			}
+			$price = (float) $price;
+			if ( ! is_finite( $price ) || $price < 0 ) {
+				return new WP_Error( 'wsq_invalid_price', __( 'قیمت واردشده معتبر نیست.', 'woo-smart-quote' ), array( 'status' => 400 ) );
+			}
+			$normalized[ $item_id ] = $price;
+		}
+
+		if ( empty( $normalized ) ) {
+			return new WP_Error( 'wsq_missing_prices', __( 'هیچ قیمتی برای ذخیره ارسال نشده است.', 'woo-smart-quote' ), array( 'status' => 400 ) );
+		}
+		if ( $require_all && count( $normalized ) !== count( $items ) ) {
+			return new WP_Error( 'wsq_missing_prices', __( 'قیمت همه اقلام باید مشخص شود.', 'woo-smart-quote' ), array( 'status' => 400 ) );
+		}
+
+		return $normalized;
+	}
+
+	/**
+	 * Send the AJAX/redirect response for a rejected pricing request.
+	 *
+	 * @param WP_Error $error  Error.
+	 * @param bool     $is_ajax Whether the request came from admin-ajax.
+	 */
+	private function reject_pricing( $error, $is_ajax ) {
+		$message = $error->get_error_message();
+		if ( $is_ajax ) {
+			wp_send_json_error( array( 'message' => $message ) );
+		}
+		wp_die( esc_html( $message ) );
 	}
 
 	/**
@@ -617,23 +739,35 @@ class WSQ_Order {
 				: wp_die( esc_html__( 'سفارش یافت نشد.', 'woo-smart-quote' ) );
 		}
 
-		$item_prices = isset( $_POST['wsq_item_prices'] ) ? (array) $_POST['wsq_item_prices'] : array();
-		$validity    = isset( $_POST['wsq_quote_validity'] ) ? sanitize_text_field( $_POST['wsq_quote_validity'] ) : __( '۲۴ ساعت کاری', 'woo-smart-quote' );
+		$item_prices = isset( $_POST['wsq_item_prices'] ) ? (array) wp_unslash( $_POST['wsq_item_prices'] ) : array();
+		$validity    = isset( $_POST['wsq_quote_validity'] ) ? sanitize_text_field( wp_unslash( $_POST['wsq_quote_validity'] ) ) : __( '۲۴ ساعت کاری', 'woo-smart-quote' );
+
+		if ( ! current_user_can( 'edit_shop_order', $order_id ) ) {
+			$this->reject_pricing( new WP_Error( 'wsq_forbidden', __( 'شما اجازه دسترسی به این استعلام را ندارید.', 'woo-smart-quote' ), array( 'status' => 403 ) ), $is_ajax );
+		}
+
+		$guard = self::guard_priceable_order( $order );
+		if ( is_wp_error( $guard ) ) {
+			$this->reject_pricing( $guard, $is_ajax );
+		}
+
+		$prices = self::validate_price_submission( $order, $item_prices, true );
+		if ( is_wp_error( $prices ) ) {
+			$this->reject_pricing( $prices, $is_ajax );
+		}
 
 		// Save validity meta
 		$order->update_meta_data( '_wsq_quote_validity', $validity );
 
 		// Update each item's price
 		foreach ( $order->get_items() as $item_id => $item ) {
-			if ( isset( $item_prices[ $item_id ] ) ) {
-				$unit_price = floatval( $item_prices[ $item_id ] );
-				$qty        = $item->get_quantity();
-				$line_total = $unit_price * $qty;
+			$unit_price = $prices[ (int) $item_id ];
+			$qty        = $item->get_quantity();
+			$line_total = $unit_price * $qty;
 
-				$item->set_subtotal( $line_total );
-				$item->set_total( $line_total );
-				$item->save();
-			}
+			$item->set_subtotal( $line_total );
+			$item->set_total( $line_total );
+			$item->save();
 		}
 
 		// Recalculate totals
@@ -661,16 +795,44 @@ class WSQ_Order {
 	}
 
 	/**
+	 * Best-effort client IP. Only REMOTE_ADDR is trusted: forwarding headers
+	 * are attacker-controlled unless a proxy is known to rewrite them.
+	 *
+	 * @return string
+	 */
+	private function client_ip() {
+		$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? (string) $_SERVER['REMOTE_ADDR'] : '';
+		return filter_var( $ip, FILTER_VALIDATE_IP ) ? $ip : '0.0.0.0';
+	}
+
+	/**
+	 * Per-IP quota for public quote submissions.
+	 *
+	 * @return true|WP_Error
+	 */
+	private function throttle_quote_submission() {
+		$key    = 'wsq_quote_throttle_' . md5( $this->client_ip() );
+		$recent = (int) get_transient( $key );
+
+		if ( $recent >= 5 ) {
+			return new WP_Error( 'wsq_throttled', __( 'تعداد درخواست‌های استعلام بیش از حد مجاز است. لطفاً چند دقیقه بعد دوباره تلاش کنید.', 'woo-smart-quote' ), array( 'status' => 429 ) );
+		}
+
+		set_transient( $key, $recent + 1, 10 * MINUTE_IN_SECONDS );
+		return true;
+	}
+
+	/**
 	 * AJAX submit quote request from customer
 	 */
 	public function ajax_submit_quote() {
 		check_ajax_referer( 'wsq_submit_quote', 'wsq_submit_nonce' );
 
-		$name    = isset( $_POST['wsq_name'] ) ? sanitize_text_field( $_POST['wsq_name'] ) : '';
-		$email   = isset( $_POST['wsq_email'] ) ? sanitize_email( $_POST['wsq_email'] ) : '';
-		$phone   = isset( $_POST['wsq_phone'] ) ? sanitize_text_field( $_POST['wsq_phone'] ) : '';
-		$channel = isset( $_POST['wsq_channel'] ) ? sanitize_text_field( $_POST['wsq_channel'] ) : 'all';
-		$message = isset( $_POST['wsq_message'] ) ? sanitize_textarea_field( $_POST['wsq_message'] ) : '';
+		$name    = isset( $_POST['wsq_name'] ) ? sanitize_text_field( wp_unslash( $_POST['wsq_name'] ) ) : '';
+		$email   = isset( $_POST['wsq_email'] ) ? sanitize_email( wp_unslash( $_POST['wsq_email'] ) ) : '';
+		$phone   = isset( $_POST['wsq_phone'] ) ? sanitize_text_field( wp_unslash( $_POST['wsq_phone'] ) ) : '';
+		$channel = isset( $_POST['wsq_channel'] ) ? sanitize_text_field( wp_unslash( $_POST['wsq_channel'] ) ) : 'all';
+		$message = isset( $_POST['wsq_message'] ) ? sanitize_textarea_field( wp_unslash( $_POST['wsq_message'] ) ) : '';
 
 		if ( empty( $name ) || empty( $email ) || empty( $phone ) ) {
 			wp_send_json_error( array( 'message' => __( 'لطفاً تمامی فیلدهای الزامی را پر نمایید.', 'woo-smart-quote' ) ) );
@@ -709,6 +871,12 @@ class WSQ_Order {
 
 		if ( empty( $items ) ) {
 			wp_send_json_error( array( 'message' => __( 'لیست استعلام شما خالی است.', 'woo-smart-quote' ) ) );
+		}
+
+		// Cheap validations ran first so misfilled forms do not consume quota.
+		$throttle = $this->throttle_quote_submission();
+		if ( is_wp_error( $throttle ) ) {
+			wp_send_json_error( array( 'message' => $throttle->get_error_message() ), 429 );
 		}
 
 		// Create WooCommerce Order with quote-request status

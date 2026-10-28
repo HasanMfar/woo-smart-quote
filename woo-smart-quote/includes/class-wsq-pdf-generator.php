@@ -16,6 +16,9 @@ class WSQ_PDF_Generator {
 
 	protected static $instance = null;
 
+	/** 30 days, matching the default PDF retention window. */
+	const PDF_TOKEN_TTL = 2592000;
+
 	public static function instance() {
 		if ( is_null( self::$instance ) ) {
 			self::$instance = new self();
@@ -24,6 +27,12 @@ class WSQ_PDF_Generator {
 	}
 
 	protected function __construct() {
+		// PDFs live under uploads with a directory deny rule. Apache honours
+		// it, nginx does not, so downloads always go through WordPress with a
+		// per-order token instead of a direct static URL.
+		add_action( 'admin_post_wsq_download_pdf', array( $this, 'handle_pdf_download' ) );
+		add_action( 'admin_post_nopriv_wsq_download_pdf', array( $this, 'handle_pdf_download' ) );
+
 		// Include mPDF and its Composer dependencies (bundled, no Composer needed).
 		if ( ! class_exists( 'Mpdf\Mpdf' ) ) {
 			$mpdf_autoload = WSQ_PLUGIN_DIR . 'lib/mpdf/vendor/autoload.php';
@@ -169,13 +178,13 @@ class WSQ_PDF_Generator {
 	}
 
 	/**
-	 * Get the public URL for an order's generated PDF.
+	 * Resolve the generated file for an order.
 	 *
 	 * @param int  $order_id
-	 * @param bool $auto_generate If file does not exist, whether to generate it.
-	 * @return string|false
+	 * @param bool $auto_generate Whether to render the PDF when missing.
+	 * @return string|false Absolute path.
 	 */
-	public function get_pdf_url( $order_id, $auto_generate = true ) {
+	public function get_pdf_path( $order_id, $auto_generate = false ) {
 		$order = wc_get_order( $order_id );
 		if ( ! $order ) {
 			return false;
@@ -184,21 +193,154 @@ class WSQ_PDF_Generator {
 		$pdf_secret = $order->get_meta( '_wsq_pdf_secret' );
 		$upload_dir = wp_upload_dir();
 		$pdf_dir    = $upload_dir['basedir'] . '/woo-smart-quote-pdfs';
+		$file_path  = ! empty( $pdf_secret )
+			? $pdf_dir . '/' . sprintf( 'quote-%d-%s.pdf', $order_id, $pdf_secret )
+			: '';
 
-		if ( empty( $pdf_secret ) || ! file_exists( $pdf_dir . '/' . sprintf( 'quote-%d-%s.pdf', $order_id, $pdf_secret ) ) ) {
-			if ( $auto_generate ) {
-				$file_path = $this->generate( $order_id );
-				if ( ! $file_path ) {
-					return false;
-				}
-				$pdf_secret = $order->get_meta( '_wsq_pdf_secret' );
-			} else {
-				return false;
+		if ( '' !== $file_path && file_exists( $file_path ) ) {
+			return $file_path;
+		}
+
+		if ( ! $auto_generate ) {
+			return false;
+		}
+
+		return $this->generate( $order_id );
+	}
+
+	/**
+	 * Token bound to one order's PDF secret; regenerating rotates the file and
+	 * the token with it.
+	 *
+	 * @param WC_Order $order
+	 * @return string Empty when the order has no PDF secret yet.
+	 */
+	private function pdf_token( $order ) {
+		$secret = (string) $order->get_meta( '_wsq_pdf_secret' );
+		if ( '' === $secret ) {
+			return '';
+		}
+
+		$order_id = $order->get_id();
+		$expires  = time() + self::PDF_TOKEN_TTL;
+		$signature = $this->pdf_signature( $order_id, $secret, $expires );
+
+		return $expires . '.' . $signature;
+	}
+
+	/**
+	 * @param int    $order_id
+	 * @param string $secret
+	 * @param int    $expires
+	 * @return string
+	 */
+	private function pdf_signature( $order_id, $secret, $expires ) {
+		return hash_hmac( 'sha256', 'wsq-pdf|' . $order_id . '|' . $secret . '|' . $expires, wp_salt( 'auth' ) );
+	}
+
+	/**
+	 * Whether a download token matches the order's current PDF and is unexpired.
+	 *
+	 * @param int    $order_id
+	 * @param string $token
+	 * @return bool
+	 */
+	public function is_valid_pdf_token( $order_id, $token ) {
+		$order = wc_get_order( $order_id );
+		if ( ! $order ) {
+			return false;
+		}
+
+		$secret = (string) $order->get_meta( '_wsq_pdf_secret' );
+		if ( '' === $secret ) {
+			return false;
+		}
+
+		$parts = explode( '.', (string) $token, 2 );
+		if ( 2 !== count( $parts ) ) {
+			return false;
+		}
+
+		$expires = (int) $parts[0];
+		if ( $expires <= time() ) {
+			return false;
+		}
+
+		return hash_equals( $this->pdf_signature( $order->get_id(), $secret, $expires ), $parts[1] );
+	}
+
+	/**
+	 * Download URL for an order's generated PDF.
+	 *
+	 * @param int  $order_id
+	 * @param bool $auto_generate If file does not exist, whether to generate it.
+	 * @return string|false
+	 */
+	public function get_pdf_url( $order_id, $auto_generate = true ) {
+		$file = $this->get_pdf_path( $order_id, $auto_generate );
+		if ( ! $file ) {
+			return false;
+		}
+
+		$order = wc_get_order( $order_id );
+		if ( ! $order ) {
+			return false;
+		}
+
+		return add_query_arg(
+			array(
+				'action'  => 'wsq_download_pdf',
+				'wsq_pdf' => $order_id,
+				'token'   => $this->pdf_token( $order ),
+			),
+			admin_url( 'admin-post.php' )
+		);
+	}
+
+	/**
+	 * Human-readable file name for the generated PDF.
+	 *
+	 * @param int $order_id
+	 * @return string
+	 */
+	public function get_pdf_filename( $order_id ) {
+		$file = $this->get_pdf_path( $order_id, false );
+		return $file ? basename( $file ) : '';
+	}
+
+	/**
+	 * Stream a PDF after checking staff capability or the order token.
+	 *
+	 * @return void
+	 */
+	public function handle_pdf_download() {
+		$order_id = isset( $_GET['wsq_pdf'] ) ? absint( wp_unslash( $_GET['wsq_pdf'] ) ) : 0;
+		$order    = $order_id ? wc_get_order( $order_id ) : false;
+
+		if ( ! $order ) {
+			wp_die( esc_html__( 'فایل درخواستی یافت نشد.', 'woo-smart-quote' ), '', array( 'response' => 404 ) );
+		}
+
+		$is_staff = current_user_can( 'edit_shop_order', $order_id ) || current_user_can( 'manage_woocommerce' );
+		if ( ! $is_staff ) {
+			$token = isset( $_GET['token'] ) ? (string) wp_unslash( $_GET['token'] ) : '';
+			if ( ! $this->is_valid_pdf_token( $order_id, $token ) ) {
+				wp_die( esc_html__( 'دسترسی به این فایل مجاز نیست.', 'woo-smart-quote' ), '', array( 'response' => 403 ) );
 			}
 		}
 
-		$file_name = sprintf( 'quote-%d-%s.pdf', $order_id, $pdf_secret );
-		return $upload_dir['baseurl'] . '/woo-smart-quote-pdfs/' . $file_name;
+		$file = $this->get_pdf_path( $order_id, false );
+		if ( ! $file ) {
+			wp_die( esc_html__( 'فایل درخواستی یافت نشد.', 'woo-smart-quote' ), '', array( 'response' => 404 ) );
+		}
+
+		nocache_headers();
+		header( 'Content-Type: application/pdf' );
+		header( 'Content-Disposition: inline; filename="' . basename( $file ) . '"' );
+		header( 'Content-Length: ' . filesize( $file ) );
+		header( 'X-Content-Type-Options: nosniff' );
+		readfile( $file );
+		exit;
 	}
 
 	/**

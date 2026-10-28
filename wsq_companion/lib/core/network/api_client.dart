@@ -2,22 +2,10 @@ import 'package:dio/dio.dart';
 import '../storage/local_storage.dart';
 
 class ApiClient {
+  final String? _explicitBase;
   late final Dio _dio;
-  late final String _apiBase;
 
-  ApiClient({String? baseUrl}) {
-    String base = baseUrl ?? LocalStorage.getActiveApiBase() ?? '';
-    if (base.isEmpty) {
-      final store = LocalStorage.getActiveStoreUrl() ?? '';
-      if (store.isNotEmpty) {
-        base = store.endsWith('/') ? '${store}wp-json/wsq/v1' : '$store/wp-json/wsq/v1';
-      }
-    }
-    if (base.endsWith('/')) {
-      base = base.substring(0, base.length - 1);
-    }
-    _apiBase = base;
-
+  ApiClient({String? baseUrl}) : _explicitBase = baseUrl {
     _dio = Dio(
       BaseOptions(
         connectTimeout: const Duration(seconds: 15),
@@ -32,9 +20,12 @@ class ApiClient {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
-          final token = await LocalStorage.getToken();
-          if (token != null && token.isNotEmpty) {
-            options.headers['Authorization'] = 'Bearer $token';
+          // Never leak the bearer token to a host other than the paired store.
+          if (_sameOrigin(options.uri, _apiBase)) {
+            final token = await LocalStorage.getToken();
+            if (token != null && token.isNotEmpty) {
+              options.headers['Authorization'] = 'Bearer $token';
+            }
           }
           return handler.next(options);
         },
@@ -46,6 +37,48 @@ class ApiClient {
   }
 
   Dio get dio => _dio;
+
+  // Resolved per request so switching stores never keeps talking to the old one.
+  String get _apiBase {
+    final explicit = _explicitBase;
+    if (explicit != null && explicit.isNotEmpty) {
+      return _normalize(explicit);
+    }
+    final stored = LocalStorage.getActiveApiBase();
+    if (stored != null && stored.isNotEmpty) {
+      return _normalize(stored);
+    }
+    final store = LocalStorage.getActiveStoreUrl() ?? '';
+    if (store.isNotEmpty) {
+      return _normalize(store.endsWith('/') ? '${store}wp-json/wsq/v1' : '$store/wp-json/wsq/v1');
+    }
+    return '';
+  }
+
+  static String _normalize(String base) {
+    var value = base;
+    while (value.endsWith('/')) {
+      value = value.substring(0, value.length - 1);
+    }
+    return value;
+  }
+
+  static bool _sameOrigin(Uri request, String base) {
+    final baseUri = Uri.tryParse(base);
+    if (baseUri == null || baseUri.host.isEmpty) {
+      return false;
+    }
+    return request.scheme.toLowerCase() == baseUri.scheme.toLowerCase() &&
+        request.host.toLowerCase() == baseUri.host.toLowerCase() &&
+        _port(request) == _port(baseUri);
+  }
+
+  static int _port(Uri uri) {
+    if (uri.hasPort) {
+      return uri.port;
+    }
+    return uri.scheme.toLowerCase() == 'https' ? 443 : 80;
+  }
 
   String _buildUrl(String path) {
     if (path.startsWith('http://') || path.startsWith('https://')) {

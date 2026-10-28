@@ -4,7 +4,8 @@
  * Description: سیستم پیشرفته استعلام قیمت ووکامرس با اتصال بومی به بله و ایتا و تولید PDF رسمی.
  * Version:     1.0.0
  * Requires at least: 6.0
- * Requires PHP: 7.2
+ * Requires PHP: 8.0
+ * Requires Plugins: woocommerce
  * Author:      WooCommerce Smart Quote
  * License:     GPL-2.0+
  * Text Domain: woo-smart-quote
@@ -15,6 +16,33 @@
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
+}
+
+// Encoded files terminate the entire request if their loader is unavailable.
+$wsq_missing_requirements = array();
+if ( PHP_VERSION_ID < 80000 ) {
+	$wsq_missing_requirements[] = 'PHP 8.0+';
+}
+foreach ( array( 'gd', 'mbstring' ) as $wsq_extension ) {
+	if ( ! extension_loaded( $wsq_extension ) ) {
+		$wsq_missing_requirements[] = $wsq_extension;
+	}
+}
+if ( ( is_file( __DIR__ . '/RTL_License_c5f8dd81a1c04a46.php' ) || is_file( __DIR__ . '/ProFeature.php' ) ) && ! extension_loaded( 'ionCube Loader' ) ) {
+	$wsq_missing_requirements[] = 'ionCube Loader';
+}
+if ( $wsq_missing_requirements ) {
+	$wsq_requirements_notice = static function () use ( $wsq_missing_requirements ) {
+		$message = sprintf( __( 'Smart Quote غیرفعال است. پیش‌نیازهای زیر باید روی سرور نصب یا به‌روزرسانی شوند: %s', 'woo-smart-quote' ), implode( ', ', $wsq_missing_requirements ) );
+		printf( '<div class="notice notice-error"><p>%s</p></div>', esc_html( $message ) );
+	};
+	add_action( 'admin_notices', $wsq_requirements_notice );
+	add_action( 'network_admin_notices', $wsq_requirements_notice );
+	register_activation_hook( __FILE__, static function () use ( $wsq_missing_requirements ) {
+		$message = sprintf( __( 'Smart Quote غیرفعال است. پیش‌نیازهای زیر باید روی سرور نصب یا به‌روزرسانی شوند: %s', 'woo-smart-quote' ), implode( ', ', $wsq_missing_requirements ) );
+		wp_die( esc_html( $message ), 'WooCommerce Smart Quote', array( 'back_link' => true ) );
+	} );
+	return;
 }
 
 // RTL License Loader

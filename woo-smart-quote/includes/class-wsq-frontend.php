@@ -427,7 +427,7 @@ class WSQ_Frontend {
 	public function ajax_update_item() {
 		check_ajax_referer( 'wsq-add-to-quote', 'nonce' );
 
-		$item_key  = isset( $_POST['item_key'] ) ? sanitize_text_field( $_POST['item_key'] ) : '';
+		$item_key  = isset( $_POST['item_key'] ) ? sanitize_text_field( wp_unslash( $_POST['item_key'] ) ) : '';
 		$raw_qty   = isset( $_POST['quantity'] ) ? wp_unslash( $_POST['quantity'] ) : 0;
 		$fa_digits = array( '۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹' );
 		$ar_digits = array( '٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩' );
@@ -464,7 +464,7 @@ class WSQ_Frontend {
 	public function ajax_restore_item() {
 		check_ajax_referer( 'wsq-add-to-quote', 'nonce' );
 
-		$item_key = isset( $_POST['item_key'] ) ? sanitize_text_field( $_POST['item_key'] ) : '';
+		$item_key = isset( $_POST['item_key'] ) ? sanitize_text_field( wp_unslash( $_POST['item_key'] ) ) : '';
 
 		if ( '' === $item_key ) {
 			wp_send_json_error( array( 'message' => __( 'کلید کالا نامعتبر است.', 'woo-smart-quote' ) ) );
@@ -488,7 +488,7 @@ class WSQ_Frontend {
 	public function ajax_remove_item() {
 		check_ajax_referer( 'wsq-add-to-quote', 'nonce' );
 
-		$item_key = isset( $_POST['item_key'] ) ? sanitize_text_field( $_POST['item_key'] ) : '';
+		$item_key = isset( $_POST['item_key'] ) ? sanitize_text_field( wp_unslash( $_POST['item_key'] ) ) : '';
 
 		if ( '' === $item_key ) {
 			wp_send_json_error( array( 'message' => __( 'کلید کالا نامعتبر است.', 'woo-smart-quote' ) ) );

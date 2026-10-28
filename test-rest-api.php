@@ -175,7 +175,7 @@ $req_pdf->set_header( 'Authorization', 'Bearer ' . $issued_token );
 $res_pdf = $server->dispatch( $req_pdf );
 ok( 'POST /wsq/v1/quotes/{id}/pdf returns 200', 200 === $res_pdf->get_status() );
 $pdf_data = $res_pdf->get_data();
-ok( 'PDF URL contains .pdf', false !== strpos( $pdf_data['pdf_url'], '.pdf' ) );
+ok( 'PDF URL targets the signed download endpoint', false !== strpos( $pdf_data['pdf_url'], 'action=wsq_download_pdf' ) );
 
 // 12. Test Customer Notification Dispatch: POST /wsq/v1/quotes/{id}/notify
 $req_notify = new WP_REST_Request( 'POST', '/wsq/v1/quotes/' . $order_id . '/notify' );

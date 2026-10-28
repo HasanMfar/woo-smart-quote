@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
@@ -9,6 +10,8 @@ import '../models/quote_summary.dart';
 import '../../quote_details/screens/quote_detail_screen.dart';
 import '../../quote_details/screens/pricing_desk_screen.dart';
 import '../../multi_store/screens/store_switcher_screen.dart';
+import '../../auth/screens/qr_scanner_screen.dart';
+import '../../../services/notification_service.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -21,6 +24,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final ApiClient _apiClient = ApiClient();
   List<QuoteSummary> _quotes = [];
   bool _isLoading = true;
+  String? _loadError;
   String _selectedFilter = 'all'; // 'all', 'pending', 'priced'
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
@@ -29,6 +33,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     super.initState();
     _loadQuotes();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      NotificationService.requestPermission();
+    });
+  }
+
+  Future<void> _confirmLogout() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('خروج از حساب'),
+        content: const Text('برای اتصال مجدد باید بارکد جفت‌سازی فروشگاه را دوباره اسکن کنید. ادامه می‌دهید؟'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('انصراف')),
+          ElevatedButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('خروج')),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    await LocalStorage.clearAuth();
+    if (!mounted) return;
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const QrScannerScreen(isRoot: true)),
+      (route) => false,
+    );
   }
 
   @override
@@ -38,7 +67,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<void> _loadQuotes() async {
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _loadError = null;
+    });
 
     // First load from local offline cache
     final cached = LocalStorage.getCachedQuotes();
@@ -56,6 +88,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         },
       );
 
+      if (!mounted) return;
+
       if (response.statusCode == 200 && response.data != null) {
         final list = (response.data['quotes'] as List? ?? [])
             .map((e) => QuoteSummary.fromJson(e as Map<String, dynamic>))
@@ -71,9 +105,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
           final jsonList = list.map((e) => e.toJson()).toList();
           await LocalStorage.cacheQuotes(jsonList);
         }
+      } else {
+        setState(() {
+          _isLoading = false;
+          _loadError = 'خطا در دریافت اطلاعات از فروشگاه.';
+        });
       }
     } catch (e) {
-      setState(() => _isLoading = false);
+      if (!mounted) return;
+      final unauthorized = e is DioException && e.response?.statusCode == 401;
+      setState(() {
+        _isLoading = false;
+        _loadError = unauthorized
+            ? 'نشست شما منقضی شده است. لطفاً از حساب خارج شده و دوباره به فروشگاه متصل شوید.'
+            : 'اتصال به فروشگاه برقرار نشد. اتصال اینترنت خود را بررسی کنید.';
+      });
     }
   }
 
@@ -90,11 +136,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
             icon: const Icon(Icons.storefront_outlined),
             tooltip: AppStrings.switchStore,
             onPressed: () async {
-              final changed = await Navigator.push(
+              final previousStore = LocalStorage.getActiveStoreUrl();
+              await Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const StoreSwitcherScreen()),
               );
-              if (changed == true) {
+              if (!mounted) return;
+              // Adding a store also switches to it, so compare the active store
+              // instead of relying on the route result.
+              if (LocalStorage.getActiveStoreUrl() != previousStore) {
+                setState(() {
+                  _quotes = [];
+                  _searchQuery = '';
+                  _searchController.clear();
+                });
                 _loadQuotes();
               }
             },
@@ -103,6 +158,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
             IconButton(
               icon: const Icon(Icons.refresh),
               onPressed: _loadQuotes,
+            ),
+            IconButton(
+              icon: const Icon(Icons.logout),
+              tooltip: 'خروج از حساب',
+              onPressed: _confirmLogout,
             ),
           ],
         ),
@@ -156,10 +216,30 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   : RefreshIndicator(
                       onRefresh: _loadQuotes,
                       child: _quotes.isEmpty
-                          ? const Center(
-                              child: Text(
-                                AppStrings.emptyQuotes,
-                                style: TextStyle(color: AppColors.textMuted, fontSize: 16),
+                          ? Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(24),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      _loadError ?? AppStrings.emptyQuotes,
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        color: AppColors.textMuted,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                    if (_loadError != null) ...[
+                                      const SizedBox(height: 16),
+                                      ElevatedButton.icon(
+                                        onPressed: _loadQuotes,
+                                        icon: const Icon(Icons.refresh),
+                                        label: const Text(AppStrings.retry),
+                                      ),
+                                    ],
+                                  ],
+                                ),
                               ),
                             )
                           : ListView.builder(

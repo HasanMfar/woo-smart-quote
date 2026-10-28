@@ -70,6 +70,10 @@ class WSQ_Session {
 	 * Add item to quote session
 	 */
 	public function add_item( $item_data ) {
+		if ( ! isset( WC()->session ) ) {
+			return false;
+		}
+
 		$item_data = wp_parse_args( $item_data, array(
 			'product_id'   => 0,
 			'variation_id' => 0,
@@ -80,15 +84,37 @@ class WSQ_Session {
 
 		// Generate a unique ID for the item based on product and variations
 		$item_key = $this->make_key( $item_data );
-
-		if ( isset( $items[ $item_key ] ) ) {
-			$items[ $item_key ]['quantity'] += $item_data['quantity'];
-		} else {
-			$items[ $item_key ] = $item_data;
+		$items = $this->merge_items( $items, array( $item_key => $item_data ) );
+		if ( false === $items ) {
+			return false;
 		}
 
 		$this->set_items( $items );
 		return true;
+	}
+
+	/**
+	 * Build a bounded merge without writing session data; current row metadata wins.
+	 *
+	 * @return array|false Merged items, or false if the union exceeds 100 rows.
+	 */
+	protected function merge_items( $items, $incoming ) {
+		if ( count( $items + $incoming ) > 100 ) {
+			return false;
+		}
+
+		foreach ( $incoming as $item_key => $item ) {
+			$quantity = max( 1, min( 9999, (int) $item['quantity'] ) );
+			if ( isset( $items[ $item_key ] ) ) {
+				$quantity += max( 1, min( 9999, (int) $items[ $item_key ]['quantity'] ) );
+				$items[ $item_key ]['quantity'] = min( 9999, $quantity );
+			} else {
+				$item['quantity'] = $quantity;
+				$items[ $item_key ] = $item;
+			}
+		}
+
+		return $items;
 	}
 
 	/**
@@ -100,6 +126,9 @@ class WSQ_Session {
 	public function make_key( $item_data ) {
 		$variation_id = isset( $item_data['variation_id'] ) ? (string) $item_data['variation_id'] : '0';
 		$variations   = isset( $item_data['variations'] ) ? $item_data['variations'] : array();
+		if ( is_array( $variations ) ) {
+			ksort( $variations );
+		}
 
 		return md5( $item_data['product_id'] . '_' . $variation_id . '_' . serialize( $variations ) );
 	}
@@ -272,8 +301,10 @@ class WSQ_Session {
 			return false;
 		}
 
-		$items = $this->get_items();
-		$items[ $item_key ] = $recent[ $item_key ];
+		$items = $this->merge_items( $this->get_items(), array( $item_key => $recent[ $item_key ] ) );
+		if ( false === $items ) {
+			return false;
+		}
 		$this->set_items( $items );
 
 		unset( $recent[ $item_key ] );
@@ -316,7 +347,11 @@ class WSQ_Session {
 			return false;
 		}
 
-		$this->set_items( $cleared );
+		$items = $this->merge_items( $this->get_items(), $cleared );
+		if ( false === $items ) {
+			return false;
+		}
+		$this->set_items( $items );
 		WC()->session->set( self::CLEARED_ALL_KEY, null );
 		return true;
 	}

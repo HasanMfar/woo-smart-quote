@@ -42,7 +42,9 @@ class WSQCompanionApp extends StatelessWidget {
         Locale('fa', 'IR'),
       ],
       locale: const Locale('fa', 'IR'),
-      home: isAuthenticated ? const DashboardScreen() : const QrScannerScreen(),
+      home: isAuthenticated
+          ? const DashboardScreen()
+          : const QrScannerScreen(isRoot: true),
     );
   }
 }

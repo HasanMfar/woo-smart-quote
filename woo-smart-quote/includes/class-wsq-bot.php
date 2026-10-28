@@ -4,8 +4,8 @@
  *
  * Two audiences share one entry point (`wsq_incoming_update`):
  *
- *  - Buyers: /start links the chat to their phone (contact button or order
- *    number), then they can list their quote requests, pull the latest
+ *  - Buyers: /start offers verified self-contact sharing in a private chat,
+ *    then they can list their quote requests, pull the latest
  *    proforma and payment link, or forward a question to the store staff.
  *  - Admins: chats listed as admin chats get a command menu (/pending,
  *    /order <num>) and receive copies of every buyer question so nothing
@@ -48,30 +48,19 @@ class WSQ_Bot {
 	 * @return void
 	 */
 	public function handle( $messenger, $update ) {
-		if ( empty( $update['chat_id'] ) ) {
+		if ( empty( $update['chat_id'] ) || ! in_array( $messenger, array( 'bale', 'eitaa' ), true ) ) {
 			return;
 		}
 
 		$updates = WSQ_Updates::instance();
 
-		// A shared contact always links the chat, whoever sends it.
-		if ( ! empty( $update['contact']['phone'] ) ) {
-			$phone = $this->normalize_phone( $update['contact']['phone'] );
-			if ( $phone ) {
-				$updates->link_chat( $messenger, $update['chat_id'], $phone );
-				$updates->reply(
-					$messenger,
-					$update['chat_id'],
-					__( "✅ شماره شما با موفقیت ثبت شد.\n\nحالا می‌توانید با ارسال شماره استعلام، وضعیت و پیش‌فاکتور خود را دریافت کنید. برای مشاهده استعلام‌هایتان دستور /orders را بفرستید.", 'woo-smart-quote' )
-				);
-				return;
-			}
+		if ( $updates->is_admin_chat( $messenger, $update['chat_id'] ) ) {
+			$this->handle_admin( $messenger, $update );
+			return;
 		}
 
-		$is_admin = $updates->is_admin_chat( $messenger, $update['chat_id'] );
-
-		if ( $is_admin ) {
-			$this->handle_admin( $messenger, $update );
+		if ( empty( $update['chat_type'] ) || 'private' !== $update['chat_type'] || empty( $update['from_id'] ) || (string) $update['from_id'] !== (string) $update['chat_id'] ) {
+			$updates->reply( $messenger, $update['chat_id'], __( 'برای مشاهده استعلام‌ها و ثبت شماره تماس، در گفت‌وگوی خصوصی ربات پیام دهید.', 'woo-smart-quote' ) );
 			return;
 		}
 
@@ -103,6 +92,21 @@ class WSQ_Bot {
 		$updates = WSQ_Updates::instance();
 		$text    = trim( (string) $update['text'] );
 		$lower   = function_exists( 'mb_strtolower' ) ? mb_strtolower( $text ) : strtolower( $text );
+
+		if ( isset( $update['contact'] ) ) {
+			$contact_user = isset( $update['contact']['user'] ) ? (string) $update['contact']['user'] : '';
+			$phone = isset( $update['contact']['phone'] ) ? $this->normalize_phone( $update['contact']['phone'] ) : '';
+			if ( preg_match( '/^[1-9][0-9]*$/D', $contact_user ) && $contact_user === (string) $update['from_id'] && $updates->link_chat( $messenger, $update['chat_id'], $phone, $contact_user ) ) {
+				$updates->reply(
+					$messenger,
+					$update['chat_id'],
+					__( "شماره شما با موفقیت ثبت شد.\n\nحالا می‌توانید با ارسال شماره استعلام، وضعیت و پیش‌فاکتور خود را دریافت کنید. برای مشاهده استعلام‌هایتان دستور /orders را بفرستید.", 'woo-smart-quote' )
+				);
+			} else {
+				$updates->reply( $messenger, $update['chat_id'], __( 'فقط شماره تماس خود را با دکمه «ثبت شماره تماس» در گفت‌وگوی خصوصی ارسال کنید.', 'woo-smart-quote' ) );
+			}
+			return;
+		}
 
 		if ( '' === $text ) {
 			// A photo/document with no caption: nudge the buyer.
@@ -190,7 +194,7 @@ class WSQ_Bot {
 			$updates->reply(
 				$messenger,
 				$update['chat_id'],
-				__( 'برای مشاهده استعلام‌هایتان ابتدا شماره تماس خود را با دکمه «📲 ثبت شماره تماس» ثبت کنید، یا شماره استعلام را مستقیم ارسال کنید.', 'woo-smart-quote' )
+				__( 'برای مشاهده استعلام‌هایتان ابتدا شماره تماس خود را با دکمه «ثبت شماره تماس» ثبت کنید.', 'woo-smart-quote' )
 			);
 			return;
 		}
@@ -267,33 +271,24 @@ class WSQ_Bot {
 			return false;
 		}
 
-		$link  = $updates->find_link( $messenger, $update['chat_id'] );
-		$phone = ! empty( $link['phone'] ) ? $link['phone'] : '';
+		$link = $updates->find_link( $messenger, $update['chat_id'] );
+		if ( empty( $link['phone'] ) ) {
+			$updates->reply( $messenger, $update['chat_id'], __( 'برای دسترسی به استعلام‌های خودتان، ابتدا شماره تماس خود را با دکمه «ثبت شماره تماس» ثبت کنید.', 'woo-smart-quote' ) );
+			return false;
+		}
 
-		$order = $this->find_order_by_number( $number, $phone );
+		$order = $this->find_order_by_number( $number, $link['phone'] );
 		if ( ! $order ) {
 			// Wrong number or an order that belongs to someone else.
-			if ( '' === $phone ) {
-				$updates->reply(
-					$messenger,
-					$update['chat_id'],
-					sprintf(
-						/* translators: %s: quote order number */
-						__( "استعلامی با شماره #%s یافت نشد.\nبرای دسترسی به استعلام‌های خودتان، ابتدا شماره تماس را ثبت کنید.", 'woo-smart-quote' ),
-						$number
-					)
-				);
-			} else {
-				$updates->reply(
-					$messenger,
-					$update['chat_id'],
-					sprintf(
-						/* translators: %s: quote order number */
-						__( 'استعلامی با شماره #%s برای شما یافت نشد.', 'woo-smart-quote' ),
-						$number
-					)
-				);
-			}
+			$updates->reply(
+				$messenger,
+				$update['chat_id'],
+				sprintf(
+					/* translators: %s: quote order number */
+					__( 'استعلامی با شماره #%s برای شما یافت نشد.', 'woo-smart-quote' ),
+					$number
+				)
+			);
 			return false;
 		}
 
@@ -409,8 +404,8 @@ class WSQ_Bot {
 		$lower   = function_exists( 'mb_strtolower' ) ? mb_strtolower( $text ) : strtolower( $text );
 
 		if ( 0 === strpos( $lower, '/order ' ) || 0 === strpos( $lower, 'سفارش ' ) ) {
-			$number = preg_replace( '/[^0-9]/', '', substr( $text, strlen( strstr( $text, ' ' ) ) ) );
-			$order  = $this->find_order_by_number( $number, '' );
+			$number = preg_replace( '/[^0-9]/', '', substr( $text, strpos( $text, ' ' ) + 1 ) );
+			$order  = $this->find_order_by_number( $number, '', true );
 			if ( $order ) {
 				list( $icon, $status_label ) = $this->status_badge( $order->get_status() );
 				$total  = wp_strip_all_tags( wc_price( $order->get_total() ) );
@@ -525,12 +520,12 @@ class WSQ_Bot {
 			__( '💬 پیام جدید خریدار — %s', 'woo-smart-quote' ),
 			$this->messenger_icon( $messenger )
 		) . "\n";
-		$header .= '👤 ' . ( '' !== $from_name ? $from_name : __( 'نامشخص', 'woo-smart-quote' ) ) . "\n";
+		$header .= '👤 ' . ( '' !== $from_name ? $this->escape_buyer_text( $from_name ) : __( 'نامشخص', 'woo-smart-quote' ) ) . "\n";
 		$header .= '🆔 ' . $update['chat_id'] . "\n";
 		if ( ! empty( $link['phone'] ) ) {
 			$header .= '📞 ' . $link['phone'] . "\n";
 		}
-		$header .= "————————————\n{$text}";
+		$header .= "————————————\n" . $this->escape_buyer_text( $text );
 
 		$sent = 0;
 		foreach ( $admin_ids as $admin_id ) {
@@ -550,6 +545,18 @@ class WSQ_Bot {
 	/* ---------------------------------------------------------------------
 	 * Helpers
 	 * ------------------------------------------------------------------ */
+
+	/**
+	 * Neutralise HTML in buyer-controlled text before it is embedded in a
+	 * messenger HTML message. Quotes are left alone: only tag characters
+	 * matter, and numeric entities would break Telegram-style parsers.
+	 *
+	 * @param string $text
+	 * @return string
+	 */
+	private function escape_buyer_text( $text ) {
+		return str_replace( array( '&', '<', '>' ), array( '&amp;', '&lt;', '&gt;' ), (string) $text );
+	}
 
 	/**
 	 * Built-in default templates for the buyer-facing bot messages.
@@ -777,23 +784,24 @@ class WSQ_Bot {
 	 * @return WC_Order[]
 	 */
 	private function find_buyer_orders( $phone, $limit = 5 ) {
+		$phone = $this->normalize_phone( $phone );
 		if ( '' === $phone ) {
 			return array();
 		}
 
 		$ids = wc_get_orders( array(
-			'limit'      => $limit,
-			'return'     => 'ids',
-			'orderby'    => 'date',
-			'order'      => 'DESC',
-			'meta_key'   => '_billing_phone',
-			'meta_value' => $phone,
+			'limit'         => $limit,
+			'return'        => 'ids',
+			'orderby'       => 'date',
+			'order'         => 'DESC',
+			'billing_phone' => $phone,
+			'status'        => array( 'quote-request', 'quote-sent', 'pending', 'processing', 'completed' ),
 		) );
 
 		$orders = array();
 		foreach ( (array) $ids as $id ) {
 			$order = wc_get_order( $id );
-			if ( $order ) {
+			if ( $order && $this->is_wsq_order( $order ) && $phone === $this->normalize_phone( $order->get_billing_phone() ) ) {
 				$orders[] = $order;
 			}
 		}
@@ -801,15 +809,17 @@ class WSQ_Bot {
 	}
 
 	/**
-	 * Find an order by its number, optionally requiring a matching phone.
+	 * Find a quote by number, requiring buyer ownership unless explicitly administrative.
 	 *
 	 * @param string $number
-	 * @param string $phone  When set, only orders billed to this phone match.
+	 * @param string $phone Buyer billing phone.
+	 * @param bool   $is_admin Whether called from the administrator flow.
 	 * @return WC_Order|null
 	 */
-	private function find_order_by_number( $number, $phone = '' ) {
+	private function find_order_by_number( $number, $phone, $is_admin = false ) {
 		$number = trim( (string) $number );
-		if ( '' === $number ) {
+		$phone  = $this->normalize_phone( $phone );
+		if ( '' === $number || ( ! $is_admin && '' === $phone ) ) {
 			return null;
 		}
 
@@ -827,24 +837,23 @@ class WSQ_Bot {
 			}
 		}
 
-		if ( ! $order ) {
+		if ( ! $order || ! $this->is_wsq_order( $order ) ) {
 			return null;
 		}
 
-		// Only quote-like orders are exposed to buyers.
-		if ( ! in_array( $order->get_status(), array( 'quote-request', 'quote-sent', 'pending', 'processing', 'completed' ), true ) ) {
+		if ( ! $is_admin && $this->normalize_phone( $order->get_billing_phone() ) !== $phone ) {
 			return null;
-		}
-
-		// An unlinked chat cannot claim someone else's order.
-		if ( '' !== $phone ) {
-			$order_phone = $this->normalize_phone( $order->get_billing_phone() );
-			if ( $order_phone !== $phone ) {
-				return null;
-			}
 		}
 
 		return $order;
+	}
+
+	private function is_wsq_order( $order ) {
+		$status = $order->get_status();
+		if ( in_array( $status, array( 'quote-request', 'quote-sent' ), true ) ) {
+			return true;
+		}
+		return in_array( $status, array( 'pending', 'processing', 'completed' ), true ) && '' !== (string) $order->get_meta( '_wsq_customer_phone' );
 	}
 
 	/**

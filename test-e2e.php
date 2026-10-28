@@ -118,8 +118,8 @@ $order_fresh->calculate_totals();
 $order_fresh->save();
 
 // Link the buyer chat first so this dispatch also exercises the bot push.
-WSQ_Updates::instance()->link_chat( 'bale', '555111222', '09121234567' );
-WSQ_Updates::instance()->link_chat( 'eitaa', '777888999', '09121234567' );
+WSQ_Updates::instance()->link_chat( 'bale', '555111222', '09121234567', '555111222' );
+WSQ_Updates::instance()->link_chat( 'eitaa', '777888999', '09121234567', '777888999' );
 
 $results = WSQ_Buyer_Notifier::instance()->dispatch_to_buyer( $order_id, false );
 ok( 'Buyer email dispatched', ! empty( $results['email'] ), wp_json_encode( $results ) );

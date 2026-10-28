@@ -6,7 +6,10 @@ import '../services/auth_service.dart';
 import '../../dashboard/screens/dashboard_screen.dart';
 
 class QrScannerScreen extends StatefulWidget {
-  const QrScannerScreen({super.key});
+  /// True when the scanner is the app's root screen (no store paired yet).
+  final bool isRoot;
+
+  const QrScannerScreen({super.key, this.isRoot = false});
 
   @override
   State<QrScannerScreen> createState() => _QrScannerScreenState();
@@ -27,6 +30,17 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
     _manualUrlController.dispose();
     _manualCodeController.dispose();
     super.dispose();
+  }
+
+  void _completePairing() {
+    if (!mounted) return;
+    if (widget.isRoot) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const DashboardScreen()),
+      );
+    } else {
+      Navigator.of(context).pop(true);
+    }
   }
 
   void _onDetect(BarcodeCapture capture) async {
@@ -50,9 +64,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
           backgroundColor: AppColors.secondary,
         ),
       );
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const DashboardScreen()),
-      );
+      _completePairing();
     } else {
       setState(() => _isProcessing = false);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -100,13 +112,13 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
             onPressed: () async {
               Navigator.pop(ctx);
               setState(() => _isProcessing = true);
-              final payload = '{"site_url":"${_manualUrlController.text.trim()}","pairing_code":"${_manualCodeController.text.trim()}"}';
-              final ok = await AuthService.pairWithQrPayload(payload);
+              final ok = await AuthService.pairWithManualEntry(
+                siteUrl: _manualUrlController.text,
+                pairingCode: _manualCodeController.text,
+              );
               if (!mounted) return;
               if (ok) {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) => const DashboardScreen()),
-                );
+                _completePairing();
               } else {
                 setState(() => _isProcessing = false);
                 ScaffoldMessenger.of(context).showSnackBar(

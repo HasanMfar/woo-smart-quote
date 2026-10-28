@@ -30,6 +30,57 @@ class WSQ_REST_API {
 	}
 
 	/**
+	 * Best-effort client IP. Only REMOTE_ADDR is trusted: forwarding headers
+	 * are attacker-controlled unless a proxy is known to rewrite them.
+	 *
+	 * @return string
+	 */
+	private function client_ip() {
+		$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? (string) $_SERVER['REMOTE_ADDR'] : '';
+		return filter_var( $ip, FILTER_VALIDATE_IP ) ? $ip : '0.0.0.0';
+	}
+
+	/**
+	 * Transient key holding the failed pairing attempts of this client.
+	 *
+	 * @return string
+	 */
+	private function pairing_failure_key() {
+		return 'wsq_pair_fail_' . md5( $this->client_ip() );
+	}
+
+	/**
+	 * @return bool
+	 */
+	private function pairing_is_locked_out() {
+		return (int) get_transient( $this->pairing_failure_key() ) >= 5;
+	}
+
+	/**
+	 * Count a wrong pairing code and burn the code after repeated misses so
+	 * distributed guessing cannot outlast the per-client quota.
+	 *
+	 * @param array|false $session Pairing transient, if any.
+	 */
+	private function record_pairing_failure( $session ) {
+		$key = $this->pairing_failure_key();
+		set_transient( $key, (int) get_transient( $key ) + 1, 15 * MINUTE_IN_SECONDS );
+
+		if ( ! is_array( $session ) || empty( $session['expires_at'] ) ) {
+			return;
+		}
+
+		$session['attempts'] = isset( $session['attempts'] ) ? (int) $session['attempts'] + 1 : 1;
+		if ( $session['attempts'] >= 10 ) {
+			delete_transient( self::TRANSIENT_PAIR );
+			return;
+		}
+
+		$ttl = max( 1, (int) $session['expires_at'] - time() );
+		set_transient( self::TRANSIENT_PAIR, $session, $ttl );
+	}
+
+	/**
 	 * Register all wsq/v1 REST routes.
 	 */
 	public function register_routes() {
@@ -118,33 +169,42 @@ class WSQ_REST_API {
 	 * @return bool|WP_Error
 	 */
 	public function check_auth( $request ) {
-		$auth_header = $request->get_header( 'authorization' );
+		$auth_header = (string) $request->get_header( 'authorization' );
+		$has_bearer  = (bool) preg_match( '/^\s*Bearer\b/i', $auth_header );
 		$token       = '';
 
-		if ( ! empty( $auth_header ) && preg_match( '/Bearer\s+(.*)$/i', $auth_header, $matches ) ) {
-			$token = trim( $matches[1] );
+		if ( $has_bearer ) {
+			if ( preg_match( '/^\s*Bearer\s+(.*)$/i', $auth_header, $matches ) ) {
+				$token = trim( $matches[1] );
+			}
+		} else {
+			$token = trim( (string) $request->get_header( 'x-wsq-token' ) );
 		}
 
-		if ( empty( $token ) ) {
-			$token = $request->get_header( 'x-wsq-token' );
-		}
-
-		if ( ! empty( $token ) ) {
+		if ( $has_bearer || '' !== $token ) {
 			$token_hash = hash( 'sha256', $token );
-			$devices    = get_option( self::OPTION_DEVICES, array() );
+			$devices    = (array) get_option( self::OPTION_DEVICES, array() );
 
 			foreach ( $devices as $device_id => $device ) {
-				if ( hash_equals( $device['token_hash'], $token_hash ) ) {
+				if ( '' !== $token && isset( $device['token_hash'] ) && is_string( $device['token_hash'] ) && hash_equals( $device['token_hash'], $token_hash ) ) {
+					$user = ! empty( $device['user_id'] ) ? get_userdata( (int) $device['user_id'] ) : false;
+					if ( ! $user || ! $user->exists() || ( ! user_can( $user, 'edit_shop_orders' ) && ! user_can( $user, 'manage_woocommerce' ) ) ) {
+						break;
+					}
+
+					$permission = $this->check_order_permission( $request, $user->ID );
+					if ( true !== $permission ) {
+						return $permission;
+					}
+
+					wp_set_current_user( $user->ID );
+
 					// Update last active timestamp (throttled to avoid heavy DB writes on every GET)
 					if ( empty( $device['last_active'] ) || ( time() - (int) $device['last_active'] ) > 60 ) {
 						$devices[ $device_id ]['last_active'] = time();
 						update_option( self::OPTION_DEVICES, $devices );
 					}
 
-					// Log in user context if user exists
-					if ( ! empty( $device['user_id'] ) ) {
-						wp_set_current_user( $device['user_id'] );
-					}
 					return true;
 				}
 			}
@@ -158,7 +218,7 @@ class WSQ_REST_API {
 
 		// Fallback for logged-in WP users with WooCommerce management rights
 		if ( current_user_can( 'edit_shop_orders' ) || current_user_can( 'manage_woocommerce' ) ) {
-			return true;
+			return $this->check_order_permission( $request, get_current_user_id() );
 		}
 
 		return new WP_Error(
@@ -166,6 +226,18 @@ class WSQ_REST_API {
 			__( 'برای دسترسی به این بخش نیاز به احراز هویت است.', 'woo-smart-quote' ),
 			array( 'status' => 401 )
 		);
+	}
+
+	private function check_order_permission( $request, $user_id ) {
+		$order_id = $request->get_param( 'id' );
+		if ( null !== $order_id && ! user_can( $user_id, 'edit_shop_order', absint( $order_id ) ) ) {
+			return new WP_Error(
+				'wsq_forbidden',
+				__( 'شما اجازه دسترسی به این استعلام را ندارید.', 'woo-smart-quote' ),
+				array( 'status' => 403 )
+			);
+		}
+		return true;
 	}
 
 	/**
@@ -188,8 +260,18 @@ class WSQ_REST_API {
 		$english_nums = array( '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' );
 		$pairing_code = str_replace( $persian_nums, $english_nums, trim( $pairing_code ) );
 
+		if ( $this->pairing_is_locked_out() ) {
+			return new WP_Error( 'pairing_locked', __( 'تلاش‌های ناموفق جفت‌سازی بیش از حد مجاز است. لطفاً ۱۵ دقیقه بعد دوباره تلاش کنید.', 'woo-smart-quote' ), array( 'status' => 429 ) );
+		}
+
 		$session = get_transient( self::TRANSIENT_PAIR );
 		if ( ! $session || empty( $session['code'] ) || ! hash_equals( (string) $session['code'], $pairing_code ) ) {
+			$this->record_pairing_failure( $session );
+			return new WP_Error( 'pairing_expired', __( 'کد جفت‌سازی نامعتبر است یا مهلت ۱۰ دقیقه‌ای آن منقضی شده است.', 'woo-smart-quote' ), array( 'status' => 403 ) );
+		}
+
+		$user = ! empty( $session['user_id'] ) ? get_userdata( (int) $session['user_id'] ) : false;
+		if ( empty( $session['expires_at'] ) || ! is_numeric( $session['expires_at'] ) || (int) $session['expires_at'] <= time() || ! $user || ! $user->exists() || ( ! user_can( $user, 'edit_shop_orders' ) && ! user_can( $user, 'manage_woocommerce' ) ) ) {
 			return new WP_Error( 'pairing_expired', __( 'کد جفت‌سازی نامعتبر است یا مهلت ۱۰ دقیقه‌ای آن منقضی شده است.', 'woo-smart-quote' ), array( 'status' => 403 ) );
 		}
 
@@ -206,17 +288,17 @@ class WSQ_REST_API {
 			'device_id'   => $device_id,
 			'device_name' => $device_name,
 			'token_hash'  => $token_hash,
-			'user_id'     => isset( $session['user_id'] ) ? (int) $session['user_id'] : get_current_user_id(),
+			'user_id'     => $user->ID,
 			'paired_at'   => time(),
 			'last_active' => time(),
 		);
 		update_option( self::OPTION_DEVICES, $devices );
 
-		// Consume one-time pairing transient
+		// Consume one-time pairing transient and clear this client's failures
 		delete_transient( self::TRANSIENT_PAIR );
+		delete_transient( $this->pairing_failure_key() );
 
-		$user = get_userdata( $devices[ $device_id ]['user_id'] );
-		$display_name = $user ? $user->display_name : __( 'مدیر فروشگاه', 'woo-smart-quote' );
+		$display_name = $user->display_name;
 
 		return rest_ensure_response( array(
 			'success'           => true,
@@ -319,51 +401,117 @@ class WSQ_REST_API {
 			return new WP_Error( 'not_found', __( 'استعلام مورد نظر یافت نشد.', 'woo-smart-quote' ), array( 'status' => 404 ) );
 		}
 
+		$guard = WSQ_Order::guard_priceable_order( $order );
+		if ( is_wp_error( $guard ) ) {
+			return $guard;
+		}
+
 		$params         = $request->get_json_params();
+		$params         = is_array( $params ) ? $params : array();
 		$items_data     = isset( $params['items'] ) && is_array( $params['items'] ) ? $params['items'] : array();
 		$quote_validity = isset( $params['quote_validity'] ) ? sanitize_text_field( $params['quote_validity'] ) : __( '۲۴ ساعت کاری', 'woo-smart-quote' );
 		$admin_note     = isset( $params['admin_note'] ) ? sanitize_textarea_field( $params['admin_note'] ) : '';
 		$auto_notify    = ! empty( $params['auto_notify'] );
 
-		// Update quote validity
-		$order->update_meta_data( '_wsq_quote_validity', $quote_validity );
+		// Validate the whole submission before anything is written, so a bad
+		// line cannot leave the quote half-priced.
+		$items_map   = array();
+		$prices      = array();
+		$discounts   = array();
+		$line_taxes  = array();
 
-		// Index items by item_id
-		$items_map = array();
-		foreach ( $items_data as $it ) {
-			if ( isset( $it['item_id'] ) ) {
-				$items_map[ absint( $it['item_id'] ) ] = $it;
+		foreach ( $items_data as $entry ) {
+			if ( ! is_array( $entry ) || empty( $entry['item_id'] ) || ! is_numeric( $entry['item_id'] ) ) {
+				return new WP_Error( 'wsq_invalid_item', __( 'یکی از اقلام ارسالی معتبر نیست.', 'woo-smart-quote' ), array( 'status' => 400 ) );
+			}
+
+			$item_id = absint( $entry['item_id'] );
+			if ( isset( $items_map[ $item_id ] ) ) {
+				return new WP_Error( 'wsq_duplicate_item', __( 'یکی از اقلام بیش از یک بار ارسال شده است.', 'woo-smart-quote' ), array( 'status' => 400 ) );
+			}
+			$items_map[ $item_id ] = $entry;
+
+			if ( isset( $entry['custom_price'] ) ) {
+				$prices[ $item_id ] = $entry['custom_price'];
+			}
+
+			if ( isset( $entry['discount_percent'] ) ) {
+				$discount = $entry['discount_percent'];
+				if ( is_bool( $discount ) || ! is_numeric( $discount ) || ! is_finite( (float) $discount ) ) {
+					return new WP_Error( 'wsq_invalid_discount', __( 'درصد تخفیف واردشده معتبر نیست.', 'woo-smart-quote' ), array( 'status' => 400 ) );
+				}
+				$discounts[ $item_id ] = max( 0.0, min( 100.0, (float) $discount ) );
+			}
+
+			if ( isset( $entry['tax'] ) || isset( $entry['line_tax'] ) ) {
+				$line_tax = isset( $entry['tax'] ) ? $entry['tax'] : $entry['line_tax'];
+				if ( is_bool( $line_tax ) || ! is_numeric( $line_tax ) || ! is_finite( (float) $line_tax ) || (float) $line_tax < 0 ) {
+					return new WP_Error( 'wsq_invalid_tax', __( 'مالیات قلم واردشده معتبر نیست.', 'woo-smart-quote' ), array( 'status' => 400 ) );
+				}
+				$line_taxes[ $item_id ] = (float) $line_tax;
 			}
 		}
 
-		// Apply custom unit prices & discounts to line items
-		foreach ( $order->get_items() as $item_id => $item ) {
-			if ( isset( $items_map[ $item_id ] ) ) {
-				$entry        = $items_map[ $item_id ];
-				$qty          = max( 1, $item->get_quantity() );
-				$custom_price = isset( $entry['custom_price'] ) ? max( 0.0, floatval( $entry['custom_price'] ) ) : null;
-				$discount_pct = isset( $entry['discount_percent'] ) ? max( 0.0, min( 100.0, floatval( $entry['discount_percent'] ) ) ) : 0.0;
-
-				if ( null !== $custom_price ) {
-					$line_subtotal = $custom_price * $qty;
-					$line_total    = $line_subtotal * ( 1.0 - ( $discount_pct / 100.0 ) );
-
-					$item->set_subtotal( $line_subtotal );
-					$item->set_total( $line_total );
-
-					if ( isset( $entry['tax'] ) || isset( $entry['line_tax'] ) ) {
-						$line_tax = max( 0.0, floatval( isset( $entry['tax'] ) ? $entry['tax'] : $entry['line_tax'] ) );
-						$item->set_total_tax( $line_tax );
-					}
-
-					if ( $discount_pct > 0 ) {
-						$item->update_meta_data( '_wsq_item_discount_pct', $discount_pct );
-					} else {
-						$item->delete_meta_data( '_wsq_item_discount_pct' );
-					}
-					$item->save();
-				}
+		$validated_prices = array();
+		if ( ! empty( $prices ) ) {
+			$validated_prices = WSQ_Order::validate_price_submission( $order, $prices, false );
+			if ( is_wp_error( $validated_prices ) ) {
+				return $validated_prices;
 			}
+		}
+		if ( empty( $validated_prices ) ) {
+			return new WP_Error( 'wsq_missing_prices', __( 'هیچ قیمتی برای ذخیره ارسال نشده است.', 'woo-smart-quote' ), array( 'status' => 400 ) );
+		}
+
+		$custom_tax_rate  = null;
+		$custom_tax_total = null;
+
+		$raw_tax_rate = isset( $params['tax_rate'] ) ? $params['tax_rate'] : ( isset( $params['tax_percent'] ) ? $params['tax_percent'] : null );
+		if ( null !== $raw_tax_rate ) {
+			if ( is_bool( $raw_tax_rate ) || ! is_numeric( $raw_tax_rate ) || ! is_finite( (float) $raw_tax_rate ) || (float) $raw_tax_rate < 0 ) {
+				return new WP_Error( 'wsq_invalid_tax', __( 'نرخ مالیات واردشده معتبر نیست.', 'woo-smart-quote' ), array( 'status' => 400 ) );
+			}
+			$custom_tax_rate = (float) $raw_tax_rate;
+		}
+
+		$raw_tax_total = isset( $params['tax_total'] ) ? $params['tax_total'] : ( isset( $params['tax'] ) ? $params['tax'] : null );
+		if ( null !== $raw_tax_total ) {
+			if ( is_bool( $raw_tax_total ) || ! is_numeric( $raw_tax_total ) || ! is_finite( (float) $raw_tax_total ) || (float) $raw_tax_total < 0 ) {
+				return new WP_Error( 'wsq_invalid_tax', __( 'مبلغ مالیات واردشده معتبر نیست.', 'woo-smart-quote' ), array( 'status' => 400 ) );
+			}
+			$custom_tax_total = (float) $raw_tax_total;
+		}
+
+		$order->update_meta_data( '_wsq_quote_validity', $quote_validity );
+		if ( null !== $custom_tax_rate ) {
+			$order->update_meta_data( '_wsq_custom_tax_rate', $custom_tax_rate );
+		}
+
+		// Apply validated unit prices & discounts to line items.
+		foreach ( $order->get_items() as $item_id => $item ) {
+			$item_id = (int) $item_id;
+			if ( ! isset( $validated_prices[ $item_id ] ) ) {
+				continue;
+			}
+
+			$qty           = max( 1, $item->get_quantity() );
+			$line_subtotal = $validated_prices[ $item_id ] * $qty;
+			$discount_pct  = isset( $discounts[ $item_id ] ) ? $discounts[ $item_id ] : 0.0;
+			$line_total    = $line_subtotal * ( 1.0 - ( $discount_pct / 100.0 ) );
+
+			$item->set_subtotal( $line_subtotal );
+			$item->set_total( $line_total );
+
+			if ( isset( $line_taxes[ $item_id ] ) ) {
+				$item->set_total_tax( $line_taxes[ $item_id ] );
+			}
+
+			if ( $discount_pct > 0 ) {
+				$item->update_meta_data( '_wsq_item_discount_pct', $discount_pct );
+			} else {
+				$item->delete_meta_data( '_wsq_item_discount_pct' );
+			}
+			$item->save();
 		}
 
 		// Calculate items net total after line item discounts
@@ -372,19 +520,21 @@ class WSQ_REST_API {
 			$items_net_total += (float) $item->get_total();
 		}
 
-		// Support custom tax total or rate at quote level
-		if ( isset( $params['tax_rate'] ) || isset( $params['tax_percent'] ) ) {
-			$custom_tax_rate = max( 0.0, floatval( isset( $params['tax_rate'] ) ? $params['tax_rate'] : $params['tax_percent'] ) );
-			$order->update_meta_data( '_wsq_custom_tax_rate', $custom_tax_rate );
+		// Shipping and fees must survive an explicit tax override; recomputing
+		// only from items would silently drop them from the payable total.
+		$other_totals = (float) $order->get_shipping_total();
+		foreach ( $order->get_fees() as $fee ) {
+			$other_totals += (float) $fee->get_total();
 		}
-		if ( isset( $params['tax_total'] ) || isset( $params['tax'] ) ) {
-			$custom_tax_total = max( 0.0, floatval( isset( $params['tax_total'] ) ? $params['tax_total'] : $params['tax'] ) );
+
+		// Support custom tax total or rate at quote level
+		if ( null !== $custom_tax_total ) {
 			$order->set_cart_tax( $custom_tax_total );
-			$order->set_total( $items_net_total + $custom_tax_total );
-		} elseif ( isset( $custom_tax_rate ) && $custom_tax_rate > 0 ) {
+			$order->set_total( $items_net_total + $other_totals + $custom_tax_total );
+		} elseif ( null !== $custom_tax_rate && $custom_tax_rate > 0 ) {
 			$calculated_tax = round( $items_net_total * ( $custom_tax_rate / 100.0 ), wc_get_price_decimals() );
 			$order->set_cart_tax( $calculated_tax );
-			$order->set_total( $items_net_total + $calculated_tax );
+			$order->set_total( $items_net_total + $other_totals + $calculated_tax );
 		} else {
 			$order->calculate_totals( false );
 		}
@@ -469,7 +619,7 @@ class WSQ_REST_API {
 			'success'   => true,
 			'order_id'  => $order_id,
 			'pdf_url'   => $pdf_url,
-			'file_name' => basename( $pdf_url ),
+			'file_name' => $pdf_gen->get_pdf_filename( $order_id ),
 		) );
 	}
 

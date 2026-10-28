@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -15,31 +17,48 @@ class LocalStorage {
     await Hive.openBox(_boxSettings);
     await Hive.openBox(_boxQuotes);
     await Hive.openBox(_boxStores);
+
+    // Tokens must never live in plaintext Hive storage; drop the legacy mirror.
+    await Hive.box(_boxSettings).delete('active_token');
   }
 
   // Secure Token Storage
   static Future<void> saveToken(String storeUrl, String token) async {
     await _secureStorage.write(key: 'token_$storeUrl', value: token);
-    await Hive.box(_boxSettings).put('active_token', token);
   }
 
   static Future<String?> getToken([String? storeUrl]) async {
-    if (storeUrl != null) {
-      return await _secureStorage.read(key: 'token_$storeUrl');
+    final target = storeUrl ?? getActiveStoreUrl();
+    if (target == null || target.isEmpty) {
+      return null;
     }
-    final active = Hive.box(_boxSettings).get('active_token') as String?;
-    if (active != null) return active;
-    final activeStore = getActiveStoreUrl();
-    if (activeStore != null) {
-      return await _secureStorage.read(key: 'token_$activeStore');
-    }
-    return null;
+    final token = await _secureStorage.read(key: 'token_$target');
+    return (token == null || token.isEmpty) ? null : token;
   }
 
   static Future<void> clearAuth() async {
     await _secureStorage.deleteAll();
-    await Hive.box(_boxSettings).clear();
+    final settings = Hive.box(_boxSettings);
+    await settings.delete('active_store_url');
+    await settings.delete('active_api_base');
+    await settings.delete('active_store_name');
+    await settings.delete('active_currency');
+    await settings.delete('active_token');
     await Hive.box(_boxQuotes).clear();
+  }
+
+  /// Stable per-install identifier so a re-pair does not create a new device row.
+  static String getOrCreateDeviceId() {
+    final box = Hive.box(_boxSettings);
+    final existing = box.get('device_id');
+    if (existing is String && existing.isNotEmpty) {
+      return existing;
+    }
+    final random = Random.secure();
+    final bytes = List<int>.generate(16, (_) => random.nextInt(256));
+    final id = 'dev_${bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join()}';
+    box.put('device_id', id);
+    return id;
   }
 
   // Active Store Settings
@@ -94,15 +113,23 @@ class LocalStorage {
     return list;
   }
 
-  // Offline Quotes Cache
+  // Offline Quotes Cache (scoped per store so stores never see each other's data)
   static Future<void> cacheQuotes(List<Map<String, dynamic>> quotes) async {
+    final store = getActiveStoreUrl();
+    if (store == null || store.isEmpty) {
+      return;
+    }
     final box = Hive.box(_boxQuotes);
-    await box.put('cached_list', quotes);
-    await box.put('last_cached_at', DateTime.now().millisecondsSinceEpoch);
+    await box.put('cached_list_$store', quotes);
+    await box.put('last_cached_at_$store', DateTime.now().millisecondsSinceEpoch);
   }
 
   static List<Map<String, dynamic>>? getCachedQuotes() {
-    final data = Hive.box(_boxQuotes).get('cached_list');
+    final store = getActiveStoreUrl();
+    if (store == null || store.isEmpty) {
+      return null;
+    }
+    final data = Hive.box(_boxQuotes).get('cached_list_$store');
     if (data is List) {
       return data.map((e) => Map<String, dynamic>.from(e as Map)).toList();
     }

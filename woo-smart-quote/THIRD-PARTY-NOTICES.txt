@@ -1,0 +1,47 @@
+WooCommerce Smart Quote — third-party notices
+=============================================
+
+This plugin is distributed under GPLv2 or later. It bundles the following
+third-party components, each under its own license. The full license texts
+are kept next to the components.
+
+1. mPDF
+   Path:    lib/mpdf/vendor/mpdf/mpdf/
+   License: MIT
+   Text:    lib/mpdf/vendor/mpdf/mpdf/LICENSE.txt
+   Source:  https://github.com/mpdf/mpdf
+
+2. FPDI
+   Path:    lib/mpdf/vendor/setasign/fpdi/
+   License: MIT
+   Text:    lib/mpdf/vendor/setasign/fpdi/LICENSE.txt
+   Source:  https://github.com/Setasign/FPDI
+
+3. myclabs/deep-copy
+   Path:    lib/mpdf/vendor/myclabs/deep-copy/
+   License: MIT
+   Text:    lib/mpdf/vendor/myclabs/deep-copy/LICENSE
+
+4. paragonie/random_compat
+   Path:    lib/mpdf/vendor/paragonie/random_compat/
+   License: MIT
+   Text:    lib/mpdf/vendor/paragonie/random_compat/LICENSE
+
+5. psr/http-message
+   Path:    lib/mpdf/vendor/psr/http-message/
+   License: MIT
+   Text:    lib/mpdf/vendor/psr/http-message/LICENSE
+
+6. psr/log
+   Path:    lib/mpdf/vendor/psr/log/
+   License: MIT
+   Text:    lib/mpdf/vendor/psr/log/LICENSE
+
+7. Vazirmatn font family
+   Path:    lib/mpdf/fonts/ (a copy also lives in assets/fonts/)
+   License: SIL Open Font License 1.1
+   Text:    lib/mpdf/fonts/OFL.txt
+   Source:  https://github.com/rastikerdar/vazirmatn
+
+Nothing in this notice changes the GPLv2-or-later terms that apply to the
+plugin's own code.

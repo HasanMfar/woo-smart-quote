@@ -32,6 +32,18 @@ class _StoreSwitcherScreenState extends State<StoreSwitcherScreen> {
   }
 
   Future<void> _selectStore(StoreProfile store) async {
+    final token = await LocalStorage.getToken(store.storeUrl);
+    if (token == null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('برای این فروشگاه اعتبارنامه‌ای یافت نشد. لطفاً بارکد جفت‌سازی را دوباره اسکن کنید.'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
     await LocalStorage.setActiveStore(
       storeUrl: store.storeUrl,
       apiBase: store.apiBase,

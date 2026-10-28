@@ -116,14 +116,6 @@ abstract class WSQ_Messenger_API {
 	 * @return array Response array carrying ok=true/false.
 	 */
 	public function send_document( $chat_id, $file_path, $caption = '' ) {
-		if ( empty( $file_path ) || ! file_exists( $file_path ) ) {
-			WSQ_Logger::error( $this->log_context(), 'Document file missing; cannot send.', array(
-				'chat_id' => $chat_id,
-				'path'    => (string) $file_path,
-			) );
-			return array( 'ok' => false, 'description' => 'File not found.' );
-		}
-
 		$caption      = (string) $caption;
 		$long_caption = function_exists( 'mb_strlen' ) && mb_strlen( $caption ) > self::CAPTION_LIMIT;
 		$doc_caption  = $long_caption
@@ -131,41 +123,49 @@ abstract class WSQ_Messenger_API {
 			: $caption;
 
 		$delivered = null;
-		$last      = array( 'ok' => false, 'description' => 'Document endpoint unavailable.' );
+		$last      = array( 'ok' => false, 'description' => 'File not found.' );
 
-		foreach ( $this->document_attempts as $attempt ) {
-			$last = $this->post_document( $attempt['method'], $attempt['field'], $chat_id, $file_path, $doc_caption );
+		if ( ! empty( $file_path ) && file_exists( $file_path ) ) {
+			$last = array( 'ok' => false, 'description' => 'Document endpoint unavailable.' );
 
-			if ( ! empty( $last['ok'] ) ) {
-				$delivered = $last;
-				break;
+			foreach ( $this->document_attempts as $attempt ) {
+				$last = $this->post_document( $attempt['method'], $attempt['field'], $chat_id, $file_path, $doc_caption );
+
+				if ( ! empty( $last['ok'] ) ) {
+					$delivered = $last;
+					break;
+				}
+
+				// A 404 means this messenger does not expose that method at all;
+				// any other error is a real rejection and retrying another
+				// endpoint would only duplicate failures.
+				$code = isset( $last['http_code'] ) ? (int) $last['http_code'] : 0;
+				if ( 404 !== $code ) {
+					break;
+				}
 			}
 
-			// A 404 means this messenger does not expose that method at all;
-			// any other error is a real rejection and retrying another
-			// endpoint would only duplicate failures.
-			$code = isset( $last['http_code'] ) ? (int) $last['http_code'] : 0;
-			if ( 404 !== $code ) {
-				break;
+			if ( null !== $delivered ) {
+				// Captions are clipped by the API; send the whole text separately
+				// so the expert still sees every line of the alert.
+				if ( $long_caption ) {
+					$this->send_message( $chat_id, $caption );
+				}
+				return $delivered;
 			}
+
+			WSQ_Logger::warning( $this->log_context(), 'Document delivery failed; falling back to text alert.', array(
+				'chat_id'     => $chat_id,
+				'description' => isset( $last['description'] ) ? $last['description'] : '',
+			) );
+		} else {
+			// The PDF was never generated (or was pruned). The alert text is
+			// still useful, so degrade instead of failing the whole dispatch.
+			WSQ_Logger::error( $this->log_context(), 'Document file missing; falling back to text alert.', array(
+				'chat_id' => $chat_id,
+				'path'    => (string) $file_path,
+			) );
 		}
-
-		if ( null !== $delivered ) {
-			// Captions are clipped by the API; send the whole text separately
-			// so the expert still sees every line of the alert.
-			if ( $long_caption ) {
-				$this->send_message( $chat_id, $caption );
-			}
-			return $delivered;
-		}
-
-		// Document delivery failed. A plain text alert still tells the expert
-		// about the quote, and marks the target as delivered so the retry job
-		// does not spam the same chat every five minutes.
-		WSQ_Logger::warning( $this->log_context(), 'Document delivery failed; falling back to text alert.', array(
-			'chat_id'     => $chat_id,
-			'description' => isset( $last['description'] ) ? $last['description'] : '',
-		) );
 
 		$pdf_fallback_note = __( '⚠️ پیوست PDF ارسال نشد؛ سند در پنل فروشگاه موجود است.', 'woo-smart-quote' );
 		$fallback_text     = ! empty( $caption )
@@ -270,15 +270,7 @@ abstract class WSQ_Messenger_API {
 	 * @return array
 	 */
 	public function set_webhook( $url ) {
-		$result = $this->execute( 'setWebhook', array( 'url' => (string) $url ) );
-
-		// Some panels answer plain `true` instead of {ok:true}; treat a
-		// 200 with no error body as success as well.
-		if ( empty( $result['ok'] ) && isset( $result['http_code'] ) && 200 === (int) $result['http_code'] ) {
-			$result['ok'] = true;
-		}
-
-		return $result;
+		return $this->execute( 'setWebhook', array( 'url' => (string) $url ) );
 	}
 
 	/**
@@ -287,13 +279,7 @@ abstract class WSQ_Messenger_API {
 	 * @return array
 	 */
 	public function delete_webhook() {
-		$result = $this->execute( 'deleteWebhook', array() );
-
-		if ( empty( $result['ok'] ) && isset( $result['http_code'] ) && 200 === (int) $result['http_code'] ) {
-			$result['ok'] = true;
-		}
-
-		return $result;
+		return $this->execute( 'deleteWebhook', array() );
 	}
 
 	/**
@@ -393,6 +379,14 @@ abstract class WSQ_Messenger_API {
 		$decoded = json_decode( $body, true );
 
 		$ok = is_array( $decoded ) && ! empty( $decoded['ok'] );
+		$http_ok = $code >= 200 && $code < 300;
+
+		// Some panels answer plain `true` instead of {ok:true}.
+		if ( ! $ok && $http_ok && 'true' === strtolower( trim( (string) $body ) ) ) {
+			$decoded = array( 'ok' => true, 'result' => true );
+			$ok      = true;
+		}
+		$ok = $ok && $http_ok;
 
 		if ( ! $ok ) {
 			$description = '';
