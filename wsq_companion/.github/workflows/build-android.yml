@@ -47,8 +47,8 @@ jobs:
       - name: Run Static Analysis & Tests
         run: |
           cd "${{ steps.app-dir.outputs.APP_DIR }}"
-          flutter analyze || true
-          flutter test --exclude-tags=golden || true
+          flutter analyze --no-fatal-infos
+          flutter test --exclude-tags=golden
 
       - name: Decode Android Keystore & Configure Properties
         env:
