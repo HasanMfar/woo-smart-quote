@@ -40,4 +40,6 @@ android/app/upload-keystore.jks
 # Keystore secret backups
 *.jks
 *.keystore
-!/android/keystore/placeholder.txt
+*.b64
+*keystore-base64*
+android/keystore/*
