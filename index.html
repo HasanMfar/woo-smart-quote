@@ -219,6 +219,34 @@
       font-weight: 900;
     }
 
+    /* Toast */
+    .wsq-toast {
+      position: fixed;
+      bottom: 96px;
+      left: 50%;
+      transform: translate(-50%, 16px);
+      max-width: min(92vw, 520px);
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 14px 20px;
+      border-radius: 14px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.35);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.7;
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 3000;
+    }
+    .wsq-toast.is-visible {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+    .wsq-toast.is-success { background: #065f46; }
+    .wsq-toast.is-error { background: #991b1b; }
+
     /* Modal */
     .modal-overlay {
       position: fixed;
@@ -421,9 +449,10 @@
     <div class="invoice-preview-card">
       <div class="inv-header">
         <div>
-          <span style="background: #e0f2fe; color: #0284c7; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;">پیش‌نمایش سند خروجی mPDF</span>
+          <span style="background: #e0f2fe; color: #0284c7; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;">نمونه سند خروجی mPDF</span>
           <h3 class="inv-title">پیش‌فاکتور رسمی فروش کالا و خدمات (ماده ۱۶۹)</h3>
           <span class="inv-meta">شناسه ملی: ۱۰۱۰۳۴۸۵۹۴ • کد اقتصادی: ۴۱۱۳۷۸۶۶۵۵</span>
+          <p style="margin: 8px 0 0; font-size: 12px; color: #64748b; line-height: 1.8;">این جدول یک نمونه ثابت از فایل PDF تولیدشده توسط افزونه است؛ اقلامی که به سبد اضافه می‌کنید فقط در سبد استعلام و فرم ثبت درخواست نمایش داده می‌شوند.</p>
         </div>
         <div style="text-align: left;">
           <div style="font-weight: 800; color: #0284c7;">شماره استعلام: WSQ-1403-8201</div>
@@ -486,6 +515,8 @@
     <span class="basket-badge" id="basket-count">۲</span>
   </div>
 
+  <div class="wsq-toast" id="wsq-toast" role="status" aria-live="polite"></div>
+
   <!-- Quote Modal -->
   <div class="modal-overlay" id="quote-modal">
     <div class="modal-card">
@@ -533,14 +564,31 @@
       { name: 'لوله مانیسمان رده ۴۰ (۶ اینچ)', qty: 12 }
     ];
 
+    function toFa(value) {
+      return String(value).replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+    }
+
+    let toastTimer = null;
+    function showToast(message, variant) {
+      const toast = document.getElementById('wsq-toast');
+      toast.textContent = message;
+      toast.classList.remove('is-success', 'is-error');
+      if (variant) {
+        toast.classList.add('is-' + variant);
+      }
+      toast.classList.add('is-visible');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 4000);
+    }
+
     function updateBadge() {
-      document.getElementById('basket-count').textContent = quoteItems.length;
+      document.getElementById('basket-count').textContent = toFa(quoteItems.length);
     }
 
     function addToQuote(name, qty) {
       quoteItems.push({ name: name, qty: qty });
       updateBadge();
-      alert('کالای «' + name + '» با موفقیت به سبد استعلام قیمت اضافه شد.');
+      showToast('کالای «' + name + '» به سبد استعلام قیمت اضافه شد.', 'success');
     }
 
     function openModal() {
@@ -569,8 +617,27 @@
     }
 
     function submitQuote() {
-      alert('درخواست استعلام با موفقیت ثبت شد!\nپیش‌فاکتور رسمی صادر گردید و اعلان برای مدیر فروشگاه و پیام‌رسان بله/ایتا ارسال شد.');
+      const name = document.getElementById('cust-name').value.trim();
+      const phone = document.getElementById('cust-phone').value.trim();
+
+      if (quoteItems.length === 0) {
+        showToast('سبد استعلام خالی است؛ ابتدا کالایی را به سبد اضافه کنید.', 'error');
+        return;
+      }
+      if (name === '') {
+        showToast('نام خریدار را وارد کنید.', 'error');
+        return;
+      }
+      if (phone === '') {
+        showToast('شماره تماس خریدار را وارد کنید.', 'error');
+        return;
+      }
+
+      const count = quoteItems.length;
+      quoteItems = [];
+      updateBadge();
       closeModal();
+      showToast('درخواست استعلام با ' + toFa(count) + ' قلم کالا ثبت شد؛ پیش‌فاکتور صادر و اعلان برای مدیر فروشگاه و بله/ایتا ارسال شد.', 'success');
     }
   </script>
 </body>
