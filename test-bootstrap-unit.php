@@ -11,8 +11,12 @@ if ( extension_loaded( 'ionCube Loader' ) ) {
 define( 'ABSPATH', __DIR__ . '/' );
 $GLOBALS['bootstrap_actions'] = array();
 $GLOBALS['bootstrap_activation'] = null;
+$GLOBALS['bootstrap_deactivation'] = null;
+$GLOBALS['bootstrap_cleared'] = array();
 function add_action( $hook, $callback ) { $GLOBALS['bootstrap_actions'][ $hook ] = $callback; }
 function register_activation_hook( $file, $callback ) { $GLOBALS['bootstrap_activation'] = $callback; }
+function register_deactivation_hook( $file, $callback ) { $GLOBALS['bootstrap_deactivation'] = $callback; }
+function wp_clear_scheduled_hook( $hook ) { $GLOBALS['bootstrap_cleared'][] = $hook; }
 function __( $text, $domain = '' ) { return $text; }
 function esc_html( $value ) { return htmlspecialchars( $value, ENT_QUOTES, 'UTF-8' ); }
 function wp_die( $message, $title = '', $args = array() ) { throw new RuntimeException( $message ); }
@@ -39,6 +43,12 @@ try {
 		$activation_blocked = false !== strpos( $error->getMessage(), 'ionCube Loader' );
 	}
 	bootstrap_check( $activation_blocked, 'Activation did not reject unavailable runtime.' );
+	bootstrap_check( is_callable( $GLOBALS['bootstrap_deactivation'] ), 'Missing deactivation hook.' );
+	call_user_func( $GLOBALS['bootstrap_deactivation'] );
+	bootstrap_check(
+		array( 'wsq_daily_cleanup', 'wsq_poll_updates' ) === $GLOBALS['bootstrap_cleared'],
+		'Deactivation did not clear both plugin cron events.'
+	);
 	$entry = file_get_contents( __DIR__ . '/woo-smart-quote/woo-smart-quote.php' );
 	$readme = file_get_contents( __DIR__ . '/woo-smart-quote/readme.txt' );
 	bootstrap_check( preg_match( '/Requires PHP:\s*8\.0\b/', $entry ) && preg_match( '/Requires PHP:\s*8\.0\b/', $readme ), 'Runtime headers disagree with bundled dependencies.' );

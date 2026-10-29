@@ -162,10 +162,13 @@ class WSQ_Plugin {
 	 * @return void
 	 */
 	public function schedule_cleanup() {
-		if ( ! get_option( 'wsq_cleanup_scheduled' ) ) {
-			update_option( 'wsq_cleanup_scheduled', 1 );
-			wp_schedule_event( time() + DAY_IN_SECONDS, 'daily', 'wsq_daily_cleanup' );
+		// Gate on the event itself: an option flag would leave cleanup
+		// permanently unscheduled after a restore or an external cron reset.
+		if ( wp_next_scheduled( 'wsq_daily_cleanup' ) ) {
+			return;
 		}
+		update_option( 'wsq_cleanup_scheduled', 1 );
+		wp_schedule_event( time() + DAY_IN_SECONDS, 'daily', 'wsq_daily_cleanup' );
 	}
 
 	/**

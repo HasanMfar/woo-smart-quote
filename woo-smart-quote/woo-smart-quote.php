@@ -31,6 +31,18 @@ foreach ( array( 'gd', 'mbstring' ) as $wsq_extension ) {
 if ( ( is_file( __DIR__ . '/RTL_License_c5f8dd81a1c04a46.php' ) || is_file( __DIR__ . '/ProFeature.php' ) ) && ! extension_loaded( 'ionCube Loader' ) ) {
 	$wsq_missing_requirements[] = 'ionCube Loader';
 }
+/**
+ * Deactivation: drop the plugin's cron events so a deactivated install stops
+ * waking WP-Cron every minute. Registered before the runtime gate so a
+ * degraded install can still be deactivated cleanly. Options and quote data
+ * are left untouched; both events are rescheduled on the next request after
+ * reactivation.
+ */
+register_deactivation_hook( __FILE__, function () {
+	wp_clear_scheduled_hook( 'wsq_daily_cleanup' );
+	wp_clear_scheduled_hook( 'wsq_poll_updates' );
+} );
+
 if ( $wsq_missing_requirements ) {
 	$wsq_requirements_notice = static function () use ( $wsq_missing_requirements ) {
 		$message = sprintf( __( 'Smart Quote غیرفعال است. پیش‌نیازهای زیر باید روی سرور نصب یا به‌روزرسانی شوند: %s', 'woo-smart-quote' ), implode( ', ', $wsq_missing_requirements ) );
