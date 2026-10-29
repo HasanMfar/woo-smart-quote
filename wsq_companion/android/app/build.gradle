@@ -28,6 +28,17 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 
+def releaseRequested = gradle.startParameter.taskNames.any { it.toLowerCase().contains('release') }
+if (releaseRequested && !keystorePropertiesFile.exists()) {
+    throw new GradleException("Release builds require android/key.properties (storeFile, storePassword, keyAlias, keyPassword); refusing to fall back to the debug signing key.")
+}
+def missingSigningProperties = ['storeFile', 'storePassword', 'keyAlias', 'keyPassword'].findAll {
+    !keystoreProperties.getProperty(it)
+}
+if (releaseRequested && missingSigningProperties) {
+    throw new GradleException("android/key.properties is missing: ${missingSigningProperties.join(', ')}")
+}
+
 android {
     namespace "com.woosmartquote.companion"
     compileSdk 34
@@ -76,11 +87,7 @@ android {
 
     buildTypes {
         release {
-            if (keystorePropertiesFile.exists()) {
-                signingConfig signingConfigs.release
-            } else {
-                signingConfig signingConfigs.debug
-            }
+            signingConfig signingConfigs.release
             minifyEnabled false
             shrinkResources false
         }
