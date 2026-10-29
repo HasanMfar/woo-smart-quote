@@ -305,7 +305,7 @@ class WSQ_Bot {
 				'status_icon'   => $icon,
 				'total'         => wp_strip_all_tags( wc_price( $order->get_total() ) ),
 				'payment_url'   => $payment_url ? $payment_url : '',
-				'items'         => trim( strip_tags( $this->items_summary_raw( $order ) ) ),
+				'items'         => trim( wp_strip_all_tags( $this->items_summary_raw( $order ) ) ),
 				'date'          => date_i18n( 'Y/m/d', $order->get_date_created() ? $order->get_date_created()->getTimestamp() : time() ),
 			), $update, $order );
 
@@ -675,7 +675,7 @@ class WSQ_Bot {
 				'status_icon'   => $icon,
 				'total'         => wp_strip_all_tags( wc_price( $order->get_total() ) ),
 				'date'          => date_i18n( 'Y/m/d', $order->get_date_created() ? $order->get_date_created()->getTimestamp() : time() ),
-				'items'         => trim( strip_tags( $this->items_summary_raw( $order ) ) ),
+				'items'         => trim( wp_strip_all_tags( $this->items_summary_raw( $order ) ) ),
 			), $update, $order );
 		}
 
