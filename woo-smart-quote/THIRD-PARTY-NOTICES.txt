@@ -1,5 +1,5 @@
-WooCommerce Smart Quote — third-party notices
-=============================================
+Nerkhnegar (woo-smart-quote) — third-party notices
+================================================
 
 This plugin is distributed under GPLv2 or later. It bundles the following
 third-party components, each under its own license. The full license texts

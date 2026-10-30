@@ -226,7 +226,7 @@ class WSQ_Queue {
 	private function generate_message_text( $order ) {
 		$template = get_option( 'wsq_message_template', '' );
 		if ( empty( $template ) ) {
-			$template = __( "📋 استعلام جدید #{{order_number}}\n👤 {{customer_name}}\n📞 {{customer_phone}}\n🛒 {{items_count}} محصول — جمع: {{total}}\n📝 {{note}}", 'woo-smart-quote' );
+			$template = __( "استعلام جدید #{{order_number}}\nنام مشتری: {{customer_name}}\nتلفن تماس: {{customer_phone}}\nتعداد اقلام: {{items_count}} محصول — جمع: {{total}}\nیادداشت: {{note}}", 'woo-smart-quote' );
 		}
 
 		$created_date = $order->get_date_created();
@@ -377,7 +377,7 @@ class WSQ_Queue {
 	public function send_test_notification( $messenger, $token, $chat_id ) {
 		$test_msg = sprintf(
 			/* translators: 1: messenger name (Bale or Eitaa), 2: test date */
-			__( "🔔 پیام آزمایشی اتصال افزونه WooCommerce Smart Quote\n\n✅ اتصال به API %1\$s با موفقیت برقرار شد!\nتاریخ تست: %2\$s", 'woo-smart-quote' ),
+			__( "پیام آزمایشی اتصال افزونه نرخنگار\n\nاتصال به API %1\$s با موفقیت برقرار شد!\nتاریخ تست: %2\$s", 'woo-smart-quote' ),
 			'bale' === $messenger ? __( 'بله', 'woo-smart-quote' ) : __( 'ایتا', 'woo-smart-quote' ),
 			WSQ_PDF_Generator::instance()->format_jalali_date( time() )
 		);

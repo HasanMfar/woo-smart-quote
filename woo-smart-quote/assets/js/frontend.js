@@ -1,5 +1,5 @@
 /**
- * WooCommerce Smart Quote Frontend JavaScript
+ * Nerkhnegar Frontend JavaScript
  *
  * Handles: add-to-quote, remove-item (with undo), quantity editing, the
  * quote request form validation and the sticky mobile action bar.

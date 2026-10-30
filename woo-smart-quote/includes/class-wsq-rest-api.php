@@ -1,6 +1,6 @@
 <?php
 /**
- * WooCommerce Smart Quote REST API Controller (wsq/v1)
+ * Nerkhnegar REST API Controller (wsq/v1)
  *
  * Dedicated REST endpoints for the companion mobile app (Pricing Desk,
  * Real-time notifications, QR pairing, quote updates, and PDF invoices).

@@ -1,5 +1,5 @@
 /**
- * WooCommerce Smart Quote Admin JavaScript
+ * Nerkhnegar Admin JavaScript
  *
  * - Test-connection buttons with loading / success / error status pills.
  * - Click-to-insert template tokens.
@@ -493,12 +493,84 @@ jQuery( document ).ready( function ( $ ) {
 
 	function syncStampPreview() {
 		var $checkbox = $( '#wsq_show_digital_stamp_toggle' );
-		if ( $checkbox.length ) {
-			$( '.wsq-stamp-preview-card' ).toggleClass( 'is-disabled', ! $checkbox.is( ':checked' ) );
+		var $input = $( '#wsq_company_seal_image' );
+		var $card = $( '.wsq-stamp-preview-card' );
+		if ( $card.length ) {
+			if ( $checkbox.length ) {
+				$card.toggleClass( 'is-disabled', ! $checkbox.is( ':checked' ) );
+			}
+			var url = $.trim( $input.val() );
+			var $sealDemo = $card.find( '.wsq-digital-seal-demo' );
+			var $img = $card.find( '.wsq-seal-img-preview' );
+			if ( url ) {
+				if ( ! $img.length ) {
+					$img = $( '<img class="wsq-seal-img-preview" alt="Seal" style="max-height:84px;max-width:110px;object-fit:contain;border-radius:4px;" />' );
+					$card.prepend( $img );
+				}
+				$img.attr( 'src', url ).show();
+				$sealDemo.hide();
+			} else {
+				if ( $img.length ) {
+					$img.hide();
+				}
+				$sealDemo.show();
+			}
 		}
 	}
 	$( document ).on( 'change', '#wsq_show_digital_stamp_toggle', syncStampPreview );
+	$( document ).on( 'input change', '#wsq_company_seal_image', syncStampPreview );
 	syncStampPreview();
+
+	function syncSignaturePreview() {
+		var $checkbox = $( '#wsq_show_digital_signature_toggle' );
+		var $input = $( '#wsq_company_signature_image' );
+		var $card = $( '.wsq-signature-preview-card' );
+		if ( $card.length ) {
+			if ( $checkbox.length ) {
+				$card.toggleClass( 'is-disabled', ! $checkbox.is( ':checked' ) );
+			}
+			var url = $.trim( $input.val() );
+			var $sigDemo = $card.find( '.wsq-digital-signature-demo' );
+			var $img = $card.find( '.wsq-signature-img-preview' );
+			if ( url ) {
+				if ( ! $img.length ) {
+					$img = $( '<img class="wsq-signature-img-preview" alt="Signature" style="max-height:48px;max-width:120px;object-fit:contain;border-radius:4px;" />' );
+					$card.prepend( $img );
+				}
+				$img.attr( 'src', url ).show();
+				$sigDemo.hide();
+			} else {
+				if ( $img.length ) {
+					$img.hide();
+				}
+				$sigDemo.show();
+			}
+		}
+	}
+	$( document ).on( 'change', '#wsq_show_digital_signature_toggle', syncSignaturePreview );
+	$( document ).on( 'input change', '#wsq_company_signature_image', syncSignaturePreview );
+	syncSignaturePreview();
+
+	// Media library file picker
+	$( document ).on( 'click', '.wsq-upload-media-btn', function ( e ) {
+		e.preventDefault();
+		var targetSelector = $( this ).data( 'target' );
+		var $target = $( targetSelector );
+		if ( typeof wp !== 'undefined' && wp.media ) {
+			var frame = wp.media( {
+				title: t( 'choose_image', 'انتخاب یا بارگذاری تصویر' ),
+				button: { text: t( 'use_image', 'استفاده از این تصویر' ) },
+				multiple: false
+			} );
+			frame.on( 'select', function () {
+				var attachment = frame.state().get( 'selection' ).first().toJSON();
+				if ( attachment && attachment.url ) {
+					$target.val( attachment.url ).trigger( 'input' ).trigger( 'change' );
+				}
+			} );
+			frame.open();
+		}
+	} );
 
 	function syncFloatingPreview() {
 		var $checkbox = $( '#wsq_enable_floating_cart_toggle' );
@@ -648,6 +720,112 @@ jQuery( document ).ready( function ( $ ) {
 		}
 	}
 
+	function renderApkQrCode( url ) {
+		var $qr = $( '#wsq-apk-qrcode' );
+		if ( ! $qr.length || typeof $.fn.qrcode !== 'function' || ! url ) {
+			return;
+		}
+		var encodedUrl = url;
+		try {
+			encodedUrl = unescape( encodeURIComponent( url ) );
+		} catch ( e ) {
+			encodedUrl = url;
+		}
+		$qr.empty().qrcode( {
+			render: 'canvas',
+			width: 140,
+			height: 140,
+			text: encodedUrl,
+			background: '#ffffff',
+			foreground: '#1d2327'
+		} );
+	}
+
+	if ( $( '#wsq-apk-qrcode' ).length ) {
+		var apkUrl = $( '#wsq-apk-qrcode' ).attr( 'data-url' );
+		if ( apkUrl ) {
+			renderApkQrCode( apkUrl );
+		}
+	}
+
+	// Toggle direct APK download QR Code box
+	$( document ).on( 'click', '.wsq-toggle-apk-qr-btn', function ( e ) {
+		e.preventDefault();
+		var $btn = $( this );
+		var $box = $( '#wsq-apk-qr-container' );
+		var willOpen = ! $box.is( ':visible' );
+		$btn.attr( 'aria-expanded', willOpen ? 'true' : 'false' );
+		if ( willOpen ) {
+			var currentUrl = $( '#wsq-apk-primary-link' ).attr( 'href' );
+			renderApkQrCode( currentUrl );
+		}
+		$box.slideToggle( 200 );
+	} );
+
+	// Toggle Custom URL configuration box
+	$( document ).on( 'click', '.wsq-toggle-custom-apk-btn', function ( e ) {
+		e.preventDefault();
+		var $btn = $( this );
+		var $box = $( '#wsq-custom-apk-container' );
+		var willOpen = ! $box.is( ':visible' );
+		$btn.attr( 'aria-expanded', willOpen ? 'true' : 'false' );
+		$box.slideToggle( 200, function () {
+			if ( willOpen ) {
+				$( '#wsq_companion_apk_url_input' ).trigger( 'focus' );
+			}
+		} );
+	} );
+
+	// Save Custom APK URL on Enter key inside input
+	$( document ).on( 'keydown', '#wsq_companion_apk_url_input', function ( e ) {
+		if ( e.which === 13 || e.keyCode === 13 ) {
+			e.preventDefault();
+			$( '.wsq-save-apk-url-btn' ).trigger( 'click' );
+		}
+	} );
+
+	// Save Custom APK URL via AJAX
+	$( document ).on( 'click', '.wsq-save-apk-url-btn', function ( e ) {
+		e.preventDefault();
+		var $btn = $( this );
+		var $input = $( '#wsq_companion_apk_url_input' );
+		var $status = $( '#wsq-custom-apk-status' );
+		var val = $.trim( $input.val() );
+
+		$btn.prop( 'disabled', true );
+		$status.text( t( 'sending', 'در حال ذخیره…' ) ).css( 'color', '#646970' );
+
+		$.post( params.ajax_url, {
+			action: 'wsq_save_apk_url',
+			nonce: params.nonce,
+			apk_url: val
+		}, function ( res ) {
+			$btn.prop( 'disabled', false );
+			if ( res && res.success ) {
+				$status.text( res.data.message ).css( 'color', '#008a20' );
+				if ( res.data.apk_url ) {
+					$( '#wsq-apk-primary-link' ).attr( 'href', res.data.apk_url );
+					$( '#wsq-apk-qrcode' ).attr( 'data-url', res.data.apk_url );
+					renderApkQrCode( res.data.apk_url );
+				}
+				announce( res.data.message );
+			} else {
+				var err = ( res && res.data && res.data.message ) ? res.data.message : t( 'request_failed', 'خطا در ذخیره‌سازی.' );
+				$status.text( err ).css( 'color', '#d63638' );
+			}
+		} ).fail( function () {
+			$btn.prop( 'disabled', false );
+			$status.text( t( 'request_failed', 'خطا در ارتباط با سرور.' ) ).css( 'color', '#d63638' );
+		} );
+	} );
+
+	// Reset APK URL to official default
+	$( document ).on( 'click', '.wsq-reset-apk-url-btn', function ( e ) {
+		e.preventDefault();
+		$( '#wsq_companion_apk_url_input' ).val( '' );
+		$( '.wsq-save-apk-url-btn' ).trigger( 'click' );
+	} );
+
 	// Refresh Pairing Code
 	$( document ).on( 'click', '.wsq-refresh-pairing-btn', function ( e ) {
 		e.preventDefault();
@@ -710,5 +888,35 @@ jQuery( document ).ready( function ( $ ) {
 			$btn.prop( 'disabled', false ).html( origHtml );
 			alert( t( 'request_failed', 'Request failed.' ) );
 		} );
+	} );
+
+	// Digital Seal & Signature Card Toggle & Live Update
+	var $stampToggle = $( '#wsq_show_digital_stamp_toggle' );
+	var $stampCard   = $( '.wsq-stamp-preview-card' );
+	function updateStampCardState() {
+		if ( $stampToggle.length && $stampCard.length ) {
+			$stampCard.toggleClass( 'is-disabled', ! $stampToggle.is( ':checked' ) );
+		}
+	}
+	$stampToggle.on( 'change', updateStampCardState );
+	updateStampCardState();
+
+	var $sigToggle = $( '#wsq_show_digital_signature_toggle' );
+	var $sigCard   = $( '.wsq-signature-preview-card' );
+	function updateSigCardState() {
+		if ( $sigToggle.length && $sigCard.length ) {
+			$sigCard.toggleClass( 'is-disabled', ! $sigToggle.is( ':checked' ) );
+		}
+	}
+	$sigToggle.on( 'change', updateSigCardState );
+	updateSigCardState();
+
+	$( '#wsq_company_name' ).on( 'input', function () {
+		var val = $( this ).val() || $( this ).attr( 'placeholder' ) || '';
+		$( '#wsq-stamp-company-preview' ).text( val );
+	} );
+	$( '#wsq_stamp_text_input' ).on( 'input', function () {
+		var val = $( this ).val() || $( this ).attr( 'placeholder' ) || '';
+		$( '#wsq-stamp-text-preview' ).text( val );
 	} );
 } );

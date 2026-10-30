@@ -1,5 +1,5 @@
 class AppStrings {
-  static const String appName = 'مظنه چند؟';
+  static const String appName = 'نرخنگار';
   static const String appTitle = 'مدیریت استعلام و پیش‌فاکتور';
   
   // Auth & Pairing

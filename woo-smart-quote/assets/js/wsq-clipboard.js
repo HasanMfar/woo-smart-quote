@@ -1,5 +1,5 @@
 /**
- * Shared clipboard helper for the Smart Quote admin screens.
+ * Shared clipboard helper for the Nerkhnegar admin screens.
  *
  * Returns a Promise<boolean> that resolves only when the text was actually
  * copied, so callers can show honest success/failure feedback.

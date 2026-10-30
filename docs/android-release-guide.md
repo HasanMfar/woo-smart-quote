@@ -1,6 +1,6 @@
 # راهنمای دریافت فایل Release APK و راه‌اندازی GitHub Actions
 
-برای بیلد و دریافت فایل **Release APK** اپلیکیشن همراه اندروید (`WooCommerce Smart Quote Companion`) بر روی مخزن خصوصی گیت‌هاب (Private Repository)، مراحل زیر به‌صورت صفر تا صد آماده شده است.
+برای بیلد و دریافت فایل **Release APK** اپلیکیشن همراه اندروید (`Nerkhnegar Companion`) بر روی مخزن خصوصی گیت‌هاب (Private Repository)، مراحل زیر به‌صورت صفر تا صد آماده شده است.
 
 ---
 
@@ -59,3 +59,61 @@ git push -u origin main
 - **`app-arm64-v8a-release.apk`**: فایل بهینه‌شده فوق‌سبک مخصوص گوشی‌های مدرن ۶۴ بیتی.
 - **`app-armeabi-v7a-release.apk`**: فایل مخصوص گوشی‌های قدیمی‌تر ۳۲ بیتی.
 - **`release-aab`**: بسته استاندارد Android App Bundle (جهت بارگذاری در مارکت‌های بازار، مایکت یا گوگل‌پلی).
+
+---
+
+## ۴. انتشار عمومی فایل‌های APK بدون فاش شدن سورس‌کد مخزن (Public Releases Repo Architecture)
+
+### صورت مسئله:
+- مخزن سورس پروژه شما (`woo-smart-quote`) حاوی کدهای اختصاصی PHP، سورس فلاتر و کدهای بیزینس است و **باید ۱۰۰٪ خصوصی (Private)** باقی بماند.
+- در گیت‌هاب، فایل‌های پیوست شده به Release در یک مخزن Private فقط توسط کاربرانی قابل دانلود است که در آن مخزن عضویت یا دسترسی دست‌کم Read داشته باشند؛ در غیر این صورت لینک مستقیم با خطای 404 مواجه می‌شود.
+
+### راه‌حل برگزیده (استاندارد صنعت نرم‌افزار):
+ایجاد یک **مخزن جداگانه و عمومی صرفاً جهت انتشار (Releases-Only Public Repository)**:
+1. در گیت‌هاب یک ریپازیتوری عمومی جدید با نام مثلاً `nerkhnegar-companion-releases` ایجاد کنید (با تیک Add a README file). در این مخزن هیچ سورس کدی قرار نمی‌گیرد.
+2. مخزن اصلی سورس شما همچنان کاملاً Private و محرمانه باقی می‌ماند.
+3. فایل‌های نهایی `.apk` بیلد شده، در بخش Releases مخزن عمومی منتشر می‌شوند.
+4. گیت‌هاب یک لینک دانلود مستقیم همیشگی و دائمی با ریدایرکت خودکار به آخرین نسخه برای فایل یونیورسال ارائه می‌دهد:
+   ```
+   https://github.com/<YOUR_USERNAME>/nerkhnegar-companion-releases/releases/latest/download/app-release.apk
+   ```
+   و برای نسخه ۶۴ بیتی:
+   ```
+   https://github.com/HasanMfar/nerkhnegar-companion-releases/releases/latest/download/app-arm64-v8a-release.apk
+   ```
+
+### روش‌های آپلود فایل APK به مخزن عمومی:
+
+#### روش اول: خودکار با GitHub Actions (پیشنهادی)
+1. در گیت‌هاب به مسیر **Settings** > **Developer Settings** > **Personal Access Tokens** > **Fine-grained tokens** بروید.
+2. یک توکن جدید بسازید و دسترسی آن را فقط به مخزن `nerkhnegar-companion-releases` و با مجوز **Contents: Read and write** محدود نمایید.
+3. توکن ساخته شده را در مخزن سورس خصوصی خود، در مسیر **Settings** > **Secrets and variables** > **Actions** با نام `PUBLIC_RELEASE_PAT` ذخیره کنید.
+4. پایپ‌لاین `.github/workflows/build-android.yml` به‌صورت خودکار پس از هر بار پوش به شاخه `main`، فایل‌های APK را بیلد کرده و مستقیماً روی مخزن عمومی ریلیز می‌نماید؛ بدون اینکه حتی یک خط از سورس کد مخزن اصلی به مخزن عمومی منتقل شود.
+
+#### روش دوم: آپلود دستی (ساده و سریع)
+1. از تب **Actions** در مخزن خصوصی، فایل `release-apks` را دانلود و Extract کنید.
+2. وارد مخزن عمومی `nerkhnegar-companion-releases` شوید.
+3. در ستون سمت راست روی **Releases** > **Draft a new release** کلیک کنید.
+4. تگ `v1.0.0` را انتخاب کرده و فایل‌های `app-release.apk` و `app-arm64-v8a-release.apk` را بکشید و رها کنید (Drag & Drop) و روی **Publish release** کلیک نمایید.
+
+---
+
+## ۵. تنظیم و سفارشی‌سازی لینک دانلود در افزونه نرخنگار
+
+در تب **اپلیکیشن همراه** پیشخوان وردپرس، لینک دانلود به طور پیش‌فرض بر روی لینک عمومی انتشارهای رسمی گیت‌هاب تنظیم شده است. همچنین به سه روش زیر می‌توانید لینک دلخواه خود را جایگزین کنید:
+
+1. **از طریق پیشخوان وردپرس:**
+   در تب اپلیکیشن همراه، روی دکمه «آدرس اختصاصی…» در مرحله ۱ کلیک کرده و آدرس مستقیم فایل APK آپلود شده روی هاست یا رسانه وردپرس خود را ذخیره کنید.
+2. **از طریق فایل wp-config.php:**
+   ```php
+   define( 'WSQ_COMPANION_APK_URL', 'https://your-site.com/downloads/nerkhnegar-companion.apk' );
+   ```
+3. **از طریق هوک فیلتر در functions.php پوسته:**
+   ```php
+   add_filter( 'wsq_companion_apk_download_url', function( $url, $variant ) {
+       if ( 'arm64' === $variant ) {
+           return 'https://cdn.yourdomain.com/app-arm64.apk';
+       }
+       return 'https://cdn.yourdomain.com/app-universal.apk';
+   }, 10, 2 );
+   ```

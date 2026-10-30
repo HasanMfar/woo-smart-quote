@@ -72,44 +72,80 @@ class WSQ_PDF_Generator {
 		$logo_source = $this->resolve_logo( $logo_url );
 
 		// Official Company Settings
-		$company_name    = get_option( 'wsq_company_name', get_bloginfo( 'name' ) );
-		$economic_code   = get_option( 'wsq_economic_code', '' );
-		$national_id     = get_option( 'wsq_national_id', '' );
-		$registration_no = get_option( 'wsq_registration_no', '' );
-		$company_phone   = get_option( 'wsq_company_phone', '' );
-		$company_address = get_option( 'wsq_company_address', '' );
-		$show_stamp      = get_option( 'wsq_show_digital_stamp', 'yes' ) === 'yes';
-		$stamp_text      = get_option( 'wsq_stamp_text', __( 'تأیید شد - استعلام قیمت رسمی', 'woo-smart-quote' ) );
+		$company_name        = get_option( 'wsq_company_name', get_bloginfo( 'name' ) );
+		$economic_code       = get_option( 'wsq_economic_code', '' );
+		$national_id         = get_option( 'wsq_national_id', '' );
+		$registration_no     = get_option( 'wsq_registration_no', '' );
+		$company_postal_code = get_option( 'wsq_company_postal_code', '' );
+		$company_phone       = get_option( 'wsq_company_phone', '' );
+		$company_address     = get_option( 'wsq_company_address', '' );
+		$company_bank_name   = get_option( 'wsq_company_bank_name', '' );
+		$company_bank_account= get_option( 'wsq_company_bank_account', '' );
+		$company_bank_shaba  = get_option( 'wsq_company_bank_shaba', '' );
+		$company_bank_owner  = get_option( 'wsq_company_bank_owner', '' );
+		$company_seal_image      = get_option( 'wsq_company_seal_image', '' );
+		$seal_image_source       = $this->resolve_logo( $company_seal_image );
+		$show_stamp              = get_option( 'wsq_show_digital_stamp', 'yes' ) === 'yes';
+		$stamp_text              = get_option( 'wsq_stamp_text', __( 'تأیید شد - استعلام قیمت رسمی', 'woo-smart-quote' ) );
+		$company_signature_image = get_option( 'wsq_company_signature_image', '' );
+		$signature_image_source  = $this->resolve_logo( $company_signature_image );
+		$show_signature          = get_option( 'wsq_show_digital_signature', 'yes' ) === 'yes';
 
 		// Extra PDF look & feel customization
-		$pdf_header_note = get_option( 'wsq_pdf_header_note', __( 'سیستم جامع استعلام و سفارشات سازمانی', 'woo-smart-quote' ) );
+		$pdf_header_note = get_option( 'wsq_pdf_header_note', __( 'سامانه رسمی استعلام و سفارشات سازمانی', 'woo-smart-quote' ) );
 		$pdf_footer_text = get_option( 'wsq_pdf_footer_text', '' );
 		$pdf_validity    = (int) get_option( 'wsq_pdf_validity_days', 7 );
+		if ( $pdf_validity <= 0 ) {
+			$pdf_validity = 7;
+		}
+
+		// Calculate Jalali Expiry Date
+		$day_seconds         = defined( 'DAY_IN_SECONDS' ) ? DAY_IN_SECONDS : 86400;
+		$created_ts          = $created_date ? $created_date->getTimestamp() : time();
+		$expiry_ts           = $created_ts + ( $pdf_validity * $day_seconds );
+		$date_expiry_jalali  = $this->format_jalali_date( $expiry_ts );
+
+		// Buyer Tax 169 Identifiers (from order meta if set by checkout or B2B extensions)
+		$buyer_national_id     = (string) ( $order->get_meta( '_billing_national_id' ) ?: $order->get_meta( 'billing_national_id' ) ?: $order->get_meta( '_billing_melli_code' ) ?: $order->get_meta( 'billing_melli_code' ) ?: $order->get_meta( '_wsq_buyer_national_id' ) ?: '' );
+		$buyer_economic_code   = (string) ( $order->get_meta( '_billing_economic_code' ) ?: $order->get_meta( 'billing_economic_code' ) ?: $order->get_meta( '_wsq_buyer_economic_code' ) ?: '' );
+		$buyer_registration_no = (string) ( $order->get_meta( '_billing_registration_no' ) ?: $order->get_meta( 'billing_registration_no' ) ?: $order->get_meta( '_wsq_buyer_registration_no' ) ?: '' );
 
 		// Render HTML template
 		ob_start();
 		wc_get_template(
 			'pdf/quote-fa.php',
 			array(
-				'order'           => $order,
-				'order_id'        => $order_id,
-				'customer_name'   => $customer_name,
-				'date'            => $date_jalali,
-				'date_gregorian'  => $date_greg,
-				'items'           => $items,
-				'total'           => $total,
-				'logo_url'        => $logo_source,
-				'company_name'    => $company_name,
-				'economic_code'   => $economic_code,
-				'national_id'     => $national_id,
-				'registration_no' => $registration_no,
-				'company_phone'   => $company_phone,
-				'company_address' => $company_address,
-				'show_stamp'      => $show_stamp,
-				'stamp_text'      => $stamp_text,
-				'header_note'     => $pdf_header_note,
-				'footer_text'     => $pdf_footer_text,
-				'validity_days'   => $pdf_validity,
+				'order'                 => $order,
+				'order_id'              => $order_id,
+				'customer_name'         => $customer_name,
+				'date'                  => $date_jalali,
+				'date_gregorian'        => $date_greg,
+				'date_expiry'           => $date_expiry_jalali,
+				'items'                 => $items,
+				'total'                 => $total,
+				'logo_url'              => $logo_source,
+				'company_name'          => $company_name,
+				'economic_code'         => $economic_code,
+				'national_id'           => $national_id,
+				'registration_no'       => $registration_no,
+				'company_postal_code'   => $company_postal_code,
+				'company_phone'         => $company_phone,
+				'company_address'       => $company_address,
+				'company_bank_name'     => $company_bank_name,
+				'company_bank_account'  => $company_bank_account,
+				'company_bank_shaba'    => $company_bank_shaba,
+				'company_bank_owner'    => $company_bank_owner,
+				'seal_image_url'        => $seal_image_source,
+				'show_stamp'            => $show_stamp,
+				'stamp_text'            => $stamp_text,
+				'signature_image_url'   => $signature_image_source,
+				'show_signature'        => $show_signature,
+				'header_note'           => $pdf_header_note,
+				'footer_text'           => $pdf_footer_text,
+				'validity_days'         => $pdf_validity,
+				'buyer_national_id'     => $buyer_national_id,
+				'buyer_economic_code'   => $buyer_economic_code,
+				'buyer_registration_no' => $buyer_registration_no,
 			),
 			'woo-smart-quote/',
 			WSQ_PLUGIN_DIR . 'templates/'
@@ -500,6 +536,181 @@ class WSQ_PDF_Generator {
 			$jd = 1 + ( ( $days - 186 ) % 30 );
 		}
 		return array( $jy, $jm, $jd );
+	}
+
+	/**
+	 * Convert English digits in string to Persian digits.
+	 *
+	 * @param string|int|float $str
+	 * @return string
+	 */
+	public static function to_persian_digits( $str ) {
+		$en = array( '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' );
+		$fa = array( '۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹' );
+		return str_replace( $en, $fa, (string) $str );
+	}
+
+	/**
+	 * Format numeric amount with thousand-separators and Persian digits.
+	 *
+	 * @param float|int $number
+	 * @param int       $decimals
+	 * @return string
+	 */
+	public static function format_persian_number( $number, $decimals = 0 ) {
+		$formatted = number_format( (float) $number, $decimals );
+		return self::to_persian_digits( $formatted );
+	}
+
+	/**
+	 * Convert numeric amount into formal Persian words.
+	 *
+	 * @param float|int $number
+	 * @param string    $currency Currency name (default 'تومان').
+	 * @return string
+	 */
+	public static function number_to_persian_words( $number, $currency = 'تومان' ) {
+		$number = (int) round( (float) $number );
+		if ( $number <= 0 ) {
+			return '';
+		}
+
+		$ones = array(
+			0 => '', 1 => 'یک', 2 => 'دو', 3 => 'سه', 4 => 'چهار', 5 => 'پنج',
+			6 => 'شش', 7 => 'هفت', 8 => 'هشت', 9 => 'نه', 10 => 'ده',
+			11 => 'یازده', 12 => 'دوازده', 13 => 'سیزده', 14 => 'چهارده', 15 => 'پانزده',
+			16 => 'شانزده', 17 => 'هفده', 18 => 'هجده', 19 => 'نوزده',
+		);
+
+		$tens = array(
+			2 => 'بیست', 3 => 'سی', 4 => 'چهل', 5 => 'پنجاه',
+			6 => 'شصت', 7 => 'هفتاد', 8 => 'هشتاد', 9 => 'نود',
+		);
+
+		$hundreds = array(
+			1 => 'یکصد', 2 => 'دویست', 3 => 'سیصد', 4 => 'چهارصد', 5 => 'پانصد',
+			6 => 'ششصد', 7 => 'هفتصد', 8 => 'هشتصد', 9 => 'نهصد',
+		);
+
+		$scales = array( '', 'هزار', 'میلیون', 'میلیارد', 'تریلیون' );
+
+		$groups    = array();
+		$scale_idx = 0;
+
+		while ( $number > 0 ) {
+			$triplet = $number % 1000;
+			if ( $triplet > 0 ) {
+				$parts = array();
+				$h     = (int) ( $triplet / 100 );
+				$rem   = $triplet % 100;
+				if ( $h > 0 && isset( $hundreds[ $h ] ) ) {
+					$parts[] = $hundreds[ $h ];
+				}
+				if ( $rem > 0 ) {
+					if ( $rem < 20 ) {
+						$parts[] = $ones[ $rem ];
+					} else {
+						$t = (int) ( $rem / 10 );
+						$o = $rem % 10;
+						if ( isset( $tens[ $t ] ) ) {
+							$parts[] = $tens[ $t ];
+						}
+						if ( $o > 0 && isset( $ones[ $o ] ) ) {
+							$parts[] = $ones[ $o ];
+						}
+					}
+				}
+				$words = implode( ' و ', $parts );
+				if ( $scale_idx > 0 && isset( $scales[ $scale_idx ] ) ) {
+					$words .= ' ' . $scales[ $scale_idx ];
+				}
+				array_unshift( $groups, $words );
+			}
+			$number = (int) ( $number / 1000 );
+			$scale_idx++;
+		}
+
+		$cur_text = ! empty( $currency ) ? ' ' . trim( $currency ) : '';
+		return implode( ' و ', $groups ) . $cur_text . ' تمام';
+	}
+
+	/**
+	 * Build authentic Iranian corporate seal SVG with zero missing font glyphs.
+	 *
+	 * @param string $seller_name
+	 * @param string $reg_no
+	 * @param string $national_id
+	 * @param string $date
+	 * @param string $stamp_text
+	 * @return string
+	 */
+	public static function get_vector_seal( $seller_name, $reg_no = '', $national_id = '', $date = '', $stamp_text = '' ) {
+		$seller_display = ! empty( $seller_name ) ? esc_html( $seller_name ) : esc_html__( 'شرکت رسمی', 'woo-smart-quote' );
+		$stamp_display  = ! empty( $stamp_text ) ? esc_html( $stamp_text ) : esc_html__( 'تأیید شد — پیش‌فاکتور رسمی', 'woo-smart-quote' );
+		$reg_fa         = ! empty( $reg_no ) && '—' !== $reg_no ? self::to_persian_digits( $reg_no ) : '';
+		$nat_fa         = ! empty( $national_id ) && '—' !== $national_id ? self::to_persian_digits( $national_id ) : '';
+		$date_fa        = ! empty( $date ) ? self::to_persian_digits( $date ) : '';
+
+		$reg_line = '';
+		if ( '' !== $reg_fa ) {
+			$reg_line = '<text x="70" y="42" font-size="6.8" fill="#991b1b" text-anchor="middle" font-family="vazirmatn">' . esc_html__( 'شماره ثبت:', 'woo-smart-quote' ) . ' ' . esc_html( $reg_fa ) . '</text>';
+		}
+
+		$nat_line = '';
+		if ( '' !== $nat_fa ) {
+			$nat_line = '<text x="70" y="79" font-size="7" font-weight="bold" fill="#b91c1c" text-anchor="middle" font-family="vazirmatn">' . esc_html__( 'شناسه ملی:', 'woo-smart-quote' ) . ' ' . esc_html( $nat_fa ) . '</text>';
+		}
+
+		$date_line = '';
+		if ( '' !== $date_fa ) {
+			$date_line = '<text x="70" y="99" font-size="6.8" font-weight="bold" fill="#b91c1c" text-anchor="middle" font-family="vazirmatn">' . esc_html__( 'تاریخ صدور:', 'woo-smart-quote' ) . ' ' . esc_html( $date_fa ) . '</text>';
+		}
+
+		return '<svg width="124" height="124" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+  <g transform="rotate(-3 70 70)">
+    <!-- Outer Double Rings -->
+    <circle cx="70" cy="70" r="66" stroke="#b91c1c" stroke-width="2.5" fill="#fffcfc" fill-opacity="0.97" />
+    <circle cx="70" cy="70" r="61" stroke="#b91c1c" stroke-width="0.9" stroke-dasharray="2.5,2" fill="none" />
+    <circle cx="70" cy="70" r="58" stroke="#b91c1c" stroke-width="0.8" fill="none" />
+
+    <!-- Corner/Edge Vector Diamond Ornaments (No font glyph dependency) -->
+    <polygon points="70,14 72,17 70,20 68,17" fill="#b91c1c" />
+    <polygon points="126,70 123,72 120,70 123,68" fill="#b91c1c" />
+    <polygon points="14,70 17,72 20,70 17,68" fill="#b91c1c" />
+
+    <!-- Company Name Arc/Top -->
+    <text x="70" y="32" font-size="8.8" font-weight="bold" fill="#b91c1c" text-anchor="middle" font-family="vazirmatn">' . $seller_display . '</text>
+
+    <!-- Subtitle / Registration No -->
+    ' . $reg_line . '
+
+    <!-- Center Cartouche Badge -->
+    <rect x="16" y="47" width="108" height="21" rx="4" fill="#fef2f2" stroke="#b91c1c" stroke-width="1.2" />
+    <text x="70" y="61" font-size="8.4" font-weight="bold" fill="#b91c1c" text-anchor="middle" font-family="vazirmatn">' . $stamp_display . '</text>
+
+    <!-- Legal Identifiers -->
+    ' . $nat_line . '
+    <text x="70" y="89" font-size="6.5" fill="#991b1b" text-anchor="middle" font-family="vazirmatn">' . esc_html__( 'واحد امور مالی و بازرگانی', 'woo-smart-quote' ) . '</text>
+    ' . $date_line . '
+
+    <!-- Bottom Decorative Accent -->
+    <polygon points="70,126 72,123 70,120 68,123" fill="#b91c1c" />
+  </g>
+</svg>';
+	}
+
+	/**
+	 * Executive fluid fountain pen signature SVG.
+	 *
+	 * @return string
+	 */
+	public static function get_vector_signature() {
+		return '<svg width="125" height="48" viewBox="0 0 140 54" xmlns="http://www.w3.org/2000/svg" style="display:block; margin-top:-4px;">
+  <!-- Fluid executive calligraphic strokes in royal fountain pen blue -->
+  <path d="M 8 34 C 24 14, 38 46, 56 16 C 66 2, 78 42, 94 20 C 104 6, 118 32, 134 14" stroke="#1d4ed8" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.94" />
+  <path d="M 22 40 Q 62 24, 112 32 M 42 44 C 72 36, 98 38, 128 30" stroke="#1e40af" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.88" />
+  <path d="M 14 46 C 50 42, 88 44, 136 36" stroke="#1d4ed8" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.75" />
+</svg>';
 	}
 }
 

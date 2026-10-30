@@ -1,12 +1,12 @@
 <?php
 /**
- * Plugin Name: «مظنه چند؟» (WooCommerce Smart Quote)
- * Description: سیستم پیشرفته استعلام قیمت ووکامرس با اتصال بومی به بله و ایتا و تولید PDF رسمی.
+ * Plugin Name: نرخنگار
+ * Description: سیستم استعلام قیمت و صدور پیش‌فاکتور رسمی ماده ۱۶۹ برای ووکامرس؛ همراه با اپلیکیشن اندروید و اتصال مستقیم به بله و ایتا.
  * Version:     1.0.0
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Requires Plugins: woocommerce
- * Author:      WooCommerce Smart Quote
+ * Author:      نرخنگار
  * License:     GPL-2.0+
  * Text Domain: woo-smart-quote
  * Domain Path: /languages
@@ -45,14 +45,14 @@ register_deactivation_hook( __FILE__, function () {
 
 if ( $wsq_missing_requirements ) {
 	$wsq_requirements_notice = static function () use ( $wsq_missing_requirements ) {
-		$message = sprintf( __( 'Smart Quote غیرفعال است. پیش‌نیازهای زیر باید روی سرور نصب یا به‌روزرسانی شوند: %s', 'woo-smart-quote' ), implode( ', ', $wsq_missing_requirements ) );
+		$message = sprintf( __( 'افزونه نرخنگار غیرفعال است. پیش‌نیازهای زیر باید روی سرور نصب یا به‌روزرسانی شوند: %s', 'woo-smart-quote' ), implode( ', ', $wsq_missing_requirements ) );
 		printf( '<div class="notice notice-error"><p>%s</p></div>', esc_html( $message ) );
 	};
 	add_action( 'admin_notices', $wsq_requirements_notice );
 	add_action( 'network_admin_notices', $wsq_requirements_notice );
 	register_activation_hook( __FILE__, static function () use ( $wsq_missing_requirements ) {
-		$message = sprintf( __( 'Smart Quote غیرفعال است. پیش‌نیازهای زیر باید روی سرور نصب یا به‌روزرسانی شوند: %s', 'woo-smart-quote' ), implode( ', ', $wsq_missing_requirements ) );
-		wp_die( esc_html( $message ), 'WooCommerce Smart Quote', array( 'back_link' => true ) );
+		$message = sprintf( __( 'افزونه نرخنگار غیرفعال است. پیش‌نیازهای زیر باید روی سرور نصب یا به‌روزرسانی شوند: %s', 'woo-smart-quote' ), implode( ', ', $wsq_missing_requirements ) );
+		wp_die( esc_html( $message ), 'نرخنگار', array( 'back_link' => true ) );
 	} );
 	return;
 }
@@ -71,7 +71,7 @@ define( 'WSQ_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'WSQ_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
 /**
- * Main instance of WooCommerce Smart Quote.
+ * Main instance of Nerkhnegar (woo-smart-quote).
  */
 function woo_smart_quote_init() {
 	// Check if WooCommerce is active
@@ -117,7 +117,7 @@ register_activation_hook( __FILE__, function () {
 function wsq_woocommerce_missing_notice() {
 	?>
 	<div class="notice notice-error is-dismissible">
-		<p><?php esc_html_e( 'WooCommerce Smart Quote requires WooCommerce to be installed and active.', 'woo-smart-quote' ); ?></p>
+		<p><?php esc_html_e( 'افزونه نرخنگار برای فعالیت نیازمند نصب و فعال‌سازی ووکامرس است.', 'woo-smart-quote' ); ?></p>
 	</div>
 	<?php
 }

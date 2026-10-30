@@ -32,6 +32,20 @@ if ( ! $admin_user ) {
 $admin_id = $admin_user ? $admin_user->ID : 1;
 wp_set_current_user( $admin_id );
 
+if ( ! defined( 'WSQ_VERSION' ) ) {
+	define( 'WSQ_VERSION', '1.0.0' );
+}
+if ( ! defined( 'WSQ_PLUGIN_URL' ) ) {
+	define( 'WSQ_PLUGIN_URL', plugins_url( '/woo-smart-quote/', WP_PLUGIN_DIR ) );
+}
+if ( ! defined( 'WSQ_PLUGIN_DIR' ) ) {
+	define( 'WSQ_PLUGIN_DIR', WP_PLUGIN_DIR . '/woo-smart-quote/' );
+}
+
+if ( ! class_exists( 'WSQ_Plugin' ) ) {
+	require_once WP_PLUGIN_DIR . '/woo-smart-quote/includes/class-wsq-plugin.php';
+	WSQ_Plugin::instance();
+}
 if ( ! class_exists( 'WSQ_Admin' ) ) {
 	require_once WP_PLUGIN_DIR . '/woo-smart-quote/includes/class-wsq-admin.php';
 }
@@ -52,6 +66,9 @@ ok( 'HTML contains pairing code display', false !== strpos( $html, 'id="wsq-pair
 ok( 'HTML contains countdown timer box', false !== strpos( $html, 'id="wsq-pairing-timer-box"' ) );
 ok( 'HTML contains refresh button', false !== strpos( $html, 'wsq-refresh-pairing-btn' ) );
 ok( 'HTML contains setup guide steps', false !== strpos( $html, 'میز کار قیمت‌گذاری سیار' ) );
+ok( 'HTML contains APK download button in Step 1', false !== strpos( $html, 'wsq-apk-download-btn' ) );
+ok( 'HTML contains APK download direct link ID', false !== strpos( $html, 'id="wsq-apk-primary-link"' ) );
+ok( 'HTML contains APK QR code container', false !== strpos( $html, 'id="wsq-apk-qrcode"' ) );
 ok( 'HTML contains paired devices section', false !== strpos( $html, 'دستگاه‌های متصل فعال' ) );
 
 // 2. Test AJAX refresh pairing

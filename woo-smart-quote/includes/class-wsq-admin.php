@@ -7,6 +7,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+require_once dirname( __FILE__ ) . '/class-wsq-icons.php';
+require_once dirname( __FILE__ ) . '/class-wsq-updates.php';
+
 class WSQ_Admin {
 
 	protected static $instance = null;
@@ -28,11 +31,15 @@ class WSQ_Admin {
 		add_action( 'wp_ajax_wsq_inbox_read', array( $this, 'ajax_inbox_read' ) );
 		add_action( 'wp_ajax_wsq_refresh_pairing', array( $this, 'ajax_refresh_pairing' ) );
 		add_action( 'wp_ajax_wsq_revoke_device', array( $this, 'ajax_revoke_device' ) );
+		add_action( 'wp_ajax_wsq_save_apk_url', array( $this, 'ajax_save_apk_url' ) );
 	}
 
 	public function enqueue_scripts( $hook ) {
 		if ( 'toplevel_page_woo-smart-quote' !== $hook ) {
 			return;
+		}
+		if ( function_exists( 'wp_enqueue_media' ) ) {
+			wp_enqueue_media();
 		}
 		wp_enqueue_style( 'woo-smart-quote-admin', WSQ_PLUGIN_URL . 'assets/css/admin.css', array(), WSQ_VERSION );
 		wp_enqueue_script( 'woo-smart-quote-clipboard', WSQ_PLUGIN_URL . 'assets/js/wsq-clipboard.js', array(), WSQ_VERSION, false );
@@ -84,12 +91,12 @@ class WSQ_Admin {
 	}
 
 	public function add_menu_page() {
-		$icon_svg = 'data:image/svg+xml;base64,' . base64_encode( '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" stroke="currentColor"><path d="M4 2.5C4 1.95 4.45 1.5 5 1.5H12L16 5.5V17.5C16 18.05 15.55 18.5 15 18.5H5C4.45 18.5 4 18.05 4 17.5V2.5Z" stroke-width="1.4" stroke-linejoin="round" fill="none"/><path d="M12 1.5V5.5H16" stroke-width="1.4" stroke-linejoin="round"/><path d="M7 8C7 7 7.5 6.5 8.5 6.5" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="9" r="0.9" fill="currentColor"/><path d="M10.5 8C10.5 7 11 6.5 12 6.5" stroke-width="1.5" stroke-linecap="round"/><circle cx="11.5" cy="9" r="0.9" fill="currentColor"/><line x1="7" y1="12" x2="13" y2="12" stroke-width="1.3" stroke-linecap="round"/><line x1="7" y1="14.5" x2="11" y2="14.5" stroke-width="1.3" stroke-linecap="round"/></svg>' );
+		$icon_svg = 'data:image/svg+xml;base64,' . base64_encode( '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" stroke="currentColor"><path d="M8.5 4.5L3.5 10L8.5 15.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 4.5L9 10L14 15.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16.5" cy="10" r="1.2" fill="currentColor" stroke="none"/></svg>' );
 
 		// Show the number of unread buyer messages next to the menu entry so
 		// the team notices new inquiries without opening the settings page.
 		$unread     = WSQ_Updates::instance()->unread_count();
-		$menu_title = __( 'Smart Quote', 'woo-smart-quote' );
+		$menu_title = __( 'نرخنگار', 'woo-smart-quote' );
 
 		if ( $unread > 0 ) {
 			$menu_title .= sprintf(
@@ -101,7 +108,7 @@ class WSQ_Admin {
 		}
 
 		add_menu_page(
-			__( 'Smart Quote Settings', 'woo-smart-quote' ),
+			__( 'تنظیمات نرخنگار', 'woo-smart-quote' ),
 			$menu_title,
 			'manage_woocommerce',
 			'woo-smart-quote',
@@ -208,10 +215,18 @@ class WSQ_Admin {
 		register_setting( $groups['general'], 'wsq_national_id', array( 'sanitize_callback' => $text_cb ) );
 		register_setting( $groups['general'], 'wsq_economic_code', array( 'sanitize_callback' => $text_cb ) );
 		register_setting( $groups['general'], 'wsq_registration_no', array( 'sanitize_callback' => $text_cb ) );
+		register_setting( $groups['general'], 'wsq_company_postal_code', array( 'sanitize_callback' => $text_cb ) );
 		register_setting( $groups['general'], 'wsq_company_phone', array( 'sanitize_callback' => $text_cb ) );
 		register_setting( $groups['general'], 'wsq_company_address', array( 'sanitize_callback' => $textarea_cb ) );
+		register_setting( $groups['general'], 'wsq_company_bank_name', array( 'sanitize_callback' => $text_cb ) );
+		register_setting( $groups['general'], 'wsq_company_bank_account', array( 'sanitize_callback' => $text_cb ) );
+		register_setting( $groups['general'], 'wsq_company_bank_shaba', array( 'sanitize_callback' => $text_cb ) );
+		register_setting( $groups['general'], 'wsq_company_bank_owner', array( 'sanitize_callback' => $text_cb ) );
+		register_setting( $groups['general'], 'wsq_company_seal_image', array( 'sanitize_callback' => $callbacks['wsq_url'] ) );
 		register_setting( $groups['general'], 'wsq_show_digital_stamp', array( 'sanitize_callback' => $callbacks['wsq_checkbox'] ) );
 		register_setting( $groups['general'], 'wsq_stamp_text', array( 'sanitize_callback' => $text_cb ) );
+		register_setting( $groups['general'], 'wsq_company_signature_image', array( 'sanitize_callback' => $callbacks['wsq_url'] ) );
+		register_setting( $groups['general'], 'wsq_show_digital_signature', array( 'sanitize_callback' => $callbacks['wsq_checkbox'] ) );
 		register_setting( $groups['general'], 'wsq_pdf_header_note', array( 'sanitize_callback' => $text_cb ) );
 		register_setting( $groups['general'], 'wsq_pdf_validity_days', array( 'sanitize_callback' => array( $this, 'sanitize_validity_days' ) ) );
 		register_setting( $groups['general'], 'wsq_pdf_retention_days', array( 'sanitize_callback' => array( $this, 'sanitize_retention_days' ) ) );
@@ -701,9 +716,6 @@ class WSQ_Admin {
 								);
 								?>
 							</span>
-							<span class="wsq-kpi-track" role="img" aria-label="<?php echo esc_attr( sprintf( __( 'نرخ تبدیل: %s درصد', 'woo-smart-quote' ), number_format_i18n( $rate_round ) ) ); ?>">
-								<span style="width:<?php echo esc_attr( min( 100, max( 0, $rate ) ) ); ?>%;"></span>
-							</span>
 						</div>
 					</div>
 
@@ -1120,25 +1132,21 @@ class WSQ_Admin {
 				<div class="wsq-brand-box">
 					<div class="wsq-brand-id">
 						<span class="wsq-brand-badge" aria-hidden="true">
-							<img src="<?php echo esc_url( WSQ_PLUGIN_URL . 'assets/images/icon.svg' ); ?>" alt="" width="34" height="34" />
+							<img src="<?php echo esc_url( ( defined( 'WSQ_PLUGIN_URL' ) ? WSQ_PLUGIN_URL : plugins_url( '/', dirname( __FILE__ ) ) ) . 'assets/images/icon.svg' ); ?>" alt="" width="34" height="34" />
 						</span>
 						<div>
-							<h1 class="wsq-brand-title"><?php esc_html_e( 'هوشمند استعلام قیمت ووکامرس', 'woo-smart-quote' ); ?></h1>
-							<span class="wsq-brand-sub"><?php esc_html_e( 'اتصال بومی به بله و ایتا + صدور پیش‌فاکتور رسمی PDF', 'woo-smart-quote' ); ?></span>
+							<h1 class="wsq-brand-title"><?php esc_html_e( 'نرخنگار | مدیریت استعلام قیمت و پیش‌فاکتور رسمی', 'woo-smart-quote' ); ?></h1>
+							<span class="wsq-brand-sub"><?php esc_html_e( 'مدیریت استعلام‌های قیمت توافقی، صدور پیش‌فاکتور رسمی ماده ۱۶۹ و اطلاع‌رسانی بله و ایتا', 'woo-smart-quote' ); ?></span>
 						</div>
 					</div>
 					<div class="wsq-brand-meta">
-						<span class="wsq-version-badge"><?php echo esc_html( sprintf( __( 'نسخه %s', 'woo-smart-quote' ), WSQ_VERSION ) ); ?></span>
+						<span class="wsq-version-badge"><?php echo esc_html( sprintf( __( 'نسخه %s', 'woo-smart-quote' ), defined( 'WSQ_VERSION' ) ? WSQ_VERSION : '1.0.0' ) ); ?></span>
 					</div>
 				</div>
 				<div class="wsq-status-row" role="status" aria-live="polite">
 					<span class="wsq-chip <?php echo $wsq_setup['bale_ok'] ? 'is-ok' : 'is-off'; ?>"><span class="wsq-dot" aria-hidden="true"></span><?php esc_html_e( 'بله', 'woo-smart-quote' ); ?>: <?php echo $wsq_setup['bale_ok'] ? esc_html__( 'متصل', 'woo-smart-quote' ) : esc_html__( 'تنظیم نشده', 'woo-smart-quote' ); ?></span>
 					<span class="wsq-chip <?php echo $wsq_setup['eitaa_ok'] ? 'is-ok' : 'is-off'; ?>"><span class="wsq-dot" aria-hidden="true"></span><?php esc_html_e( 'ایتا', 'woo-smart-quote' ); ?>: <?php echo $wsq_setup['eitaa_ok'] ? esc_html__( 'متصل', 'woo-smart-quote' ) : esc_html__( 'تنظیم نشده', 'woo-smart-quote' ); ?></span>
 					<span class="wsq-chip <?php echo $wsq_setup['buyer_on'] ? 'is-ok' : 'is-off'; ?>"><span class="wsq-dot" aria-hidden="true"></span><?php esc_html_e( 'ارسال خودکار به خریدار', 'woo-smart-quote' ); ?>: <?php echo $wsq_setup['buyer_on'] ? esc_html__( 'فعال', 'woo-smart-quote' ) : esc_html__( 'غیرفعال', 'woo-smart-quote' ); ?></span>
-				</div>
-				<div class="wsq-setup-progress">
-					<div class="wsq-setup-progress-label"><span id="wsq-progress-label"><?php esc_html_e( 'پیشرفت راه‌اندازی', 'woo-smart-quote' ); ?></span><span><?php echo esc_html( sprintf( __( '%s٪ تکمیل شده', 'woo-smart-quote' ), number_format_i18n( $wsq_setup['percent'] ) ) ); ?></span></div>
-					<div class="wsq-progress" role="progressbar" aria-labelledby="wsq-progress-label" aria-valuemin="0" aria-valuemax="100" aria-valuenow="<?php echo esc_attr( $wsq_setup['percent'] ); ?>" aria-valuetext="<?php echo esc_attr( sprintf( __( '%s درصد تکمیل شده', 'woo-smart-quote' ), number_format_i18n( $wsq_setup['percent'] ) ) ); ?>"><span style="width:<?php echo esc_attr( $wsq_setup['percent'] ); ?>%;"></span></div>
 				</div>
 			</div>
 
@@ -1172,7 +1180,10 @@ class WSQ_Admin {
 							<tr>
 								<th scope="row"><label for="wsq_pdf_logo"><?php esc_html_e( 'آدرس لوگوی فروشگاه (URL)', 'woo-smart-quote' ); ?></label></th>
 								<td>
-									<input type="text" id="wsq_pdf_logo" name="wsq_pdf_logo" value="<?php echo esc_attr( get_option( 'wsq_pdf_logo' ) ); ?>" class="regular-text" placeholder="https://site.com/logo.png" aria-describedby="wsq_pdf_logo_help" />
+									<div style="display:flex; gap:8px; align-items:center; max-width:500px;">
+										<input type="text" id="wsq_pdf_logo" name="wsq_pdf_logo" value="<?php echo esc_attr( get_option( 'wsq_pdf_logo' ) ); ?>" class="regular-text code" style="flex:1;" placeholder="https://site.com/logo.png" aria-describedby="wsq_pdf_logo_help" />
+										<button type="button" class="button wsq-upload-media-btn" data-target="#wsq_pdf_logo"><?php esc_html_e( 'انتخاب از رسانه', 'woo-smart-quote' ); ?></button>
+									</div>
 									<p class="description" id="wsq_pdf_logo_help"><?php esc_html_e( 'آدرس مستقیم تصویر لوگو جهت درج در بالای پیش‌فاکتور رسمی.', 'woo-smart-quote' ); ?></p>
 								</td>
 							</tr>
@@ -1201,6 +1212,12 @@ class WSQ_Admin {
 								</td>
 							</tr>
 							<tr>
+								<th scope="row"><label for="wsq_company_postal_code"><?php esc_html_e( 'کد پستی ۱۰ رقمی', 'woo-smart-quote' ); ?></label></th>
+								<td>
+									<input type="text" id="wsq_company_postal_code" name="wsq_company_postal_code" value="<?php echo esc_attr( get_option( 'wsq_company_postal_code' ) ); ?>" class="regular-text" placeholder="<?php esc_attr_e( 'مثال: ۱۳۷۸۹۴۵۶۱۲', 'woo-smart-quote' ); ?>" />
+								</td>
+							</tr>
+							<tr>
 								<th scope="row"><label for="wsq_company_phone"><?php esc_html_e( 'تلفن تماس شرکت', 'woo-smart-quote' ); ?></label></th>
 								<td>
 									<input type="text" id="wsq_company_phone" name="wsq_company_phone" value="<?php echo esc_attr( get_option( 'wsq_company_phone' ) ); ?>" class="regular-text" />
@@ -1213,21 +1230,56 @@ class WSQ_Admin {
 								</td>
 							</tr>
 							<tr>
-								<th scope="row"><label for="wsq_show_digital_stamp_toggle"><?php esc_html_e( 'مهر دیجیتال رسمی', 'woo-smart-quote' ); ?></label></th>
+								<th scope="row"><label for="wsq_company_bank_name"><?php esc_html_e( 'مشخصات حساب بانکی (جهت واریز)', 'woo-smart-quote' ); ?></label></th>
+								<td>
+									<div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 650px;">
+										<div>
+											<label for="wsq_company_bank_name" style="display:block; font-size:12px; font-weight:600; margin-bottom:4px;"><?php esc_html_e( 'نام بانک و شعبه', 'woo-smart-quote' ); ?></label>
+											<input type="text" id="wsq_company_bank_name" name="wsq_company_bank_name" value="<?php echo esc_attr( get_option( 'wsq_company_bank_name' ) ); ?>" class="regular-text" style="width:100%;" placeholder="<?php esc_attr_e( 'مثال: بانک سامان — شعبه بازار آهن', 'woo-smart-quote' ); ?>" />
+										</div>
+										<div>
+											<label for="wsq_company_bank_owner" style="display:block; font-size:12px; font-weight:600; margin-bottom:4px;"><?php esc_html_e( 'نام صاحب حساب', 'woo-smart-quote' ); ?></label>
+											<input type="text" id="wsq_company_bank_owner" name="wsq_company_bank_owner" value="<?php echo esc_attr( get_option( 'wsq_company_bank_owner' ) ); ?>" class="regular-text" style="width:100%;" placeholder="<?php esc_attr_e( 'مثال: شرکت بازرگانی آرین فولاد', 'woo-smart-quote' ); ?>" />
+										</div>
+										<div>
+											<label for="wsq_company_bank_shaba" style="display:block; font-size:12px; font-weight:600; margin-bottom:4px;"><?php esc_html_e( 'شماره شبا (IBAN)', 'woo-smart-quote' ); ?></label>
+											<input type="text" id="wsq_company_bank_shaba" name="wsq_company_bank_shaba" value="<?php echo esc_attr( get_option( 'wsq_company_bank_shaba' ) ); ?>" dir="ltr" class="regular-text code" style="width:100%;" placeholder="IR450560084281032596000001" />
+										</div>
+										<div>
+											<label for="wsq_company_bank_account" style="display:block; font-size:12px; font-weight:600; margin-bottom:4px;"><?php esc_html_e( 'شماره حساب / کارت', 'woo-smart-quote' ); ?></label>
+											<input type="text" id="wsq_company_bank_account" name="wsq_company_bank_account" value="<?php echo esc_attr( get_option( 'wsq_company_bank_account' ) ); ?>" dir="ltr" class="regular-text code" style="width:100%;" placeholder="6219-8610-3344-5566" />
+										</div>
+									</div>
+									<p class="description"><?php esc_html_e( 'این مشخصات در کادر بانکی انتهای پیش‌فاکتور برای تسهیل واریز وجه توسط خریدار درج می‌شود.', 'woo-smart-quote' ); ?></p>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row"><label for="wsq_company_seal_image"><?php esc_html_e( 'تصویر مهر رسمی شرکت (اختیاری)', 'woo-smart-quote' ); ?></label></th>
+								<td>
+									<div style="display:flex; gap:8px; align-items:center; max-width:500px;">
+										<input type="text" id="wsq_company_seal_image" name="wsq_company_seal_image" value="<?php echo esc_attr( get_option( 'wsq_company_seal_image' ) ); ?>" class="regular-text code" style="flex:1;" placeholder="https://site.com/seal.png" aria-describedby="wsq_company_seal_image_help" />
+										<button type="button" class="button wsq-upload-media-btn" data-target="#wsq_company_seal_image"><?php esc_html_e( 'انتخاب از رسانه', 'woo-smart-quote' ); ?></button>
+									</div>
+									<p class="description" id="wsq_company_seal_image_help"><?php esc_html_e( 'در صورت تمایل می‌توانید آدرس فایل تصویر شفاف (PNG) مهر رسمی شرکت خود را درج کنید. در صورت خالی بودن و فعال بودن گزینه زیر، مهر دیجیتال رسمی وکتور به‌صورت خودکار با مشخصات ثبتی درج می‌شود.', 'woo-smart-quote' ); ?></p>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row"><label for="wsq_show_digital_stamp_toggle"><?php esc_html_e( 'مهر رسمی دیجیتال شرکت', 'woo-smart-quote' ); ?></label></th>
 								<td>
 									<input type="hidden" name="wsq_show_digital_stamp" value="no" />
 									<label class="wsq-toggle">
 										<input type="checkbox" id="wsq_show_digital_stamp_toggle" name="wsq_show_digital_stamp" value="yes" <?php checked( 'yes', get_option( 'wsq_show_digital_stamp', 'yes' ) ); ?> aria-describedby="wsq_stamp_preview_help" />
 										<span class="wsq-toggle-track"><span class="wsq-toggle-thumb"></span></span>
-										<span class="wsq-toggle-label"><?php esc_html_e( 'درج مهر قرمز رنگ رسمی در انتهای پیش‌فاکتور', 'woo-smart-quote' ); ?></span>
+										<span class="wsq-toggle-label"><?php esc_html_e( 'الصاق مهر شرکتی دایره‌ای دوخط قرمز در انتهای پیش‌فاکتور (در صورت عدم درج تصویر اختصاصی)', 'woo-smart-quote' ); ?></span>
 									</label>
 									<div class="wsq-stamp-preview-card">
 										<div class="wsq-digital-seal-demo" aria-hidden="true">
-											<span><?php echo esc_html( get_option( 'wsq_company_name', get_bloginfo( 'name' ) ) ); ?></span>
-											<span style="font-size:8px;margin:2px 0;">★★★★★</span>
-											<span id="wsq-stamp-text-preview"><?php echo esc_html( get_option( 'wsq_stamp_text', __( 'تأیید شد - استعلام قیمت رسمی', 'woo-smart-quote' ) ) ); ?></span>
+											<span id="wsq-stamp-company-preview" style="font-weight:900;"><?php echo esc_html( get_option( 'wsq_company_name', get_bloginfo( 'name' ) ) ); ?></span>
+											<span style="font-size:7.5px;color:#a81d1d;margin:2px 0;"><?php esc_html_e( 'شماره ثبت رسمی', 'woo-smart-quote' ); ?></span>
+											<span id="wsq-stamp-text-preview" style="font-size:8px;font-weight:700;background:#fef2f2;border:1px solid #b91c1c;padding:1px 4px;border-radius:2px;"><?php echo esc_html( get_option( 'wsq_stamp_text', __( 'تأیید شد — پیش‌فاکتور رسمی', 'woo-smart-quote' ) ) ); ?></span>
+											<span style="font-size:7.5px;color:#a81d1d;margin-top:2px;"><?php esc_html_e( 'امور مالی و فروش', 'woo-smart-quote' ); ?></span>
 										</div>
-										<p class="description" id="wsq_stamp_preview_help" style="margin:0;"><?php esc_html_e( 'پیش‌نمایش نمادین مهر رسمی که به‌صورت وکتور با حاشیه دایره‌ای دوخط قرمز در انتهای سند PDF الصاق می‌شود.', 'woo-smart-quote' ); ?></p>
+										<p class="description" id="wsq_stamp_preview_help" style="margin:0;"><?php esc_html_e( 'پیش‌نمایش مهر رسمی شرکت که به‌صورت برداری با حاشیه دایره‌ای دوخطه، شناسه ملی، شماره ثبت و تاریخ صدور در پایین سند PDF الصاق می‌شود.', 'woo-smart-quote' ); ?></p>
 									</div>
 								</td>
 							</tr>
@@ -1238,9 +1290,40 @@ class WSQ_Admin {
 								</td>
 							</tr>
 							<tr>
+								<th scope="row"><label for="wsq_company_signature_image"><?php esc_html_e( 'تصویر امضای مجاز (اختیاری)', 'woo-smart-quote' ); ?></label></th>
+								<td>
+									<div style="display:flex; gap:8px; align-items:center; max-width:500px;">
+										<input type="text" id="wsq_company_signature_image" name="wsq_company_signature_image" value="<?php echo esc_attr( get_option( 'wsq_company_signature_image' ) ); ?>" class="regular-text code" style="flex:1;" placeholder="https://site.com/signature.png" aria-describedby="wsq_company_signature_image_help" />
+										<button type="button" class="button wsq-upload-media-btn" data-target="#wsq_company_signature_image"><?php esc_html_e( 'انتخاب از رسانه', 'woo-smart-quote' ); ?></button>
+									</div>
+									<p class="description" id="wsq_company_signature_image_help"><?php esc_html_e( 'در صورت تمایل می‌توانید آدرس فایل تصویر شفاف (PNG) امضای مجاز شرکت را درج کنید. در صورت خالی بودن، امضای وکتور روان‌نویس نمایش داده می‌شود.', 'woo-smart-quote' ); ?></p>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row"><label for="wsq_show_digital_signature_toggle"><?php esc_html_e( 'نمایش امضای مجاز فروشنده', 'woo-smart-quote' ); ?></label></th>
+								<td>
+									<input type="hidden" name="wsq_show_digital_signature" value="no" />
+									<label class="wsq-toggle">
+										<input type="checkbox" id="wsq_show_digital_signature_toggle" name="wsq_show_digital_signature" value="yes" <?php checked( 'yes', get_option( 'wsq_show_digital_signature', 'yes' ) ); ?> aria-describedby="wsq_signature_preview_help" />
+										<span class="wsq-toggle-track"><span class="wsq-toggle-thumb"></span></span>
+										<span class="wsq-toggle-label"><?php esc_html_e( 'نمایش خط امضای مجاز در کنار مهر رسمی (در صورت غیرفعال بودن، محل امضا جهت امضای فیزیکی خالی می‌ماند)', 'woo-smart-quote' ); ?></span>
+									</label>
+									<div class="wsq-signature-preview-card">
+										<div class="wsq-digital-signature-demo" aria-hidden="true">
+											<svg width="115" height="44" viewBox="0 0 140 54" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+												<path d="M 8 34 C 24 14, 38 46, 56 16 C 66 2, 78 42, 94 20 C 104 6, 118 32, 134 14" stroke="#1d4ed8" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.94" />
+												<path d="M 22 40 Q 62 24, 112 32 M 42 44 C 72 36, 98 38, 128 30" stroke="#1e40af" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.88" />
+												<path d="M 14 46 C 50 42, 88 44, 136 36" stroke="#1d4ed8" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.75" />
+											</svg>
+										</div>
+										<p class="description" id="wsq_signature_preview_help" style="margin:0;"><?php esc_html_e( 'پیش‌نمایش امضای دیجیتال روان‌نویس که در صورت نبود تصویر اختصاصی، در کنار مشخصات مدیر مالی و مهر رسمی درج می‌شود.', 'woo-smart-quote' ); ?></p>
+									</div>
+								</td>
+							</tr>
+							<tr>
 								<th scope="row"><label for="wsq_pdf_header_note"><?php esc_html_e( 'شعار زیر لوگو (هدر PDF)', 'woo-smart-quote' ); ?></label></th>
 								<td>
-									<input type="text" id="wsq_pdf_header_note" name="wsq_pdf_header_note" value="<?php echo esc_attr( get_option( 'wsq_pdf_header_note', __( 'سیستم جامع استعلام و سفارشات سازمانی', 'woo-smart-quote' ) ) ); ?>" class="regular-text" aria-describedby="wsq_pdf_header_note_help" />
+									<input type="text" id="wsq_pdf_header_note" name="wsq_pdf_header_note" value="<?php echo esc_attr( get_option( 'wsq_pdf_header_note', __( 'واحد فروش و پیش‌فاکتور رسمی', 'woo-smart-quote' ) ) ); ?>" class="regular-text" aria-describedby="wsq_pdf_header_note_help" />
 									<p class="description" id="wsq_pdf_header_note_help"><?php esc_html_e( 'متن کوچکی که در بالای پیش‌فاکتور زیر نام و لوگوی شرکت درج می‌شود.', 'woo-smart-quote' ); ?></p>
 								</td>
 							</tr>
@@ -1330,7 +1413,7 @@ class WSQ_Admin {
 							<tr>
 								<th scope="row"><label for="wsq_message_template"><?php esc_html_e( 'متن پیام ارسالی', 'woo-smart-quote' ); ?></label></th>
 								<td>
-									<textarea name="wsq_message_template" rows="8" class="large-text code" id="wsq_message_template"><?php echo esc_textarea( get_option( 'wsq_message_template', __( "📋 استعلام جدید #{{order_number}}\n👤 {{customer_name}}\n📞 {{customer_phone}}\n🛒 {{items_count}} محصول — جمع: {{total}}\n📅 تاریخ: {{date_fa}}\n📝 {{note}}", 'woo-smart-quote' ) ) ); ?></textarea>
+									<textarea name="wsq_message_template" rows="8" class="large-text code" id="wsq_message_template"><?php echo esc_textarea( get_option( 'wsq_message_template', __( "استعلام جدید #{{order_number}}\nنام مشتری: {{customer_name}}\nتلفن تماس: {{customer_phone}}\nتعداد اقلام: {{items_count}} محصول — جمع: {{total}}\nتاریخ: {{date_fa}}\nیادداشت: {{note}}", 'woo-smart-quote' ) ) ); ?></textarea>
 									<div class="wsq-token-bar" role="group" aria-label="<?php esc_attr_e( 'توکن‌های قابل استفاده — برای درج در متن کلیک کنید', 'woo-smart-quote' ); ?>">
 										<?php
 										$wsq_tokens = array( '{{order_number}}', '{{customer_name}}', '{{customer_phone}}', '{{total}}', '{{items_count}}', '{{date}}', '{{date_fa}}', '{{note}}' );
@@ -1356,10 +1439,10 @@ class WSQ_Admin {
 						<div class="wsq-notice wsq-notice-info">
 							<span class="wsq-notice-icon"><?php echo WSQ_Icons::get( 'bulb' ); ?></span>
 							<div class="wsq-notice-body">
-								<strong><?php esc_html_e( 'سازوکار هوشمند ارسال به شماره خریدار در ایران:', 'woo-smart-quote' ); ?></strong>
+								<strong><?php esc_html_e( 'فرآیند ارسال پیش‌فاکتور به شماره خریدار:', 'woo-smart-quote' ); ?></strong>
 								<ul>
 									<li><?php esc_html_e( 'برداشت مستقیم شماره: شماره موبایل خریدار بدون نیاز به ثبت‌نام، از فرم استعلام قیمت استخراج و در سفارش ذخیره می‌شود.', 'woo-smart-quote' ); ?></li>
-									<li><?php esc_html_e( 'ارسال به بله و ایتا با شماره موبایل: با فعال‌سازی وب‌سرویس فراز اس‌ام‌اس (IPPanel)، پیام‌ها بر اساس شماره موبایل خریدار، علاوه بر پیامک، در پیام‌رسان‌های داخلی (بله و ایتا) نیز تحویل داده می‌شوند.', 'woo-smart-quote' ); ?></li>
+									<li><?php esc_html_e( 'ارسال به بله و ایتا با شماره موبایل: با فعال‌سازی وب‌سرویس فراز اس‌ام‌اس (IPPanel)، پیام‌ها بر اساس شماره موبایل خریدار، علاوه بر پیامک، در پیام‌رسان‌های بله و ایتا نیز تحویل داده می‌شوند.', 'woo-smart-quote' ); ?></li>
 									<li><?php esc_html_e( 'سرویس سفیر بله: اتصال مستقیم به وب‌سرویس رسمی بازوی بله جهت ارسال به شماره موبایل کاربر.', 'woo-smart-quote' ); ?></li>
 									<li><?php esc_html_e( 'دکمه‌های اقدام سریع در سفارش: علاوه بر ارسال خودکار، در صفحه ویرایش سفارش ووکامرس، دکمه‌های ۱-کلیکی برای باز کردن چت بله، ایتا و واتساپ خریدار با متن آماده تعبیه شده است.', 'woo-smart-quote' ); ?></li>
 								</ul>
@@ -1379,16 +1462,16 @@ class WSQ_Admin {
 								</td>
 							</tr>
 							<tr>
-								<th scope="row"><label for="wsq_buyer_sms_provider"><?php esc_html_e( 'سامانه وب‌سرویس خریدار', 'woo-smart-quote' ); ?></label></th>
+								<th scope="row"><label for="wsq_buyer_sms_provider"><?php esc_html_e( 'سرویس پیامک و وب‌سرویس خریدار', 'woo-smart-quote' ); ?></label></th>
 								<td>
 									<select name="wsq_buyer_sms_provider" id="wsq_buyer_sms_provider" class="wsq-select-wide" aria-describedby="wsq_buyer_sms_provider_help">
 										<option value="none" <?php selected( 'none', get_option( 'wsq_buyer_sms_provider', 'none' ) ); ?>><?php esc_html_e( 'غیرفعال (فقط ایمیل و دکمه‌های دستی ادمین)', 'woo-smart-quote' ); ?></option>
-										<option value="farazsms" <?php selected( 'farazsms', get_option( 'wsq_buyer_sms_provider', 'none' ) ); ?>><?php esc_html_e( 'فراز اس‌ام‌اس / IPPanel (با ارسال هوشمند به بله و ایتا بر اساس شماره)', 'woo-smart-quote' ); ?></option>
+										<option value="farazsms" <?php selected( 'farazsms', get_option( 'wsq_buyer_sms_provider', 'none' ) ); ?>><?php esc_html_e( 'فراز اس‌ام‌اس / IPPanel (ارسال مستقیم به بله و ایتا بر اساس شماره)', 'woo-smart-quote' ); ?></option>
 										<option value="ippanel" <?php selected( 'ippanel', get_option( 'wsq_buyer_sms_provider', 'none' ) ); ?>><?php esc_html_e( 'IPPanel (ارسال مستقیم پیامک خدماتی)', 'woo-smart-quote' ); ?></option>
 										<option value="kavenegar" <?php selected( 'kavenegar', get_option( 'wsq_buyer_sms_provider', 'none' ) ); ?>><?php esc_html_e( 'کاوه‌نگار (Kavenegar Verify Lookup)', 'woo-smart-quote' ); ?></option>
 										<option value="safir_bale" <?php selected( 'safir_bale', get_option( 'wsq_buyer_sms_provider', 'none' ) ); ?>><?php esc_html_e( 'سفیر بله (وب‌سرویس سازمانی بله برای شماره‌های همراه)', 'woo-smart-quote' ); ?></option>
 									</select>
-									<p class="description" id="wsq_buyer_sms_provider_help"><?php esc_html_e( 'سامانه مورد استفاده جهت پیامک خدماتی سریع و تحویل در پیام‌رسان‌ها.', 'woo-smart-quote' ); ?></p>
+									<p class="description" id="wsq_buyer_sms_provider_help"><?php esc_html_e( 'سرویس انتخابی برای ارسال پیامک خدماتی سریع و تحویل در پیام‌رسان‌ها.', 'woo-smart-quote' ); ?></p>
 								</td>
 							</tr>
 							<tr>
@@ -1531,7 +1614,7 @@ class WSQ_Admin {
 			<?php else : ?>
 			<!-- Routing Tab -->
 			<div class="wsq-section-card">
-				<h3><?php echo WSQ_Icons::get( 'target' ); ?><?php esc_html_e( 'ماتریس مسیریابی هوشمند کارشناسان (Category Routing)', 'woo-smart-quote' ); ?></h3>
+				<h3><?php echo WSQ_Icons::get( 'target' ); ?><?php esc_html_e( 'مسیریابی استعلام کارشناسان بر اساس دسته‌بندی (Category Routing)', 'woo-smart-quote' ); ?></h3>
 				<p>
 					<?php esc_html_e( 'با استفاده از این جدول، تعیین کنید هر دسته‌بندی محصول به کدام کارشناس یا گروه در بله یا ایتا ارسال شود. در صورت خالی ماندن، استعلام به شناسه‌های پیش‌فرض ارسال خواهد شد.', 'woo-smart-quote' ); ?>
 				</p>
@@ -1607,41 +1690,45 @@ class WSQ_Admin {
 	 * Render the mobile companion app pairing and management tab.
 	 */
 	private function render_app_tab() {
-		$pairing = WSQ_REST_API::get_or_create_pairing_session();
-		$devices = WSQ_REST_API::get_paired_devices();
-		$pdf_gen = WSQ_PDF_Generator::instance();
+		$pairing      = WSQ_REST_API::get_or_create_pairing_session();
+		$devices      = WSQ_REST_API::get_paired_devices();
+		$pdf_gen      = WSQ_PDF_Generator::instance();
+		$apk_url      = self::get_apk_download_url();
+		$arm64_url    = self::get_apk_download_url( 'arm64' );
+		$releases_url = self::get_releases_page_url();
+		$custom_url   = get_option( 'wsq_companion_apk_url', '' );
 		?>
 		<div class="wsq-app-tab">
 			<div class="wsq-notice wsq-notice-info">
 				<span class="wsq-notice-icon"><?php echo WSQ_Icons::get( 'phone' ); ?></span>
 				<div class="wsq-notice-body">
-					<strong><?php esc_html_e( 'اپلیکیشن اختصاصی همراه مدیران فروش (WooCommerce Smart Quote Companion)', 'woo-smart-quote' ); ?></strong>
+					<strong><?php esc_html_e( 'اپلیکیشن اختصاصی همراه مدیران فروش (Nerkhnegar Companion)', 'woo-smart-quote' ); ?></strong>
 					<p><?php esc_html_e( 'با استفاده از اپلیکیشن اندروید، بدون نیاز به ورود به پیشخوان وردپرس، از استعلام‌های جدید با اعلان صوتی و فوری باخبر شوید، قیمت‌های اختصاصی اقلام را تعیین کنید و پیش‌فاکتور رسمی PDF را با یک لمس برای مشتری در بله، ایتا یا پیامک ارسال نمایید.', 'woo-smart-quote' ); ?></p>
 				</div>
 			</div>
 
-			<div style="display:grid; grid-template-columns: 360px 1fr; gap:20px; margin-bottom:20px;">
+			<div class="wsq-app-grid">
 				<!-- QR Code Pairing Card -->
-				<div class="wsq-section-card" style="text-align:center; padding:24px;">
-					<h3 style="margin-top:0;"><?php esc_html_e( 'اسکن بارکد اتصال سریع (QR Code)', 'woo-smart-quote' ); ?></h3>
+				<div class="wsq-section-card wsq-app-qr-card">
+					<h3><?php esc_html_e( 'اسکن بارکد اتصال سریع (QR Code)', 'woo-smart-quote' ); ?></h3>
 					<p class="description" style="margin-bottom:15px;">
 						<?php esc_html_e( 'دوربین اپلیکیشن را مقابل این بارکد بگیرید تا فروشگاه به صورت خودکار متصل شود.', 'woo-smart-quote' ); ?>
 					</p>
 
-					<div style="background:#fff; padding:15px; border-radius:12px; border:2px dashed #cbd5e1; display:inline-block; margin-bottom:15px;">
+					<div class="wsq-app-qr-box">
 						<div id="wsq-pairing-qrcode" data-payload="<?php echo esc_attr( $pairing['payload_json'] ); ?>" style="display:flex; justify-content:center;"></div>
 					</div>
 
 					<div style="margin-bottom:15px;">
-						<span style="display:block; font-size:12px; color:#64748b;"><?php esc_html_e( 'کد موقت اتصال دستی:', 'woo-smart-quote' ); ?></span>
-						<span id="wsq-pairing-code-text" style="font-family:monospace; font-size:22px; font-weight:bold; letter-spacing:2px; color:#4f46e5; background:#f1f5f9; padding:4px 14px; border-radius:6px; display:inline-block; margin-top:4px;">
+						<span class="wsq-app-code-label"><?php esc_html_e( 'کد موقت اتصال دستی:', 'woo-smart-quote' ); ?></span>
+						<span id="wsq-pairing-code-text" class="wsq-app-pairing-code">
 							<?php echo esc_html( $pairing['pairing_code'] ); ?>
 						</span>
 					</div>
 
-					<div id="wsq-pairing-timer-box" style="margin-bottom:15px; font-size:13px; color:#475569;" data-expires="<?php echo esc_attr( $pairing['expires_at'] ); ?>">
+					<div id="wsq-pairing-timer-box" class="wsq-app-timer-box" data-expires="<?php echo esc_attr( $pairing['expires_at'] ); ?>">
 						<span><?php esc_html_e( 'مهلت اعتبار بارکد:', 'woo-smart-quote' ); ?> </span>
-						<strong id="wsq-pairing-timer-val" style="color:#d97706;">--:--</strong>
+						<strong id="wsq-pairing-timer-val" class="wsq-app-timer-val">--:--</strong>
 					</div>
 
 					<div>
@@ -1656,36 +1743,105 @@ class WSQ_Admin {
 				<div class="wsq-section-card">
 					<h3 style="margin-top:0;"><?php esc_html_e( 'راهنمای راه‌اندازی و ویژگی‌های اپلیکیشن', 'woo-smart-quote' ); ?></h3>
 
-					<div style="display:flex; flex-direction:column; gap:16px; margin-top:15px;">
-						<div style="display:flex; gap:12px; align-items:flex-start;">
-							<span style="background:#e0e7ff; color:#4338ca; border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; font-weight:bold; flex-shrink:0;">۱</span>
-							<div>
-								<strong style="color:#1e293b;"><?php esc_html_e( 'نصب و اجرای اپلیکیشن', 'woo-smart-quote' ); ?></strong>
-								<p style="margin:2px 0 0; color:#64748b; font-size:13px;"><?php esc_html_e( 'فایل APK رسمی اپلیکیشن را دانلود کرده و روی گوشی اندرویدی خود نصب نمایید.', 'woo-smart-quote' ); ?></p>
+					<div class="wsq-app-step-list">
+						<div class="wsq-app-step-item">
+							<span class="wsq-app-step-num">۱</span>
+							<div class="wsq-app-step-body">
+								<div class="wsq-app-step-header">
+									<strong class="wsq-app-step-title"><?php esc_html_e( 'نصب و اجرای اپلیکیشن', 'woo-smart-quote' ); ?></strong>
+									<span class="wsq-app-badge-release">
+										<?php echo esc_html( sprintf( __( 'نسخه رسمی %s (Release)', 'woo-smart-quote' ), defined( 'WSQ_VERSION' ) ? WSQ_VERSION : '1.0.0' ) ); ?>
+									</span>
+								</div>
+								<p class="wsq-app-step-desc">
+									<?php esc_html_e( 'فایل نصبی رسمی (APK) اپلیکیشن اندروید را دانلود کرده و روی گوشی همراه خود نصب نمایید.', 'woo-smart-quote' ); ?>
+								</p>
+
+								<!-- Prominent Download Buttons & Mobile QR Option -->
+								<div class="wsq-app-action-row">
+									<a id="wsq-apk-primary-link" href="<?php echo esc_url( $apk_url ); ?>" class="button button-primary button-large wsq-apk-download-btn" target="_blank" rel="noopener noreferrer">
+										<?php echo WSQ_Icons::get( 'download' ); ?>
+										<span><?php esc_html_e( 'دانلود مستقیم فایل APK (اندروید)', 'woo-smart-quote' ); ?></span>
+									</a>
+
+									<button type="button" class="button wsq-toggle-apk-qr-btn" aria-expanded="false" style="display:inline-flex; align-items:center; gap:6px; min-height:38px;" title="<?php esc_attr_e( 'نمایش بارکد برای اسکن با گوشی و دانلود مستقیم', 'woo-smart-quote' ); ?>">
+										<?php echo WSQ_Icons::get( 'phone' ); ?>
+										<span><?php esc_html_e( 'دانلود مستقیم روی گوشی (QR Code)', 'woo-smart-quote' ); ?></span>
+									</button>
+
+									<a href="<?php echo esc_url( $releases_url ); ?>" class="button" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:6px; min-height:38px;" title="<?php esc_attr_e( 'مشاهده تمامی فایل‌های خروجی و یادداشت انتشار در گیت‌هاب', 'woo-smart-quote' ); ?>">
+										<?php echo WSQ_Icons::get( 'link' ); ?>
+										<span><?php esc_html_e( 'انتشارهای گیت‌هاب (Releases)', 'woo-smart-quote' ); ?></span>
+									</a>
+
+									<button type="button" class="button wsq-toggle-custom-apk-btn" aria-expanded="false" style="display:inline-flex; align-items:center; gap:4px; min-height:38px; color:var(--wsq-muted);" title="<?php esc_attr_e( 'تنظیم لینک دانلود اختصاصی یا هاست شخصی', 'woo-smart-quote' ); ?>">
+										<?php echo WSQ_Icons::get( 'palette' ); ?>
+										<span><?php esc_html_e( 'آدرس اختصاصی…', 'woo-smart-quote' ); ?></span>
+									</button>
+								</div>
+
+								<!-- Direct Mobile Download QR Code Box (Toggleable) -->
+								<div id="wsq-apk-qr-container" class="wsq-app-collapsible-box" style="display:none; width:fit-content;">
+									<div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+										<div class="wsq-app-qr-preview-box">
+											<div id="wsq-apk-qrcode" data-url="<?php echo esc_attr( $apk_url ); ?>" style="display:flex; justify-content:center;"></div>
+										</div>
+										<div style="max-width:320px;">
+											<strong class="wsq-app-qr-info-title"><?php esc_html_e( 'اسکن بارکد با دوربین گوشی', 'woo-smart-quote' ); ?></strong>
+											<p class="wsq-app-qr-info-desc"><?php esc_html_e( 'دوربین گوشی اندرویدی خود را مقابل این بارکد بگیرید تا فایل APK مستقیماً روی گوشی دانلود شود.', 'woo-smart-quote' ); ?></p>
+											<span class="wsq-app-qr-info-meta">Universal APK &bull; <?php echo esc_html( sprintf( __( 'نسخه %s', 'woo-smart-quote' ), defined( 'WSQ_VERSION' ) ? WSQ_VERSION : '1.0.0' ) ); ?></span>
+										</div>
+									</div>
+								</div>
+
+								<!-- Custom Download URL Editor Box (Toggleable) -->
+								<div id="wsq-custom-apk-container" class="wsq-app-collapsible-box" style="display:none; max-width:540px;">
+									<label for="wsq_companion_apk_url_input" class="wsq-app-custom-label">
+										<?php esc_html_e( 'آدرس مستقیم فایل APK اختصاصی (اختیاری):', 'woo-smart-quote' ); ?>
+									</label>
+									<p class="description" style="margin-top:0; margin-bottom:8px; font-size:12px;">
+										<?php esc_html_e( 'در صورتی که فایل APK را در هاست اختصاصی یا رسانه وردپرس آپلود کرده‌اید، آدرس مستقیم آن را اینجا وارد کنید. در صورت خالی گذاشتن، لینک به مخزن رسمی انتشارهای گیت‌هاب برمی‌گردد.', 'woo-smart-quote' ); ?>
+									</p>
+									<div style="display:flex; gap:8px; align-items:center;">
+										<input type="url" id="wsq_companion_apk_url_input" class="regular-text code" style="flex-grow:1; direction:ltr;" placeholder="https://..." value="<?php echo esc_attr( $custom_url ); ?>" />
+										<button type="button" class="button button-primary wsq-save-apk-url-btn"><?php esc_html_e( 'ذخیره', 'woo-smart-quote' ); ?></button>
+										<button type="button" class="button wsq-reset-apk-url-btn" title="<?php esc_attr_e( 'بازنشانی به گیت‌هاب رسمی', 'woo-smart-quote' ); ?>"><?php esc_html_e( 'پیش‌فرض', 'woo-smart-quote' ); ?></button>
+									</div>
+									<span id="wsq-custom-apk-status" style="display:block; margin-top:6px; font-size:12px;"></span>
+								</div>
+
+								<div class="wsq-app-variants-note">
+									<span><?php esc_html_e( 'سایر نسخه‌ها:', 'woo-smart-quote' ); ?></span>
+									<a href="<?php echo esc_url( $arm64_url ); ?>" target="_blank" rel="noopener noreferrer">
+										<?php esc_html_e( 'نسخه فوق‌سبک ARM64-v8a (مخصوص گوشی‌های مدرن)', 'woo-smart-quote' ); ?>
+									</a>
+									<span>&bull;</span>
+									<span><?php esc_html_e( 'پشتیبانی از اندروید ۶.۰ به بالا', 'woo-smart-quote' ); ?></span>
+								</div>
 							</div>
 						</div>
 
-						<div style="display:flex; gap:12px; align-items:flex-start;">
-							<span style="background:#e0e7ff; color:#4338ca; border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; font-weight:bold; flex-shrink:0;">۲</span>
+						<div class="wsq-app-step-item">
+							<span class="wsq-app-step-num">۲</span>
 							<div>
-								<strong style="color:#1e293b;"><?php esc_html_e( 'اسکن بارکد جفت‌سازی یک‌کلیکه', 'woo-smart-quote' ); ?></strong>
-								<p style="margin:2px 0 0; color:#64748b; font-size:13px;"><?php esc_html_e( 'در صفحه خوش‌آمدگویی اپلیکیشن، دکمه «اسکن کد اتصال» را لمس کرده و دوربین را روبه‌روی بارکد بالا بگیرید. اتصال به صورت رمزنگاری‌شده و بدون نیاز به تایپ کلمه عبور انجام می‌شود.', 'woo-smart-quote' ); ?></p>
+								<strong class="wsq-app-step-title"><?php esc_html_e( 'اسکن بارکد جفت‌سازی یک‌کلیکه', 'woo-smart-quote' ); ?></strong>
+								<p class="wsq-app-step-desc" style="margin-bottom:0;"><?php esc_html_e( 'در صفحه خوش‌آمدگویی اپلیکیشن، دکمه «اسکن کد اتصال» را لمس کرده و دوربین را روبه‌روی بارکد بالا بگیرید. اتصال به صورت رمزنگاری‌شده و بدون نیاز به تایپ کلمه عبور انجام می‌شود.', 'woo-smart-quote' ); ?></p>
 							</div>
 						</div>
 
-						<div style="display:flex; gap:12px; align-items:flex-start;">
-							<span style="background:#e0e7ff; color:#4338ca; border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; font-weight:bold; flex-shrink:0;">۳</span>
+						<div class="wsq-app-step-item">
+							<span class="wsq-app-step-num">۳</span>
 							<div>
-								<strong style="color:#1e293b;"><?php esc_html_e( 'میز کار قیمت‌گذاری سیار (Mobile Pricing Desk)', 'woo-smart-quote' ); ?></strong>
-								<p style="margin:2px 0 0; color:#64748b; font-size:13px;"><?php esc_html_e( 'قیمت تک‌تک اقلام را با تخفیف درصدی مشخص کنید، پیش‌فاکتور با فونت زیبای وزیرمتن آنی صادر شده و مستقیماً برای مشتری ارسال می‌شود.', 'woo-smart-quote' ); ?></p>
+								<strong class="wsq-app-step-title"><?php esc_html_e( 'میز کار قیمت‌گذاری سیار (Mobile Pricing Desk)', 'woo-smart-quote' ); ?></strong>
+								<p class="wsq-app-step-desc" style="margin-bottom:0;"><?php esc_html_e( 'قیمت تک‌تک اقلام را با تخفیف درصدی مشخص کنید، پیش‌فاکتور با فونت زیبای وزیرمتن آنی صادر شده و مستقیماً برای مشتری ارسال می‌شود.', 'woo-smart-quote' ); ?></p>
 							</div>
 						</div>
 
-						<div style="display:flex; gap:12px; align-items:flex-start;">
-							<span style="background:#e0e7ff; color:#4338ca; border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; font-weight:bold; flex-shrink:0;">۴</span>
+						<div class="wsq-app-step-item">
+							<span class="wsq-app-step-num">۴</span>
 							<div>
-								<strong style="color:#1e293b;"><?php esc_html_e( 'استعلام در پس‌زمینه (مقاوم در برابر تحریم و فیلترینگ)', 'woo-smart-quote' ); ?></strong>
-								<p style="margin:2px 0 0; color:#64748b; font-size:13px;"><?php esc_html_e( 'بهره‌گیری از سرویس پیشرفته Android WorkManager بدون هیچ‌گونه وابستگی به Google Firebase، تضمین‌کننده دریافت اعلان استعلام‌های جدید حتی در شرایط اختلال شبکه است.', 'woo-smart-quote' ); ?></p>
+								<strong class="wsq-app-step-title"><?php esc_html_e( 'استعلام در پس‌زمینه (مقاوم در برابر تحریم و فیلترینگ)', 'woo-smart-quote' ); ?></strong>
+								<p class="wsq-app-step-desc" style="margin-bottom:0;"><?php esc_html_e( 'بهره‌گیری از سرویس پیشرفته Android WorkManager بدون هیچ‌گونه وابستگی به Google Firebase، تضمین‌کننده دریافت اعلان استعلام‌های جدید حتی در شرایط اختلال شبکه است.', 'woo-smart-quote' ); ?></p>
 							</div>
 						</div>
 					</div>
@@ -1699,13 +1855,13 @@ class WSQ_Admin {
 						<h3 style="margin:0;"><?php esc_html_e( 'دستگاه‌های متصل فعال به این فروشگاه', 'woo-smart-quote' ); ?></h3>
 						<p class="description" style="margin:4px 0 0;"><?php esc_html_e( 'لیست گوشی‌ها و تبلت‌هایی که مجوز دسترسی و تعیین قیمت از طریق اپلیکیشن دارند.', 'woo-smart-quote' ); ?></p>
 					</div>
-					<span class="wsq-badge" style="background:#f1f5f9; color:#475569; padding:4px 10px; border-radius:6px; font-weight:bold;">
+					<span class="wsq-badge" style="background:var(--wsq-soft); color:var(--wsq-ink); border:1px solid var(--wsq-border); padding:4px 10px; border-radius:4px; font-weight:600;">
 						<?php echo esc_html( sprintf( __( '%d دستگاه متصل', 'woo-smart-quote' ), count( $devices ) ) ); ?>
 					</span>
 				</div>
 
 				<?php if ( empty( $devices ) ) : ?>
-					<div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:20px; text-align:center; color:#64748b;">
+					<div class="wsq-app-empty-state">
 						<?php echo WSQ_Icons::get( 'phone' ); ?>
 						<p style="margin:8px 0 0; font-size:14px;"><?php esc_html_e( 'هنوز هیچ دستگاهی متصل نشده است. بارکد بالا را با اپلیکیشن اسکن نمایید.', 'woo-smart-quote' ); ?></p>
 					</div>
@@ -1734,9 +1890,9 @@ class WSQ_Admin {
 										<code dir="ltr"><?php echo esc_html( substr( $dev_id, 0, 16 ) . '...' ); ?></code>
 									</td>
 									<td><?php echo esc_html( $paired_date ); ?></td>
-									<td><span style="color:#059669; font-weight:bold;"><?php echo esc_html( $last_active ); ?></span></td>
+									<td><span style="color:var(--wsq-ok); font-weight:600;"><?php echo esc_html( $last_active ); ?></span></td>
 									<td style="text-align:left;">
-										<button type="button" class="button wsq-revoke-device-btn" data-device-id="<?php echo esc_attr( $dev_id ); ?>" style="color:#b91c1c; border-color:#f87171;">
+										<button type="button" class="button wsq-revoke-device-btn" data-device-id="<?php echo esc_attr( $dev_id ); ?>" style="color:var(--wsq-err); border-color:var(--wsq-err-border);">
 											<?php echo WSQ_Icons::get( 'trash' ); ?>
 											<span><?php esc_html_e( 'ابطال دسترسی', 'woo-smart-quote' ); ?></span>
 										</button>
@@ -1794,6 +1950,94 @@ class WSQ_Admin {
 			wp_send_json_success( array( 'message' => __( 'دسترسی دستگاه با موفقیت ابطال شد.', 'woo-smart-quote' ) ) );
 		} else {
 			wp_send_json_error( array( 'message' => __( 'دستگاه مورد نظر یافت نشد.', 'woo-smart-quote' ) ) );
+		}
+	}
+
+	/**
+	 * Get direct download URL for the companion Android APK.
+	 *
+	 * Order of resolution:
+	 * 1. Constant WSQ_COMPANION_APK_URL (if defined).
+	 * 2. Custom option 'wsq_companion_apk_url' (if set by admin).
+	 * 3. Default official public GitHub release download URL.
+	 *
+	 * Filterable via 'wsq_companion_apk_download_url'.
+	 *
+	 * @param string $variant 'universal' | 'arm64' | 'armeabi'.
+	 * @return string Direct download URL.
+	 */
+	public static function get_apk_download_url( $variant = 'universal' ) {
+		if ( 'universal' === $variant && defined( 'WSQ_COMPANION_APK_URL' ) && '' !== WSQ_COMPANION_APK_URL ) {
+			$url = (string) WSQ_COMPANION_APK_URL;
+		} elseif ( 'universal' === $variant && '' !== trim( (string) get_option( 'wsq_companion_apk_url', '' ) ) ) {
+			$url = trim( (string) get_option( 'wsq_companion_apk_url', '' ) );
+		} elseif ( 'arm64' === $variant ) {
+			$url = 'https://github.com/HasanMfar/nerkhnegar-companion-releases/releases/latest/download/app-arm64-v8a-release.apk';
+		} elseif ( 'armeabi' === $variant ) {
+			$url = 'https://github.com/HasanMfar/nerkhnegar-companion-releases/releases/latest/download/app-armeabi-v7a-release.apk';
+		} else {
+			$url = 'https://github.com/HasanMfar/nerkhnegar-companion-releases/releases/latest/download/app-release.apk';
+		}
+
+		/**
+		 * Filter the companion Android APK download URL.
+		 *
+		 * @param string $url     Resolved download URL.
+		 * @param string $variant Architecture variant.
+		 */
+		return (string) apply_filters( 'wsq_companion_apk_download_url', $url, $variant );
+	}
+
+	/**
+	 * Get the URL to the companion app releases page.
+	 *
+	 * @return string
+	 */
+	public static function get_releases_page_url() {
+		$default = 'https://github.com/HasanMfar/nerkhnegar-companion-releases/releases/latest';
+
+		/**
+		 * Filter the companion app releases page URL.
+		 *
+		 * @param string $url Releases URL.
+		 */
+		return (string) apply_filters( 'wsq_companion_releases_page_url', $default );
+	}
+
+	/**
+	 * AJAX: Save or reset custom companion APK download URL.
+	 */
+	public function ajax_save_apk_url() {
+		check_ajax_referer( 'wsq_admin_test_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_send_json_error( array( 'message' => __( 'دسترسی غیرمجاز.', 'woo-smart-quote' ) ) );
+		}
+
+		$raw_url = isset( $_POST['apk_url'] ) ? sanitize_text_field( wp_unslash( $_POST['apk_url'] ) ) : '';
+		$url     = '' !== $raw_url ? esc_url_raw( $raw_url ) : '';
+
+		if ( '' !== $raw_url ) {
+			$parsed = function_exists( 'wp_parse_url' ) ? wp_parse_url( $url ) : parse_url( $url );
+			if ( empty( $url ) || ! is_array( $parsed ) || empty( $parsed['scheme'] ) || empty( $parsed['host'] ) || ! in_array( strtolower( $parsed['scheme'] ), array( 'http', 'https' ), true ) ) {
+				wp_send_json_error( array( 'message' => __( 'آدرس وارد شده باید یک نشانی وب معتبر با پروتکل https:// یا http:// باشد.', 'woo-smart-quote' ) ) );
+			}
+		}
+
+		if ( '' === $url ) {
+			delete_option( 'wsq_companion_apk_url' );
+			wp_send_json_success( array(
+				'message'   => __( 'آدرس دانلود به لینک پیش‌فرض رسمی گیت‌هاب بازگردانی شد.', 'woo-smart-quote' ),
+				'apk_url'   => self::get_apk_download_url(),
+				'is_custom' => false,
+			) );
+		} else {
+			update_option( 'wsq_companion_apk_url', $url );
+			wp_send_json_success( array(
+				'message'   => __( 'آدرس اختصاصی دانلود APK با موفقیت ذخیره شد.', 'woo-smart-quote' ),
+				'apk_url'   => $url,
+				'is_custom' => true,
+			) );
 		}
 	}
 }

@@ -110,15 +110,15 @@
 
     <!-- Main Title -->
     <text x="680" y="150" font-size="34" font-weight="900" fill="#FFFFFF" text-anchor="start" letter-spacing="-0.5">
-      هوشمند استعلام قیمت
+      نرخنگار
     </text>
     <text x="680" y="195" font-size="28" font-weight="800" fill="#A5B4FC" text-anchor="start" letter-spacing="-0.3">
-      WooCommerce Smart Quote
+      استعلام قیمت و پیش‌فاکتور رسمی
     </text>
 
     <!-- Description -->
     <text x="680" y="240" font-size="14.5" font-weight="500" fill="#CBD5E1" text-anchor="start" opacity="0.9">
-      سیستم جامع دریافت استعلام قیمت، صدور خودکار پیش‌فاکتور
+      راهکار حرفه‌ای ثبت استعلام قیمت، صدور خودکار پیش‌فاکتور
     </text>
     <text x="680" y="265" font-size="14.5" font-weight="500" fill="#CBD5E1" text-anchor="start" opacity="0.9">
       رسمی PDF با فونت فارسی و ارسال فوری به بات بله و ایتا
@@ -144,7 +144,7 @@
       <g transform="translate(0, 68)">
         <circle cx="-10" cy="-5" r="9" fill="#065F46"/>
         <path d="M -13 -5 L -11 -3 L -7 -7" stroke="#34D399" stroke-width="1.8" fill="none" stroke-linecap="round"/>
-        <text x="-28" y="0" font-size="13.5" font-weight="600" fill="#F1F5F9" text-anchor="start">تجربه کاربری بی‌نقص، بدون اصطکاک و ۱۰۰٪ بهینه‌شده برای موبایل</text>
+        <text x="-28" y="0" font-size="13.5" font-weight="600" fill="#F1F5F9" text-anchor="start">تجربه کاربری روان، بدون اصطکاک و بهینه‌شده برای موبایل</text>
       </g>
     </g>
 

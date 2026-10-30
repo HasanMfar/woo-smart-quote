@@ -38,10 +38,18 @@ $groups = array(
 			'wsq_national_id',
 			'wsq_economic_code',
 			'wsq_registration_no',
+			'wsq_company_postal_code',
 			'wsq_company_phone',
 			'wsq_company_address',
+			'wsq_company_bank_name',
+			'wsq_company_bank_account',
+			'wsq_company_bank_shaba',
+			'wsq_company_bank_owner',
+			'wsq_company_seal_image',
 			'wsq_show_digital_stamp',
 			'wsq_stamp_text',
+			'wsq_company_signature_image',
+			'wsq_show_digital_signature',
 			'wsq_pdf_header_note',
 			'wsq_pdf_validity_days',
 			'wsq_pdf_retention_days',
@@ -133,7 +141,7 @@ $wsq_prefixed = array_values(
 );
 $extra = array_diff( $wsq_prefixed, $all_options );
 oks( 'no option is registered outside the six groups', empty( $extra ), implode( ', ', $extra ) );
-oks( 'all 36 settings options are registered', 36 === count( $all_options ) && 36 === count( array_intersect( $all_options, $wsq_prefixed ) ), 'count=' . count( array_intersect( $all_options, $wsq_prefixed ) ) );
+oks( 'all 44 settings options are registered', 44 === count( $all_options ) && 44 === count( array_intersect( $all_options, $wsq_prefixed ) ), 'count=' . count( array_intersect( $all_options, $wsq_prefixed ) ) );
 
 /**
  * Render one tab and return the HTML.

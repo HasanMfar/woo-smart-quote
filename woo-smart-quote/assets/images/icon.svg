@@ -1,117 +1,88 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
-    <!-- Background Gradient -->
+    <!-- Background Squircle Gradient (Electric Cobalt to Midnight Navy) -->
     <linearGradient id="sqBg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#4F46E5"/>
-      <stop offset="50%" stop-color="#6366F1"/>
-      <stop offset="100%" stop-color="#7C3AED"/>
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="48%" stop-color="#1D4ED8"/>
+      <stop offset="100%" stop-color="#0B234F"/>
     </linearGradient>
 
-    <!-- Document Gradient -->
-    <linearGradient id="sqDoc" x1="0%" y1="0%" x2="0%" y2="100%">
+    <!-- White Chevron Gradient -->
+    <linearGradient id="sqWhite" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#FFFFFF"/>
       <stop offset="100%" stop-color="#F1F5F9"/>
     </linearGradient>
 
-    <!-- Accent Gradient for Quotes & Spark -->
-    <linearGradient id="sqAccent" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#06B6D4"/>
-      <stop offset="100%" stop-color="#10B981"/>
+    <!-- Cyan Chevron Gradient -->
+    <linearGradient id="sqCyan" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="50%" stop-color="#0EA5E9"/>
+      <stop offset="100%" stop-color="#0284C7"/>
     </linearGradient>
 
-    <!-- Badge Gradient -->
-    <linearGradient id="sqBadge" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#10B981"/>
+    <!-- Emerald Spark Gradient -->
+    <linearGradient id="sqSpark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34D399"/>
       <stop offset="100%" stop-color="#059669"/>
     </linearGradient>
 
-    <!-- Shadow -->
+    <!-- Drop Shadows -->
     <filter id="sqShadow" x="-10%" y="-10%" width="130%" height="130%">
-      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#1E1B4B" flood-opacity="0.35"/>
+      <feDropShadow dx="0" dy="24" stdDeviation="28" flood-color="#071324" flood-opacity="0.55"/>
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#1D4ED8" flood-opacity="0.35"/>
     </filter>
-    <filter id="docShadow" x="-10%" y="-10%" width="130%" height="130%">
-      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#1E1B4B" flood-opacity="0.18"/>
+
+    <filter id="chvShadow512" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="15" flood-color="#06152D" flood-opacity="0.55"/>
     </filter>
-    <filter id="badgeShadow" x="-20%" y="-20%" width="150%" height="150%">
-      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#065F46" flood-opacity="0.35"/>
+
+    <filter id="sparkGlow512" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#10B981" flood-opacity="0.6"/>
     </filter>
   </defs>
 
-  <!-- Base Squircle Container -->
-  <rect x="28" y="28" width="456" height="456" rx="104" fill="url(#sqBg)" filter="url(#sqShadow)"/>
+  <!-- Base Squircle Container (118px corner radius) -->
+  <rect x="28" y="28" width="456" height="456" rx="118" fill="url(#sqBg)" filter="url(#sqShadow)"/>
 
-  <!-- Subtle Inner Border Glow -->
-  <rect x="29" y="29" width="454" height="454" rx="103" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-opacity="0.2"/>
+  <!-- Inner Top Rim Highlight -->
+  <rect x="29" y="29" width="454" height="454" rx="117" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-opacity="0.35"/>
 
-  <!-- Quote Document Body -->
-  <g filter="url(#docShadow)">
-    <!-- Document Sheet with folded corner -->
-    <path d="M 144 96 
-             L 316 96 
-             L 384 164 
-             L 384 396 
-             A 24 24 0 0 1 360 420 
-             L 144 420 
-             A 24 24 0 0 1 120 396 
-             L 120 120 
-             A 24 24 0 0 1 144 96 Z" 
-          fill="url(#sqDoc)"/>
+  <!-- Centered Twin Persian Quotation Chevrons (« ») -->
+  <g transform="translate(88, 88) scale(3.27)" filter="url(#chvShadow512)">
+    <!-- Primary Chevron (Left - Radiant Pure White) -->
+    <path d="M43 21 
+             C44.8 19.3 47.7 20.3 48 22.8 
+             L48 35.2 
+             C48 36.6 47.3 37.9 46.1 38.7 
+             L35.2 46.5 
+             C33.8 47.5 33.8 49.5 35.2 50.5 
+             L46.1 58.3 
+             C47.3 59.1 48 60.4 48 61.8 
+             L48 74.2 
+             C47.7 76.7 44.8 77.7 43 76 
+             L23.4 53.6 
+             C21.5 51.5 21.5 48.5 23.4 46.4 
+             Z" 
+          fill="url(#sqWhite)"/>
 
-    <!-- Document Fold -->
-    <path d="M 316 96 
-             L 316 148 
-             A 16 16 0 0 0 332 164 
-             L 384 164 Z" 
-          fill="#CBD5E1"/>
-  </g>
+    <!-- Secondary Chevron (Right - Electric Cyan Azure) -->
+    <path d="M69 21 
+             C70.8 19.3 73.7 20.3 74 22.8 
+             L74 35.2 
+             C74 36.6 73.3 37.9 72.1 38.7 
+             L61.2 46.5 
+             C59.8 47.5 59.8 49.5 61.2 50.5 
+             L72.1 58.3 
+             C73.3 59.1 74 60.4 74 61.8 
+             L74 74.2 
+             C73.7 76.7 70.8 77.7 69 76 
+             L49.4 53.6 
+             C47.5 51.5 47.5 48.5 49.4 46.4 
+             Z" 
+          fill="url(#sqCyan)"/>
 
-  <!-- Quotation Marks Symbol (Prominent Hero Graphic) -->
-  <g fill="url(#sqBg)">
-    <!-- First Quote Mark -->
-    <path d="M 166 220 
-             C 166 195 182 178 206 178 
-             C 214 178 222 181 226 186 
-             C 218 200 216 216 216 226 
-             L 226 226 
-             C 233 226 238 231 238 238 
-             L 238 262 
-             C 238 269 233 274 226 274 
-             L 190 274 
-             C 177 274 166 263 166 250 
-             Z"/>
-
-    <!-- Second Quote Mark -->
-    <path d="M 248 220 
-             C 248 195 264 178 288 178 
-             C 296 178 304 181 308 186 
-             C 300 200 298 216 298 226 
-             L 308 226 
-             C 315 226 320 231 320 238 
-             L 320 262 
-             C 320 269 315 274 308 274 
-             L 272 274 
-             C 259 274 248 263 248 250 
-             Z"/>
-  </g>
-
-  <!-- Document Quote Rows / Estimate Lines -->
-  <g fill="#94A3B8">
-    <rect x="166" y="306" width="172" height="12" rx="6" fill="#94A3B8" opacity="0.6"/>
-    <rect x="166" y="334" width="130" height="12" rx="6" fill="#94A3B8" opacity="0.4"/>
-    <rect x="166" y="362" width="80" height="12" rx="6" fill="#94A3B8" opacity="0.3"/>
-  </g>
-
-  <!-- Smart Speed Badge (Bottom Right Seal) -->
-  <g filter="url(#badgeShadow)">
-    <circle cx="360" cy="376" r="46" fill="url(#sqBadge)"/>
-    <circle cx="360" cy="376" r="44" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-opacity="0.3"/>
-    <!-- Smart Lightning Spark / Check inside badge -->
-    <path d="M 364 348 
-             L 344 376 
-             L 358 376 
-             L 354 404 
-             L 378 372 
-             L 364 372 Z" 
-          fill="#FFFFFF"/>
+    <!-- Emerald Verification Node -->
+    <circle cx="78" cy="50" r="5.5" fill="url(#sqSpark)" filter="url(#sparkGlow512)"/>
+    <circle cx="78" cy="50" r="2.5" fill="#FFFFFF"/>
   </g>
 </svg>

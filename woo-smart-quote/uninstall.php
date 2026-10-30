@@ -1,6 +1,6 @@
 <?php
 /**
- * WooCommerce Smart Quote uninstall routine.
+ * Nerkhnegar (woo-smart-quote) uninstall routine.
  *
  * Runs only when the plugin is deleted via WordPress admin (UNINSTALL_PLUGIN
  * is only defined during a single-file uninstall, so we also allow the
@@ -34,10 +34,18 @@ function wsq_uninstall_cleanup() {
 		'wsq_national_id',
 		'wsq_economic_code',
 		'wsq_registration_no',
+		'wsq_company_postal_code',
 		'wsq_company_phone',
 		'wsq_company_address',
+		'wsq_company_bank_name',
+		'wsq_company_bank_account',
+		'wsq_company_bank_shaba',
+		'wsq_company_bank_owner',
+		'wsq_company_seal_image',
 		'wsq_show_digital_stamp',
 		'wsq_stamp_text',
+		'wsq_company_signature_image',
+		'wsq_show_digital_signature',
 		'wsq_button_text',
 		'wsq_enable_archive_button',
 		'wsq_enable_floating_cart',
@@ -68,6 +76,7 @@ function wsq_uninstall_cleanup() {
 		'wsq_bale_last_update_id',
 		// Companion app (1.0.0).
 		'wsq_paired_devices',
+		'wsq_companion_apk_url',
 	);
 
 	foreach ( $options as $option ) {

@@ -194,7 +194,7 @@ class WSQ_Order {
 
 		add_meta_box(
 			'wsq_quote_pricing_box',
-			__( 'قیمت‌گذاری تفکیکی اقلام و ارسال به خریدار (Smart Quote)', 'woo-smart-quote' ),
+			__( 'قیمت‌گذاری تفکیکی اقلام و ارسال به خریدار (نرخنگار)', 'woo-smart-quote' ),
 			array( $this, 'render_quote_pricing_meta_box' ),
 			$screen,
 			'normal',
@@ -264,37 +264,213 @@ class WSQ_Order {
 			);
 		}
 		?>
-		<div class="wsq-pricing-metabox" style="font-family:inherit;">
+		<div class="wsq-pricing-metabox">
 			<style>
-				/* Local SVG icons: sized from the surrounding font, no CDN. */
-				.wsq-pricing-metabox .wsq-icon { width: 1.1em; height: 1.1em; flex-shrink: 0; vertical-align: -0.16em; }
+				/* WordPress Native Enterprise Styling for Order Pricing */
+				.wsq-pricing-metabox {
+					--wsq-border: #c3c4c7;
+					--wsq-border-light: #dcdcde;
+					--wsq-bg-light: #f6f7f7;
+					--wsq-ink: #1d2327;
+					--wsq-muted: #50575e;
+					--wsq-primary: #2271b1;
+					--wsq-primary-hover: #135e96;
+					--wsq-ok: #007017;
+					--wsq-ok-bg: #edfaef;
+					--wsq-ok-border: #68de7c;
+					--wsq-warn: #996800;
+					--wsq-warn-bg: #fcf9e8;
+					--wsq-warn-border: #dba617;
+					--wsq-err: #d63638;
+					--wsq-err-bg: #fcf0f1;
+					--wsq-err-border: #f1aeb5;
+					font-family: inherit;
+				}
+				.wsq-pricing-metabox .wsq-icon { width: 1.15em; height: 1.15em; flex-shrink: 0; vertical-align: -0.16em; }
 				.wsq-pricing-metabox .button > .wsq-icon { margin-inline-end: 5px; }
-				.wsq-pricing-metabox .wsq-mb-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; box-shadow: inset 0 0 0 1.5px rgba(255,255,255,0.9); }
-				.wsq-pricing-metabox .wsq-mb-chips { display: flex; flex-wrap: wrap; gap: 5px; justify-content: flex-start; margin-top: 6px; }
-				.wsq-pricing-metabox .wsq-mb-chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; line-height: 1.8; border: 1px solid; }
-				.wsq-pricing-metabox .wsq-mb-chip.is-on { background: #ecfdf5; border-color: #a7f3d0; color: #065f46; }
-				.wsq-pricing-metabox .wsq-mb-chip.is-off { background: #f8fafc; border-color: #e2e8f0; color: #64748b; }
-				.wsq-pricing-metabox .wsq-mb-chip.is-warn { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+				.wsq-pricing-metabox .wsq-mb-header {
+					display: flex;
+					justify-content: space-between;
+					align-items: center;
+					background: var(--wsq-bg-light);
+					padding: 12px 16px;
+					border-radius: 4px;
+					margin-bottom: 16px;
+					border: 1px solid var(--wsq-border);
+					gap: 14px;
+					flex-wrap: wrap;
+				}
+				.wsq-pricing-metabox .wsq-mb-status-lead {
+					display: inline-flex;
+					align-items: center;
+					gap: 8px;
+					font-size: 13px;
+				}
+				.wsq-pricing-metabox .wsq-mb-status-badge {
+					display: inline-flex;
+					align-items: center;
+					gap: 5px;
+					padding: 3px 10px;
+					border-radius: 3px;
+					font-size: 12px;
+					font-weight: 700;
+					border: 1px solid transparent;
+				}
+				.wsq-pricing-metabox .wsq-mb-status-badge.is-pending {
+					background: var(--wsq-warn-bg);
+					color: var(--wsq-warn);
+					border-color: var(--wsq-warn-border);
+				}
+				.wsq-pricing-metabox .wsq-mb-status-badge.is-sent {
+					background: #f0f6fc;
+					color: #135e96;
+					border-color: #c5d9ed;
+				}
+				.wsq-pricing-metabox .wsq-mb-status-badge.is-other {
+					background: var(--wsq-ok-bg);
+					color: var(--wsq-ok);
+					border-color: var(--wsq-ok-border);
+				}
+				.wsq-pricing-metabox .wsq-mb-buyer-info {
+					color: var(--wsq-muted);
+					font-size: 12.5px;
+				}
+				.wsq-pricing-metabox .wsq-mb-dot {
+					display: inline-block;
+					width: 8px;
+					height: 8px;
+					border-radius: 50%;
+					flex-shrink: 0;
+				}
+				.wsq-pricing-metabox .wsq-mb-chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-start; margin-top: 8px; }
+				.wsq-pricing-metabox .wsq-mb-chip {
+					display: inline-flex;
+					align-items: center;
+					gap: 5px;
+					padding: 3px 9px;
+					border-radius: 3px;
+					font-size: 11.5px;
+					font-weight: 600;
+					line-height: 1.5;
+					border: 1px solid var(--wsq-border);
+					background: #ffffff;
+					color: var(--wsq-ink);
+				}
+				.wsq-pricing-metabox .wsq-mb-chip.is-on { background: var(--wsq-ok-bg); border-color: var(--wsq-ok-border); color: var(--wsq-ok); }
+				.wsq-pricing-metabox .wsq-mb-chip.is-off { background: #f0f0f1; border-color: var(--wsq-border); color: var(--wsq-muted); }
+				.wsq-pricing-metabox .wsq-mb-chip.is-warn { background: var(--wsq-warn-bg); border-color: var(--wsq-warn-border); color: var(--wsq-warn); }
 				.wsq-pricing-metabox .wsq-mb-chip[title] { cursor: help; }
 				.wsq-pricing-metabox .wsq-mb-checks { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; }
-				.wsq-pricing-metabox .wsq-mb-check-btn { font-size: 11px; line-height: 1.6; padding: 2px 8px; }
-				.wsq-pricing-metabox .wsq-mb-check-note { color: #64748b; font-size: 11px; }
-				.wsq-pricing-metabox .wsq-mb-check-result { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+				.wsq-pricing-metabox .wsq-mb-check-btn { font-size: 11.5px; line-height: 1.8; padding: 2px 10px; }
+				.wsq-pricing-metabox .wsq-mb-check-note { color: var(--wsq-muted); font-size: 11.5px; }
+				.wsq-pricing-metabox .wsq-mb-check-result { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
 				.wsq-pricing-metabox .wsq-mb-check-result[hidden] { display: none; }
+				.wsq-pricing-metabox .wsq-mb-success-notice {
+					background: var(--wsq-ok-bg);
+					border: 1px solid var(--wsq-ok-border);
+					border-inline-start-width: 4px;
+					color: var(--wsq-ok);
+					padding: 10px 14px;
+					border-radius: 3px;
+					margin-bottom: 16px;
+					font-weight: 600;
+					font-size: 13px;
+					display: flex;
+					align-items: center;
+					gap: 8px;
+				}
+				.wsq-pricing-metabox .wsq-mb-table { margin-bottom: 16px; }
+				.wsq-pricing-metabox .wsq-mb-table th { font-weight: 700; color: var(--wsq-ink); }
+				.wsq-pricing-metabox .wsq-calc-price { width: 100%; font-weight: 700; color: var(--wsq-ink); }
+				.wsq-pricing-metabox .wsq-row-subtotal { text-align: left; font-weight: 700; color: var(--wsq-ink); }
+				.wsq-pricing-metabox .wsq-mb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+				.wsq-pricing-metabox .wsq-mb-card {
+					background: var(--wsq-bg-light);
+					padding: 14px;
+					border-radius: 4px;
+					border: 1px solid var(--wsq-border);
+				}
+				.wsq-pricing-metabox .wsq-mb-card label { display: block; font-weight: 700; margin-bottom: 5px; color: var(--wsq-ink); font-size: 13px; }
+				.wsq-pricing-metabox .wsq-mb-card small { color: var(--wsq-muted); display: block; margin-top: 5px; font-size: 12px; }
+				.wsq-pricing-metabox #wsq-pricing-error-notice {
+					display: none;
+					background: var(--wsq-err-bg);
+					border: 1px solid var(--wsq-err-border);
+					border-inline-start-width: 4px;
+					color: var(--wsq-err);
+					padding: 10px 14px;
+					border-radius: 3px;
+					margin-bottom: 14px;
+					font-weight: 600;
+					font-size: 13px;
+				}
+				.wsq-pricing-metabox .wsq-mb-total-card {
+					background: #ffffff;
+					border: 1px solid var(--wsq-border);
+					border-inline-start: 4px solid var(--wsq-primary);
+					border-radius: 4px;
+					padding: 14px 18px;
+					display: flex;
+					justify-content: space-between;
+					align-items: center;
+					margin-bottom: 16px;
+					flex-wrap: wrap;
+					gap: 12px;
+				}
+				.wsq-pricing-metabox .wsq-mb-total-label { font-size: 13.5px; color: var(--wsq-ink); font-weight: 700; }
+				.wsq-pricing-metabox #wsq-calc-grand-total { font-size: 20px; color: var(--wsq-primary); margin-inline-start: 6px; font-weight: 800; }
+				.wsq-pricing-metabox .wsq-send-proposal-btn { font-weight: 700 !important; padding: 6px 20px !important; height: auto !important; font-size: 13.5px !important; min-height: 38px !important; }
+				.wsq-pricing-metabox .wsq-mb-dispatch {
+					background: #ffffff;
+					border: 1px solid var(--wsq-border);
+					border-radius: 4px;
+					padding: 14px 18px;
+					margin-top: 12px;
+				}
+				.wsq-pricing-metabox .wsq-mb-dispatch-head {
+					display: flex;
+					justify-content: space-between;
+					align-items: center;
+					margin-bottom: 12px;
+					border-bottom: 1px solid var(--wsq-border-light);
+					padding-bottom: 10px;
+					flex-wrap: wrap;
+					gap: 8px;
+				}
+				.wsq-pricing-metabox .wsq-mb-phone-badge {
+					direction: ltr;
+					font-family: Consolas, monospace;
+					background: #f0f0f1;
+					border: 1px solid var(--wsq-border);
+					padding: 2px 8px;
+					border-radius: 3px;
+					font-weight: 700;
+					color: var(--wsq-primary);
+				}
+				.wsq-pricing-metabox .wsq-btn-bale { background: #f0f6fc !important; color: #135e96 !important; border-color: #c5d9ed !important; font-weight: 600 !important; }
+				.wsq-pricing-metabox .wsq-btn-bale:hover { background: #e0eef9 !important; border-color: #2271b1 !important; }
+				.wsq-pricing-metabox .wsq-btn-eitaa { background: #fcf9e8 !important; color: #996800 !important; border-color: #dba617 !important; font-weight: 600 !important; }
+				.wsq-pricing-metabox .wsq-btn-eitaa:hover { background: #faf3cb !important; }
+				.wsq-pricing-metabox .wsq-btn-wa { background: #edfaef !important; color: #007017 !important; border-color: #68de7c !important; font-weight: 600 !important; }
+				.wsq-pricing-metabox .wsq-btn-wa:hover { background: #daf3de !important; }
+				.wsq-pricing-metabox .wsq-btn-copy { border-color: var(--wsq-border) !important; font-weight: 600 !important; color: var(--wsq-ink) !important; }
+				.wsq-pricing-metabox .wsq-btn-resend { border-color: var(--wsq-primary) !important; color: var(--wsq-primary) !important; font-weight: 600 !important; }
+				.wsq-pricing-metabox .wsq-btn-resend:hover { background: #f0f6fc !important; }
+				.wsq-pricing-metabox #wsq-resend-status { font-size: 12px; margin-inline-start: 8px; font-weight: 700; }
 			</style>
-			<div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:10px 14px; border-radius:8px; margin-bottom:15px; border:1px solid #e2e8f0;">
-				<div>
-					<strong><?php esc_html_e( 'وضعیت فعلی استعلام:', 'woo-smart-quote' ); ?></strong>
+			<div class="wsq-mb-header">
+				<div class="wsq-mb-status-lead">
+					<strong><?php esc_html_e( 'وضعیت استعلام:', 'woo-smart-quote' ); ?></strong>
 					<?php if ( 'quote-request' === $status ) : ?>
-						<span style="color:#d97706; font-weight:800; margin-right:6px;"><?php echo WSQ_Icons::get( 'clock' ); ?> <?php esc_html_e( 'در انتظار اعلام قیمت کارشناس', 'woo-smart-quote' ); ?></span>
+						<span class="wsq-mb-status-badge is-pending"><?php echo WSQ_Icons::get( 'clock' ); ?> <?php esc_html_e( 'در انتظار اعلام قیمت', 'woo-smart-quote' ); ?></span>
 					<?php elseif ( 'quote-sent' === $status ) : ?>
-						<span style="color:#2563eb; font-weight:800; margin-right:6px;"><?php echo WSQ_Icons::get( 'mail' ); ?> <?php esc_html_e( 'پیشنهاد قیمت برای مشتری ارسال شد', 'woo-smart-quote' ); ?></span>
+						<span class="wsq-mb-status-badge is-sent"><?php echo WSQ_Icons::get( 'mail' ); ?> <?php esc_html_e( 'پیشنهاد قیمت ارسال شد', 'woo-smart-quote' ); ?></span>
 					<?php else : ?>
-						<span style="color:#059669; font-weight:800; margin-right:6px;"><?php echo esc_html( wc_get_order_status_name( $status ) ); ?></span>
+						<span class="wsq-mb-status-badge is-other"><?php echo esc_html( wc_get_order_status_name( $status ) ); ?></span>
 					<?php endif; ?>
 				</div>
 				<div>
-					<span style="color:#64748b; font-size:12px;"><?php esc_html_e( 'خریدار:', 'woo-smart-quote' ); ?> <b><?php echo esc_html( $order->get_formatted_billing_full_name() ); ?></b> (<?php echo esc_html( $order->get_billing_phone() ); ?>)</span>
+					<span class="wsq-mb-buyer-info"><?php esc_html_e( 'خریدار:', 'woo-smart-quote' ); ?> <b><?php echo esc_html( $order->get_formatted_billing_full_name() ); ?></b> (<?php echo esc_html( $order->get_billing_phone() ); ?>)</span>
 					<div class="wsq-mb-chips">
 						<?php foreach ( $bot_channels as $channel ) : ?>
 							<span class="wsq-mb-chip <?php echo esc_attr( $channel['state'] ); ?>" title="<?php echo esc_attr( $channel['hint'] ); ?>">
@@ -307,7 +483,7 @@ class WSQ_Order {
 					</div>
 					<div class="wsq-mb-checks">
 						<button type="button" class="button wsq-mb-check-btn" id="wsq-check-bots-btn"><?php echo WSQ_Icons::get( 'refresh' ); ?> <?php esc_html_e( 'بررسی اتصال ربات', 'woo-smart-quote' ); ?></button>
-						<span class="wsq-mb-check-note"><?php esc_html_e( 'توکن‌ها را بدون ارسال پیام از پنل بله و ایتا می‌پرسد.', 'woo-smart-quote' ); ?></span>
+						<span class="wsq-mb-check-note"><?php esc_html_e( 'بررسی مستقیم توکن‌ها با وب‌سرویس بله و ایتا بدون ارسال پیام.', 'woo-smart-quote' ); ?></span>
 					</div>
 					<div class="wsq-mb-check-result" id="wsq-check-bots-result" role="status" aria-live="polite" hidden></div>
 				</div>
@@ -318,18 +494,18 @@ class WSQ_Order {
 				<input type="hidden" name="order_id" value="<?php echo esc_attr( $order_id ); ?>">
 				<input type="hidden" id="wsq_pricing_nonce" name="wsq_pricing_nonce" value="<?php echo esc_attr( wp_create_nonce( 'wsq_pricing_proposal_nonce' ) ); ?>">
 				<?php if ( isset( $_GET['wsq_proposal_sent'] ) ) : ?>
-					<div style="background:#ecfdf5; border:1px solid #a7f3d0; color:#065f46; padding:10px 14px; border-radius:8px; margin-bottom:15px; font-weight:bold;">
-						<?php echo WSQ_Icons::get( 'check' ); ?> <?php esc_html_e( 'قیمت‌ها ذخیره و پیش‌فاکتور برای خریدار ارسال شد.', 'woo-smart-quote' ); ?>
+					<div class="wsq-mb-success-notice">
+						<?php echo WSQ_Icons::get( 'check' ); ?> <?php esc_html_e( 'قیمت‌ها با موفقیت ذخیره و پیش‌فاکتور برای خریدار ارسال شد.', 'woo-smart-quote' ); ?>
 					</div>
 				<?php endif; ?>
 
 				<!-- Items Pricing Table -->
-				<table class="wp-list-table widefat fixed striped" style="margin-bottom:15px;">
+				<table class="wp-list-table widefat fixed striped wsq-mb-table">
 					<thead>
 						<tr>
 							<th style="width:5%;">#</th>
-							<th style="width:40%;"><?php esc_html_e( 'شرح کالا / خدمات استعلام شده', 'woo-smart-quote' ); ?></th>
-							<th style="width:12%; text-align:center;"><?php esc_html_e( 'تعداد درخواستی', 'woo-smart-quote' ); ?></th>
+							<th style="width:38%;"><?php esc_html_e( 'شرح کالا / خدمات استعلام شده', 'woo-smart-quote' ); ?></th>
+							<th style="width:14%; text-align:center; white-space:nowrap;"><?php esc_html_e( 'تعداد درخواستی', 'woo-smart-quote' ); ?></th>
 							<th style="width:23%;"><?php esc_html_e( 'قیمت واحد پیشنهادی (تومان)', 'woo-smart-quote' ); ?></th>
 							<th style="width:20%; text-align:left;"><?php esc_html_e( 'مبلغ ردیف (تومان)', 'woo-smart-quote' ); ?></th>
 						</tr>
@@ -349,7 +525,7 @@ class WSQ_Order {
 									<?php
 									$meta_data = $item->get_formatted_meta_data( '' );
 									if ( ! empty( $meta_data ) ) {
-										echo '<div style="font-size:11px; color:#64748b;">';
+										echo '<div style="font-size:11px; color:#50575e;">';
 										foreach ( $meta_data as $meta ) {
 											echo esc_html( $meta->display_key ) . ': ' . esc_html( $meta->display_value ) . ' | ';
 										}
@@ -358,7 +534,7 @@ class WSQ_Order {
 									?>
 								</td>
 								<td style="text-align:center;">
-									<span style="font-weight:bold; font-size:13px;"><?php echo esc_html( $qty ); ?></span>
+									<span style="font-weight:700; font-size:13px;"><?php echo esc_html( $qty ); ?></span>
 								</td>
 								<td>
 									<input type="number" 
@@ -366,12 +542,11 @@ class WSQ_Order {
 										   value="<?php echo esc_attr( $unit_price ); ?>" 
 										   class="wsq-calc-price regular-text" 
 										   data-qty="<?php echo esc_attr( $qty ); ?>" 
-										   style="width:100%; font-weight:bold; color:#0f172a;" 
 										   step="1000" 
 										   placeholder="<?php esc_attr_e( 'قیمت واحد را وارد کنید', 'woo-smart-quote' ); ?>" 
 										   required>
 								</td>
-								<td style="text-align:left; font-weight:bold; color:#4f46e5;" class="wsq-row-subtotal">
+								<td class="wsq-row-subtotal">
 									<?php echo number_format( $subtotal ); ?>
 								</td>
 							</tr>
@@ -380,32 +555,32 @@ class WSQ_Order {
 				</table>
 
 				<!-- Proposal Details & Actions -->
-				<div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
-					<div style="background:#f8fafc; padding:12px; border-radius:8px; border:1px solid #e2e8f0;">
-						<label for="wsq_quote_validity" style="display:block; font-weight:bold; margin-bottom:4px;"><?php echo WSQ_Icons::get( 'clock' ); ?> <?php esc_html_e( 'مهلت اعتبار این پیشنهاد قیمت:', 'woo-smart-quote' ); ?></label>
+				<div class="wsq-mb-grid">
+					<div class="wsq-mb-card">
+						<label for="wsq_quote_validity"><?php echo WSQ_Icons::get( 'clock' ); ?> <?php esc_html_e( 'مهلت اعتبار این پیشنهاد قیمت:', 'woo-smart-quote' ); ?></label>
 						<input type="text" id="wsq_quote_validity" name="wsq_quote_validity" value="<?php echo esc_attr( $validity ); ?>" class="regular-text" style="width:100%;" placeholder="<?php esc_attr_e( 'مثال: ۲۴ ساعت کاری / تا پایان وقت اداری', 'woo-smart-quote' ); ?>">
-						<small style="color:#64748b; display:block; margin-top:4px;"><?php esc_html_e( 'این مهلت در پیش‌فاکتور رسمی و پیام خریدار درج خواهد شد.', 'woo-smart-quote' ); ?></small>
+						<small><?php esc_html_e( 'این مهلت در پیش‌فاکتور رسمی و پیام خریدار درج خواهد شد.', 'woo-smart-quote' ); ?></small>
 					</div>
 
-					<div style="background:#f8fafc; padding:12px; border-radius:8px; border:1px solid #e2e8f0;">
-						<label for="wsq-payment-url" style="display:block; font-weight:bold; margin-bottom:4px;"><?php echo WSQ_Icons::get( 'link' ); ?> <?php esc_html_e( 'لینک پرداخت مستقیم خریدار (Order Pay Link):', 'woo-smart-quote' ); ?></label>
-						<input type="text" id="wsq-payment-url" readonly value="<?php echo esc_url( $payment_url ); ?>" style="width:100%; font-size:11px; direction:ltr; background:#fff;">
-						<small style="color:#64748b; display:block; margin-top:4px;"><?php esc_html_e( 'خریدار با این لینک مستقیماً به درگاه پرداخت شاپرک متصل می‌شود.', 'woo-smart-quote' ); ?></small>
+					<div class="wsq-mb-card">
+						<label for="wsq-payment-url"><?php echo WSQ_Icons::get( 'link' ); ?> <?php esc_html_e( 'لینک پرداخت مستقیم خریدار:', 'woo-smart-quote' ); ?> <span dir="ltr">(Order Pay Link)</span></label>
+						<input type="text" id="wsq-payment-url" readonly value="<?php echo esc_url( $payment_url ); ?>" style="width:100%; font-size:11.5px; direction:ltr; background:#fff;">
+						<small><?php esc_html_e( 'خریدار با این لینک مستقیماً به درگاه پرداخت شاپرک متصل می‌شود.', 'woo-smart-quote' ); ?></small>
 					</div>
 				</div>
 
-				<div id="wsq-pricing-error-notice" style="display:none; background:#fef2f2; border:1px solid #fecaca; color:#991b1b; padding:10px 14px; border-radius:8px; margin-bottom:12px; font-weight:bold; font-size:13px;" role="alert"></div>
+				<div id="wsq-pricing-error-notice" role="alert"></div>
 
-				<div style="background:#eef2ff; border:1px solid #c7d2fe; border-radius:8px; padding:14px; display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+				<div class="wsq-mb-total-card">
 					<div>
-						<span style="font-size:13px; color:#3730a3; font-weight:bold;">
+						<span class="wsq-mb-total-label">
 							<?php esc_html_e( 'جمع کل محاسبه‌شده استعلام:', 'woo-smart-quote' ); ?> 
-							<span id="wsq-calc-grand-total" style="font-size:18px; color:#4f46e5; margin-right:6px;"><?php echo number_format( $order->get_total() ); ?></span> <?php esc_html_e( 'تومان', 'woo-smart-quote' ); ?>
+							<span id="wsq-calc-grand-total"><?php echo number_format( $order->get_total() ); ?></span> <?php esc_html_e( 'تومان', 'woo-smart-quote' ); ?>
 						</span>
 					</div>
 					<div>
-						<button type="button" class="button button-primary button-large wsq-send-proposal-btn" style="background:#10b981; border-color:#059669; font-weight:bold; padding:6px 20px; height:auto; font-size:14px;">
-							<?php echo WSQ_Icons::get( 'rocket' ); ?> <?php esc_html_e( 'ذخیره قیمت‌ها و تغییر وضعیت به پیش‌فاکتور صادر شد', 'woo-smart-quote' ); ?>
+						<button type="button" class="button button-primary button-large wsq-send-proposal-btn">
+							<?php echo WSQ_Icons::get( 'check' ); ?> <?php esc_html_e( 'ذخیره قیمت‌ها و صدور پیش‌فاکتور', 'woo-smart-quote' ); ?>
 						</button>
 					</div>
 				</div>
@@ -424,44 +599,44 @@ class WSQ_Order {
 				?>
 
 				<!-- Buyer Communication & 1-Click Messenger Dispatch -->
-				<div style="background:#fff; border:1px solid #cbd5e1; border-radius:8px; padding:14px; margin-top:10px;">
-					<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid #f1f5f9; padding-bottom:8px;">
+				<div class="wsq-mb-dispatch">
+					<div class="wsq-mb-dispatch-head">
 						<div style="display:flex; align-items:center; gap:8px;">
 							<span style="font-size:16px;"><?php echo WSQ_Icons::get( 'phone' ); ?></span>
-							<strong style="color:#0f172a; font-size:13px;"><?php esc_html_e( 'ارسال سریع پیش‌فاکتور به خریدار (شماره استخراج‌شده از فرم):', 'woo-smart-quote' ); ?></strong>
-							<span style="direction:ltr; font-family:monospace; background:#f1f5f9; padding:2px 8px; border-radius:4px; font-weight:bold; color:#2563eb;">
+							<strong style="color:var(--wsq-ink); font-size:13px;"><?php esc_html_e( 'ارسال سریع به خریدار:', 'woo-smart-quote' ); ?></strong>
+							<span class="wsq-mb-phone-badge">
 								<?php echo esc_html( $buyer_phone ? $buyer_phone : __( 'شماره تلفن ثبت نشده', 'woo-smart-quote' ) ); ?>
 							</span>
 						</div>
-						<span style="font-size:11px; color:#64748b;"><?php esc_html_e( 'با تغییر وضعیت به «پیش‌فاکتور صادر شد»، پیامک/وب‌سرویس نیز خودکار ارسال می‌شود.', 'woo-smart-quote' ); ?></span>
+						<span style="font-size:11.5px; color:var(--wsq-muted);"><?php esc_html_e( 'با تغییر وضعیت، پیش‌فاکتور خودکار از طریق وب‌سرویس نیز ارسال می‌گردد.', 'woo-smart-quote' ); ?></span>
 					</div>
 
 					<div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
 						<!-- 1-Click Bale Chat Link -->
-						<a href="https://ble.ir/+<?php echo esc_attr( $intl_phone ); ?>" target="_blank" class="button" style="background:#0284c7; color:#fff; border-color:#0284c7; font-weight:bold; display:inline-flex; align-items:center; gap:5px;">
-							<span class="wsq-mb-dot" style="background:#0284c7;" aria-hidden="true"></span> <?php esc_html_e( 'باز کردن چت در بله خریدار', 'woo-smart-quote' ); ?>
+						<a href="https://ble.ir/+<?php echo esc_attr( $intl_phone ); ?>" target="_blank" class="button wsq-btn-bale" style="display:inline-flex; align-items:center; gap:6px;">
+							<span class="wsq-mb-dot" style="background:#135e96;" aria-hidden="true"></span> <?php esc_html_e( 'چت بله خریدار', 'woo-smart-quote' ); ?>
 						</a>
 
 						<!-- 1-Click Eitaa Web Link -->
-						<a href="https://web.eitaa.com/" target="_blank" class="button" style="background:#ea580c; color:#fff; border-color:#ea580c; font-weight:bold; display:inline-flex; align-items:center; gap:5px;">
-							<span class="wsq-mb-dot" style="background:#ea580c;" aria-hidden="true"></span> <?php esc_html_e( 'باز کردن ایتا خریدار', 'woo-smart-quote' ); ?>
+						<a href="https://web.eitaa.com/" target="_blank" class="button wsq-btn-eitaa" style="display:inline-flex; align-items:center; gap:6px;">
+							<span class="wsq-mb-dot" style="background:#996800;" aria-hidden="true"></span> <?php esc_html_e( 'ایتا وب خریدار', 'woo-smart-quote' ); ?>
 						</a>
 
 						<!-- 1-Click WhatsApp Link with prefilled text -->
-						<a href="https://api.whatsapp.com/send?phone=<?php echo esc_attr( $intl_phone ); ?>&text=<?php echo rawurlencode( $prop_text ); ?>" target="_blank" class="button" style="background:#22c55e; color:#fff; border-color:#22c55e; font-weight:bold; display:inline-flex; align-items:center; gap:5px;">
-							<span class="wsq-mb-dot" style="background:#22c55e;" aria-hidden="true"></span> <?php esc_html_e( 'باز کردن واتساپ با متن آماده', 'woo-smart-quote' ); ?>
+						<a href="https://api.whatsapp.com/send?phone=<?php echo esc_attr( $intl_phone ); ?>&text=<?php echo rawurlencode( $prop_text ); ?>" target="_blank" class="button wsq-btn-wa" style="display:inline-flex; align-items:center; gap:6px;">
+							<span class="wsq-mb-dot" style="background:#007017;" aria-hidden="true"></span> <?php esc_html_e( 'واتساپ با متن آماده', 'woo-smart-quote' ); ?>
 						</a>
 
 						<!-- Copy proposal text to clipboard -->
-						<button type="button" class="button" id="wsq-copy-proposal-btn" style="border-color:#94a3b8; font-weight:bold;">
-							<?php echo WSQ_Icons::get( 'clipboard' ); ?> <?php esc_html_e( 'کپی متن کامل پیشنهاد قیمت', 'woo-smart-quote' ); ?>
+						<button type="button" class="button wsq-btn-copy" id="wsq-copy-proposal-btn">
+							<?php echo WSQ_Icons::get( 'clipboard' ); ?> <?php esc_html_e( 'کپی متن پیشنهاد قیمت', 'woo-smart-quote' ); ?>
 						</button>
 
 						<!-- Resend via configured Web Service (FarazSMS/Kavenegar/Safir) -->
-						<button type="button" class="button" id="wsq-resend-sms-btn" data-order="<?php echo esc_attr( $order_id ); ?>" style="border-color:#6366f1; color:#4f46e5; font-weight:bold;">
-							<?php echo WSQ_Icons::get( 'bolt' ); ?> <?php esc_html_e( 'ارسال دستی وب‌سرویس (پیامک/سفیر بله)', 'woo-smart-quote' ); ?>
+						<button type="button" class="button wsq-btn-resend" id="wsq-resend-sms-btn" data-order="<?php echo esc_attr( $order_id ); ?>">
+							<?php echo WSQ_Icons::get( 'bolt' ); ?> <?php esc_html_e( 'ارسال مجدد وب‌سرویس', 'woo-smart-quote' ); ?>
 						</button>
-						<span id="wsq-resend-status" style="font-size:12px; margin-right:8px; font-weight:bold;"></span>
+						<span id="wsq-resend-status"></span>
 					</div>
 
 					<!-- Hidden textarea holding proposal text -->
@@ -622,7 +797,7 @@ class WSQ_Order {
 				var orderId = $btn.data('order');
 				var btnHtml = $btn.html();
 				$btn.prop('disabled', true).text(wsqOrderI18n.resending);
-				$('#wsq-resend-status').text('').css('color', '#64748b');
+				$('#wsq-resend-status').text('').css('color', '#50575e');
 
 				$.post(ajaxurl, {
 					action: 'wsq_ajax_resend_buyer_proposal',
@@ -631,9 +806,9 @@ class WSQ_Order {
 				}, function(response) {
 					$btn.prop('disabled', false).html(btnHtml);
 					if (response.success) {
-						$('#wsq-resend-status').text(response.data.message).css('color', '#059669');
+						$('#wsq-resend-status').text(response.data.message).css('color', '#007017');
 					} else {
-						$('#wsq-resend-status').text(response.data.message).css('color', '#dc2626');
+						$('#wsq-resend-status').text(response.data.message).css('color', '#d63638');
 					}
 				});
 			});

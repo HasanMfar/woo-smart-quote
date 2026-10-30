@@ -24,6 +24,17 @@ screenshots/
 *.jks
 *.keystore
 
+# Local test & setup helpers
+.qoder/
+capture-all-deliverables.js
+setup-and-seed-real-site.php
+seed-site-data.php
+set-menu.php
+admin-dashboard-real.png
+/manual.pdf
+/راهنمای نصب و راه‌اندازی.*
+/مستندات قبل از نصب.txt
+
 # Flutter / Dart build outputs
 .dart_tool/
 .flutter-plugins

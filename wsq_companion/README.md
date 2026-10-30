@@ -1,4 +1,4 @@
-# WooCommerce Smart Quote - Android Companion App
+# Nerkhnegar - Android Companion App
 
 اپلیکیشن اختصاصی اندروید مدیریت استعلام قیمت و صدور پیش‌فاکتور برای فروشگاه‌های ووکامرس.
 

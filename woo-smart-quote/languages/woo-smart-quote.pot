@@ -1,8 +1,8 @@
-# Copyright (C) 2026 WooCommerce Smart Quote
+# Copyright (C) 2026 نرخنگار
 # This file is distributed under the GPL-2.0+.
 msgid ""
 msgstr ""
-"Project-Id-Version: WooCommerce Smart Quote 1.0.0\n"
+"Project-Id-Version: نرخنگار 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/woo-smart-quote\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,12 +17,12 @@ msgstr ""
 #. Plugin Name of the plugin
 #. Author of the plugin
 #: woo-smart-quote.php
-msgid "WooCommerce Smart Quote"
+msgid "نرخنگار"
 msgstr ""
 
 #. Description of the plugin
 #: woo-smart-quote.php
-msgid "سیستم پیشرفته استعلام قیمت ووکامرس با اتصال بومی به بله و ایتا و تولید PDF رسمی."
+msgid "سیستم استعلام قیمت و صدور پیش‌فاکتور رسمی ماده ۱۶۹ برای ووکامرس؛ همراه با اپلیکیشن اندروید و اتصال مستقیم به بله و ایتا."
 msgstr ""
 
 #: includes/class-wsq-admin.php:43
@@ -170,7 +170,7 @@ msgid "تأیید شد - استعلام قیمت رسمی"
 msgstr ""
 
 #: includes/class-wsq-admin.php:83
-msgid "Smart Quote"
+msgid "نرخنگار"
 msgstr ""
 
 #: includes/class-wsq-admin.php:90
@@ -178,7 +178,7 @@ msgid "پیام خوانده‌نشده"
 msgstr ""
 
 #: includes/class-wsq-admin.php:95
-msgid "Smart Quote Settings"
+msgid "تنظیمات نرخنگار"
 msgstr ""
 
 #: includes/class-wsq-admin.php:295
@@ -690,7 +690,7 @@ msgid "دکمه و ویجت شناور"
 msgstr ""
 
 #: includes/class-wsq-admin.php:1113
-msgid "هوشمند استعلام قیمت ووکامرس"
+msgid "نرخنگار | مدیریت استعلام قیمت و پیش‌فاکتور رسمی"
 msgstr ""
 
 #: includes/class-wsq-admin.php:1114
@@ -814,10 +814,9 @@ msgstr ""
 msgid "شعار زیر لوگو (هدر PDF)"
 msgstr ""
 
-#: includes/class-wsq-admin.php:1227
-#: includes/class-wsq-pdf-generator.php:76
+#: includes/class-wsq-pdf-generator.php:85
 #: templates/pdf/quote-fa.php:42
-msgid "سیستم جامع استعلام و سفارشات سازمانی"
+msgid "سامانه رسمی استعلام و سفارشات سازمانی"
 msgstr ""
 
 #: includes/class-wsq-admin.php:1228
@@ -937,7 +936,7 @@ msgid "تغییر می‌کند، پیش‌فاکتور با لینک پرداخ
 msgstr ""
 
 #: includes/class-wsq-admin.php:1343
-msgid "سازوکار هوشمند ارسال به شماره خریدار در ایران:"
+msgid "سازوکار ارسال به شماره خریدار در ایران:"
 msgstr ""
 
 #: includes/class-wsq-admin.php:1345
@@ -965,7 +964,7 @@ msgid "با تغییر وضعیت سفارش به «پیش‌فاکتور صاد
 msgstr ""
 
 #: includes/class-wsq-admin.php:1366
-msgid "سامانه وب‌سرویس خریدار"
+msgid "سرویس پیامک و وب‌سرویس خریدار"
 msgstr ""
 
 #: includes/class-wsq-admin.php:1369
@@ -973,7 +972,7 @@ msgid "غیرفعال (فقط ایمیل و دکمه‌های دستی ادمی�
 msgstr ""
 
 #: includes/class-wsq-admin.php:1370
-msgid "فراز اس‌ام‌اس / IPPanel (با ارسال هوشمند به بله و ایتا بر اساس شماره)"
+msgid "فراز اس‌ام‌اس / IPPanel (ارسال مستقیم به بله و ایتا بر اساس شماره)"
 msgstr ""
 
 #: includes/class-wsq-admin.php:1371
@@ -989,7 +988,7 @@ msgid "سفیر بله (وب‌سرویس سازمانی بله برای شما�
 msgstr ""
 
 #: includes/class-wsq-admin.php:1375
-msgid "سامانه مورد استفاده جهت پیامک خدماتی سریع و تحویل در پیام‌رسان‌ها."
+msgid "سرویس انتخابی برای ارسال پیامک خدماتی سریع و تحویل در پیام‌رسان‌ها."
 msgstr ""
 
 #: includes/class-wsq-admin.php:1379
@@ -1100,7 +1099,7 @@ msgid "ذخیره تغییرات این برگه"
 msgstr ""
 
 #: includes/class-wsq-admin.php:1518
-msgid "ماتریس مسیریابی هوشمند کارشناسان (Category Routing)"
+msgid "ماتریس مسیریابی کارشناسان (Category Routing)"
 msgstr ""
 
 #: includes/class-wsq-admin.php:1520
@@ -1805,7 +1804,7 @@ msgid "⚠️ پیوست PDF ارسال نشد؛ سند در پنل فروشگا
 msgstr ""
 
 #: includes/class-wsq-order.php:75
-msgid "قیمت‌گذاری تفکیکی اقلام و ارسال به خریدار (Smart Quote)"
+msgid "قیمت‌گذاری تفکیکی اقلام و ارسال به خریدار (نرخنگار)"
 msgstr ""
 
 #: includes/class-wsq-order.php:124
@@ -2115,9 +2114,9 @@ msgstr ""
 #: includes/class-wsq-queue.php:380
 #, php-format
 msgid ""
-"🔔 پیام آزمایشی اتصال افزونه WooCommerce Smart Quote\n"
+"پیام آزمایشی اتصال افزونه نرخنگار\n"
 "\n"
-"✅ اتصال به API %1$s با موفقیت برقرار شد!\n"
+"اتصال به API %1$s با موفقیت برقرار شد!\n"
 "تاریخ تست: %2$s"
 msgstr ""
 
@@ -2328,7 +2327,7 @@ msgstr ""
 #. translators: %s: seller name
 #: templates/pdf/quote-fa.php:652
 #, php-format
-msgid "این پیش‌فاکتور به‌صورت سیستمی صادر شده و دارای کد رهگیری در سامانه فروش %s می‌باشد."
+msgid "این پیش‌فاکتور به‌صورت سیستمی صادر شده و دارای کد رهگیری در پرتال فروشگاهی %s می‌باشد."
 msgstr ""
 
 #: templates/quote-list.php:42
@@ -2509,6 +2508,6 @@ msgstr ""
 msgid "ثبت و ارسال درخواست استعلام"
 msgstr ""
 
-#: woo-smart-quote.php:65
-msgid "WooCommerce Smart Quote requires WooCommerce to be installed and active."
+#: woo-smart-quote.php:120
+msgid "افزونه نرخنگار برای فعالیت نیازمند نصب و فعال‌سازی ووکامرس است."
 msgstr ""

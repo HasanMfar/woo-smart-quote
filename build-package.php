@@ -1,6 +1,6 @@
 <?php
 /**
- * Builds the delivery zip for WooCommerce Smart Quote.
+ * Builds the delivery zip for Nerkhnegar (woo-smart-quote).
  *
  * Only the plugin folder is packaged. Development files (reference templates,
  * unused font duplicates, static-analysis configs of the vendored mPDF) are
@@ -25,7 +25,17 @@ if ( '' === $out_dir || ! is_dir( $out_dir ) || ! is_writable( $out_dir ) ) {
 	fwrite( STDERR, "Output directory is missing or not writable: $out_dir\n" );
 	exit( 1 );
 }
+// Auto-load ZipArchive extension via local ini if running default CLI PHP
 if ( ! class_exists( 'ZipArchive' ) ) {
+    if ( empty( getenv( 'WSQ_REEXEC' ) ) ) {
+        putenv( 'WSQ_REEXEC=1' );
+        $ini = file_exists( __DIR__ . '/php-test.ini' ) ? __DIR__ . '/php-test.ini' : ( file_exists( __DIR__ . '/wp-cli.ini' ) ? __DIR__ . '/wp-cli.ini' : '' );
+        if ( $ini ) {
+            $pass_args = array_map( 'escapeshellarg', array_slice( $argv, 1 ) );
+            passthru( 'php -c ' . escapeshellarg( $ini ) . ' ' . escapeshellarg( __FILE__ ) . ( $pass_args ? ' ' . implode( ' ', $pass_args ) : '' ), $ret );
+            exit( $ret );
+        }
+    }
 	fwrite( STDERR, "PHP ZipArchive extension is required. Run via: powershell -File build-package.ps1\n" );
 	exit( 1 );
 }
@@ -62,6 +72,7 @@ $excluded_paths = array(
 	'assets/fonts/',
 	'assets/images/marketplace-banner-',
 	'assets/images/marketplace-cover-',
+	'assets/images/infographics/',
 	'assets/images/mazanneh-logo-3d.jpg',
 	'assets/images/logo-3d.jpg',
 	'lib/mpdf/vendor/mpdf/mpdf/.github/',
@@ -204,3 +215,73 @@ if ( $excluded ) {
 		echo "    - $file\n";
 	}
 }
+
+// ============================================================
+// Build Rastchin Delivery Package (package-nerkhnegar-X.Y.Z.zip)
+// Contains:
+//   1. woo-smart-quote.zip (Installable plugin / Update file)
+//   2. راهنمای نصب و راه‌اندازی.pdf & manual.pdf (PDF User Manual)
+//   3. راهنمای نصب و راه‌اندازی.html (Standalone HTML user guide)
+//   4. مستندات قبل از نصب.txt (Pre-install notes)
+// ============================================================
+echo "\nBuilding Rastchin Delivery Package...\n";
+
+$plugin_clean_zip = $out_dir . '/woo-smart-quote.zip';
+copy( $zip_name, $plugin_clean_zip );
+
+$manual_html_src = $root . '/docs/راهنمای نصب و راه‌اندازی.html';
+$manual_html_dst = $out_dir . '/راهنمای نصب و راه‌اندازی.html';
+if ( file_exists( $manual_html_src ) ) {
+	copy( $manual_html_src, $manual_html_dst );
+}
+
+$manual_pdf_src = $root . '/docs/manual.pdf';
+$manual_pdf_dst = $out_dir . '/راهنمای نصب و راه‌اندازی.pdf';
+if ( file_exists( $manual_pdf_src ) ) {
+	copy( $manual_pdf_src, $manual_pdf_dst );
+}
+
+$notes_src = $root . '/docs/مستندات قبل از نصب.txt';
+$notes_dst = $out_dir . '/مستندات قبل از نصب.txt';
+if ( file_exists( $notes_src ) ) {
+	copy( $notes_src, $notes_dst );
+}
+
+$legacy_pkg = $out_dir . '/package-mazankar-' . $version . '.zip';
+if ( file_exists( $legacy_pkg ) ) {
+	@unlink( $legacy_pkg );
+}
+
+$pkg_name = $out_dir . '/package-nerkhnegar-' . $version . '.zip';
+$pkg_tmp  = $pkg_name . '.building-' . getmypid();
+
+$pkg_zip = new ZipArchive();
+if ( true !== $pkg_zip->open( $pkg_tmp, ZipArchive::CREATE | ZipArchive::OVERWRITE ) ) {
+	fwrite( STDERR, "Could not create delivery package: $pkg_tmp\n" );
+	exit( 1 );
+}
+
+$pkg_zip->addFile( $plugin_clean_zip, 'woo-smart-quote.zip' );
+if ( file_exists( $manual_pdf_dst ) ) {
+	$pkg_zip->addFile( $manual_pdf_dst, 'راهنمای نصب و راه‌اندازی.pdf' );
+	$pkg_zip->addFile( $manual_pdf_dst, 'manual.pdf' );
+}
+if ( file_exists( $manual_html_dst ) ) {
+	$pkg_zip->addFile( $manual_html_dst, 'راهنمای نصب و راه‌اندازی.html' );
+}
+if ( file_exists( $notes_dst ) ) {
+	$pkg_zip->addFile( $notes_dst, 'مستندات قبل از نصب.txt' );
+}
+$pkg_zip->close();
+
+if ( file_exists( $pkg_name ) ) {
+	@unlink( $pkg_name );
+}
+rename( $pkg_tmp, $pkg_name );
+
+printf(
+	"Master Delivery Package Built: %s\n  Package size: %s bytes\n  Includes:\n    - woo-smart-quote.zip (Update File)\n    - راهنمای نصب و راه‌اندازی.pdf / manual.pdf (PDF Guide)\n    - راهنمای نصب و راه‌اندازی.html (HTML Guide)\n    - مستندات قبل از نصب.txt\n",
+	basename( $pkg_name ),
+	number_format( (int) filesize( $pkg_name ) )
+);
+
