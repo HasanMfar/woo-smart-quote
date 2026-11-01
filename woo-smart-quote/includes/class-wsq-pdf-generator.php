@@ -700,17 +700,14 @@ class WSQ_PDF_Generator {
 	}
 
 	/**
-	 * Executive fluid fountain pen signature SVG.
+	 * Deprecated vector signature SVG (always empty).
+	 *
+	 * Signatures are only rendered if an authentic signature image is uploaded.
 	 *
 	 * @return string
 	 */
 	public static function get_vector_signature() {
-		return '<svg width="125" height="48" viewBox="0 0 140 54" xmlns="http://www.w3.org/2000/svg" style="display:block; margin-top:-4px;">
-  <!-- Fluid executive calligraphic strokes in royal fountain pen blue -->
-  <path d="M 8 34 C 24 14, 38 46, 56 16 C 66 2, 78 42, 94 20 C 104 6, 118 32, 134 14" stroke="#1d4ed8" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.94" />
-  <path d="M 22 40 Q 62 24, 112 32 M 42 44 C 72 36, 98 38, 128 30" stroke="#1e40af" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.88" />
-  <path d="M 14 46 C 50 42, 88 44, 136 36" stroke="#1d4ed8" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.75" />
-</svg>';
+		return '';
 	}
 }
 

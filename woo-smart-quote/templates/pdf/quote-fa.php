@@ -79,9 +79,7 @@ $seal_stamp_text      = ! empty( $stamp_text ) ? $stamp_text : __( 'تأیید �
 $seal_vector_svg      = class_exists( 'WSQ_PDF_Generator' )
 	? WSQ_PDF_Generator::get_vector_seal( $seller_name, $seller_reg_no, $seller_national_id, $date, $seal_stamp_text )
 	: '';
-$signature_vector_svg = class_exists( 'WSQ_PDF_Generator' )
-	? WSQ_PDF_Generator::get_vector_signature()
-	: '';
+$signature_vector_svg = '';
 $signature_image_url  = ! empty( $signature_image_url ) ? $signature_image_url : '';
 $show_signature       = isset( $show_signature ) ? (bool) $show_signature : ( get_option( 'wsq_show_digital_signature', 'yes' ) === 'yes' );
 $seal_image_url       = ! empty( $seal_image_url ) ? $seal_image_url : '';
@@ -646,8 +644,6 @@ $show_stamp           = isset( $show_stamp ) ? (bool) $show_stamp : ( get_option
 							</div>
 							<?php if ( ! empty( $signature_image_url ) ) : ?>
 								<img src="<?php echo esc_url( $signature_image_url ); ?>" style="max-height: 52px; max-width: 130px; display: block; margin-top: 4px;" alt="Signature">
-							<?php elseif ( ! empty( $show_signature ) ) : ?>
-								<?php echo $signature_vector_svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 							<?php endif; ?>
 						</td>
 						<td style="border: none; padding: 0; width: 52%; text-align: left; vertical-align: middle;">

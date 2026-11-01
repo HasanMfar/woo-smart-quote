@@ -530,20 +530,25 @@ jQuery( document ).ready( function ( $ ) {
 				$card.toggleClass( 'is-disabled', ! $checkbox.is( ':checked' ) );
 			}
 			var url = $.trim( $input.val() );
-			var $sigDemo = $card.find( '.wsq-digital-signature-demo' );
+			var $placeholder = $card.find( '.wsq-signature-empty-placeholder, .wsq-digital-signature-demo' );
 			var $img = $card.find( '.wsq-signature-img-preview' );
+			var $slot = $card.find( '.wsq-signature-preview-slot' );
 			if ( url ) {
 				if ( ! $img.length ) {
-					$img = $( '<img class="wsq-signature-img-preview" alt="Signature" style="max-height:48px;max-width:120px;object-fit:contain;border-radius:4px;" />' );
-					$card.prepend( $img );
+					$img = $( '<img class="wsq-signature-img-preview" alt="Signature" style="max-height:48px;max-width:130px;object-fit:contain;border-radius:4px;" />' );
+					if ( $slot.length ) {
+						$slot.prepend( $img );
+					} else {
+						$card.prepend( $img );
+					}
 				}
 				$img.attr( 'src', url ).show();
-				$sigDemo.hide();
+				$placeholder.hide();
 			} else {
 				if ( $img.length ) {
 					$img.hide();
 				}
-				$sigDemo.show();
+				$placeholder.show();
 			}
 		}
 	}

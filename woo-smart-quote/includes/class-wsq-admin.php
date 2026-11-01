@@ -1296,7 +1296,7 @@ class WSQ_Admin {
 										<input type="text" id="wsq_company_signature_image" name="wsq_company_signature_image" value="<?php echo esc_attr( get_option( 'wsq_company_signature_image' ) ); ?>" class="regular-text code" style="flex:1;" placeholder="https://site.com/signature.png" aria-describedby="wsq_company_signature_image_help" />
 										<button type="button" class="button wsq-upload-media-btn" data-target="#wsq_company_signature_image"><?php esc_html_e( 'انتخاب از رسانه', 'woo-smart-quote' ); ?></button>
 									</div>
-									<p class="description" id="wsq_company_signature_image_help"><?php esc_html_e( 'در صورت تمایل می‌توانید آدرس فایل تصویر شفاف (PNG) امضای مجاز شرکت را درج کنید. در صورت خالی بودن، امضای وکتور روان‌نویس نمایش داده می‌شود.', 'woo-smart-quote' ); ?></p>
+									<p class="description" id="wsq_company_signature_image_help"><?php esc_html_e( 'در صورت تمایل می‌توانید آدرس فایل تصویر شفاف (PNG) امضای مجاز شرکت را درج کنید. امضا تنها در صورت بارگذاری تصویر در پیش‌فاکتور درج می‌شود؛ در صورت خالی بودن، هیچ امضای خودکاری درج نشده و محل امضا جهت امضای فیزیکی خالی می‌ماند.', 'woo-smart-quote' ); ?></p>
 								</td>
 							</tr>
 							<tr>
@@ -1306,17 +1306,17 @@ class WSQ_Admin {
 									<label class="wsq-toggle">
 										<input type="checkbox" id="wsq_show_digital_signature_toggle" name="wsq_show_digital_signature" value="yes" <?php checked( 'yes', get_option( 'wsq_show_digital_signature', 'yes' ) ); ?> aria-describedby="wsq_signature_preview_help" />
 										<span class="wsq-toggle-track"><span class="wsq-toggle-thumb"></span></span>
-										<span class="wsq-toggle-label"><?php esc_html_e( 'نمایش خط امضای مجاز در کنار مهر رسمی (در صورت غیرفعال بودن، محل امضا جهت امضای فیزیکی خالی می‌ماند)', 'woo-smart-quote' ); ?></span>
+										<span class="wsq-toggle-label"><?php esc_html_e( 'نمایش خط امضای مجاز در کنار مهر رسمی (در صورت غیرفعال بودن یا نبود تصویر، محل امضا جهت امضای فیزیکی خالی می‌ماند)', 'woo-smart-quote' ); ?></span>
 									</label>
 									<div class="wsq-signature-preview-card">
-										<div class="wsq-digital-signature-demo" aria-hidden="true">
-											<svg width="115" height="44" viewBox="0 0 140 54" xmlns="http://www.w3.org/2000/svg" style="display:block;">
-												<path d="M 8 34 C 24 14, 38 46, 56 16 C 66 2, 78 42, 94 20 C 104 6, 118 32, 134 14" stroke="#1d4ed8" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.94" />
-												<path d="M 22 40 Q 62 24, 112 32 M 42 44 C 72 36, 98 38, 128 30" stroke="#1e40af" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.88" />
-												<path d="M 14 46 C 50 42, 88 44, 136 36" stroke="#1d4ed8" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.75" />
-											</svg>
+										<?php
+										$sig_preview_url = (string) get_option( 'wsq_company_signature_image', '' );
+										?>
+										<div class="wsq-signature-preview-slot">
+											<img class="wsq-signature-img-preview" src="<?php echo esc_url( $sig_preview_url ); ?>" alt="Signature" style="max-height:48px;max-width:130px;object-fit:contain;border-radius:4px;<?php echo empty( $sig_preview_url ) ? 'display:none;' : ''; ?>" />
+											<span class="wsq-signature-empty-placeholder" style="display:<?php echo empty( $sig_preview_url ) ? 'inline-block' : 'none'; ?>;padding:6px 12px;border:1px dashed var(--wsq-border);border-radius:4px;background:var(--wsq-soft);color:var(--wsq-muted);font-size:11.5px;"><?php esc_html_e( 'بدون تصویر امضا (محل امضای فیزیکی)', 'woo-smart-quote' ); ?></span>
 										</div>
-										<p class="description" id="wsq_signature_preview_help" style="margin:0;"><?php esc_html_e( 'پیش‌نمایش امضای دیجیتال روان‌نویس که در صورت نبود تصویر اختصاصی، در کنار مشخصات مدیر مالی و مهر رسمی درج می‌شود.', 'woo-smart-quote' ); ?></p>
+										<p class="description" id="wsq_signature_preview_help" style="margin:0;"><?php esc_html_e( 'پیش‌نمایش امضای مجاز فروشنده. امضا تنها در صورت بارگذاری تصویر اختصاصی در پیش‌فاکتور درج می‌شود؛ در غیر این صورت فضا برای امضای دستی و فیزیکی خالی می‌ماند.', 'woo-smart-quote' ); ?></p>
 									</div>
 								</td>
 							</tr>

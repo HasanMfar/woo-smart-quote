@@ -139,11 +139,9 @@ $tests['orders without a PDF secret never validate'] = function () use ( $genera
 	$GLOBALS['order'] = new PDF_Order( 55, $secret );
 };
 
-$tests['vector signature SVG is valid and contains calligraphic paths'] = function () {
+$tests['procedural vector signature is completely removed and returns empty string'] = function () {
 	$svg = WSQ_PDF_Generator::get_vector_signature();
-	pdf_assert( is_string( $svg ) && false !== strpos( $svg, '<svg' ), 'Vector signature is not an SVG string' );
-	pdf_assert( false !== strpos( $svg, 'stroke="#1d4ed8"' ), 'Vector signature lacks royal ink strokes' );
-	pdf_assert( false !== strpos( $svg, '</svg>' ), 'Vector signature SVG not closed' );
+	pdf_assert( is_string( $svg ) && '' === $svg, 'Vector signature must return empty string' );
 };
 
 $tests['corporate seal and signature slots render independently in quote template'] = function () {
@@ -198,7 +196,7 @@ $tests['corporate seal and signature slots render independently in quote templat
 	pdf_assert( false === strpos( $html1, 'stroke-dasharray="2.5,2"' ), 'Case 1: Dynamic seal vector leaked' );
 	pdf_assert( false === strpos( $html1, 'stroke="#1d4ed8"' ), 'Case 1: Vector signature leaked' );
 
-	// Case 2: No images, both toggles enabled -> fallback to both vector seal and vector signature
+	// Case 2: No images, show_stamp enabled -> fallback to vector seal, but NEVER vector signature
 	$html2 = $render( array(
 		'seal_image_url'      => '',
 		'show_stamp'          => true,
@@ -206,7 +204,8 @@ $tests['corporate seal and signature slots render independently in quote templat
 		'show_signature'      => true,
 	) );
 	pdf_assert( false !== strpos( $html2, 'stroke-dasharray="2.5,2"' ), 'Case 2: Dynamic seal vector missing' );
-	pdf_assert( false !== strpos( $html2, 'stroke="#1d4ed8"' ), 'Case 2: Vector signature missing' );
+	pdf_assert( false === strpos( $html2, 'stroke="#1d4ed8"' ), 'Case 2: Procedural vector signature must never be rendered' );
+	pdf_assert( false === strpos( $html2, 'alt="Signature"' ), 'Case 2: Signature image should not exist' );
 	pdf_assert( false === strpos( $html2, 'src="https://site.test/' ), 'Case 2: Ghost image rendered' );
 
 	// Case 3: Merchant disables signature toggle (show_signature=false) and seal toggle (show_stamp=false)

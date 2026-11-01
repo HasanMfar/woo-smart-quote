@@ -355,7 +355,9 @@
 .wsq-signature-preview-card.is-disabled { opacity: 0.42; filter: grayscale(90%); }
 .wsq-digital-seal-demo { width: 88px; height: 88px; border-radius: 50%; border: 3px double #d63638; color: #d63638; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 6px; font-size: 9.5px; font-weight: 700; transform: rotate(-5deg); flex-shrink: 0; box-sizing: border-box; }
 .wsq-digital-seal-demo span { display: block; line-height: 1.3; }
-.wsq-digital-signature-demo { padding: 4px 14px; border: 1px dashed var(--wsq-border); border-radius: 4px; background: var(--wsq-soft); flex-shrink: 0; }
+.wsq-digital-signature-demo,
+.wsq-signature-preview-slot { display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.wsq-signature-empty-placeholder { padding: 6px 12px; border: 1px dashed var(--wsq-border); border-radius: 4px; background: var(--wsq-soft); color: var(--wsq-muted); font-size: 11.5px; }
 
 /* ---------- Category Search Bar in Routing Matrix ---------- */
 .wsq-cat-search-bar { position: relative; max-width: 320px; margin-bottom: 12px; }
