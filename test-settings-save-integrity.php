@@ -54,6 +54,12 @@ $groups = array(
 			'wsq_pdf_validity_days',
 			'wsq_pdf_retention_days',
 			'wsq_pdf_footer_text',
+			'wsq_pdf_show_product_images',
+			'wsq_pdf_tax169_full_columns',
+			'wsq_pdf_show_table_totals_row',
+			'wsq_pdf_show_sale_terms',
+			'wsq_pdf_delivery_terms',
+			'wsq_pdf_warranty_terms',
 		),
 	),
 	'messengers' => array(
@@ -141,7 +147,7 @@ $wsq_prefixed = array_values(
 );
 $extra = array_diff( $wsq_prefixed, $all_options );
 oks( 'no option is registered outside the six groups', empty( $extra ), implode( ', ', $extra ) );
-oks( 'all 44 settings options are registered', 44 === count( $all_options ) && 44 === count( array_intersect( $all_options, $wsq_prefixed ) ), 'count=' . count( array_intersect( $all_options, $wsq_prefixed ) ) );
+oks( 'all 50 settings options are registered', 50 === count( $all_options ) && 50 === count( array_intersect( $all_options, $wsq_prefixed ) ), 'count=' . count( array_intersect( $all_options, $wsq_prefixed ) ) );
 
 /**
  * Render one tab and return the HTML.

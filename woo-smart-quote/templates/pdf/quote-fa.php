@@ -84,6 +84,12 @@ $signature_image_url  = ! empty( $signature_image_url ) ? $signature_image_url :
 $show_signature       = isset( $show_signature ) ? (bool) $show_signature : ( get_option( 'wsq_show_digital_signature', 'yes' ) === 'yes' );
 $seal_image_url       = ! empty( $seal_image_url ) ? $seal_image_url : '';
 $show_stamp           = isset( $show_stamp ) ? (bool) $show_stamp : ( get_option( 'wsq_show_digital_stamp', 'yes' ) === 'yes' );
+$show_product_images  = isset( $show_product_images ) ? (bool) $show_product_images : ( get_option( 'wsq_pdf_show_product_images', 'yes' ) === 'yes' );
+$tax169_full_columns  = isset( $tax169_full_columns ) ? (bool) $tax169_full_columns : ( get_option( 'wsq_pdf_tax169_full_columns', 'yes' ) === 'yes' );
+$show_table_totals    = isset( $show_table_totals ) ? (bool) $show_table_totals : ( get_option( 'wsq_pdf_show_table_totals_row', 'yes' ) === 'yes' );
+$show_sale_terms      = isset( $show_sale_terms ) ? (bool) $show_sale_terms : ( get_option( 'wsq_pdf_show_sale_terms', 'yes' ) === 'yes' );
+$delivery_terms       = isset( $delivery_terms ) ? (string) $delivery_terms : (string) get_option( 'wsq_pdf_delivery_terms', '' );
+$warranty_terms       = isset( $warranty_terms ) ? (string) $warranty_terms : (string) get_option( 'wsq_pdf_warranty_terms', '' );
 ?>
 <!DOCTYPE html>
 <html dir="rtl" lang="fa">
@@ -439,9 +445,53 @@ $show_stamp           = isset( $show_stamp ) ? (bool) $show_stamp : ( get_option
 		</tr>
 	</table>
 
-	<!-- Items Table -->
+	<!-- Items Table (Tax 169 & Commercial Proforma Grid) -->
 	<table class="items-table">
 		<thead>
+			<?php if ( ! empty( $tax169_full_columns ) ) : ?>
+			<!-- Statutory Row 1: Legal Column Numbers (۱ تا ۱۱) -->
+			<tr style="background: #1e293b; color: #94a3b8; font-size: 7.5px;">
+				<th style="width: 3.5%; padding: 2px;">۱</th>
+				<th style="width: 8%; padding: 2px;">۲</th>
+				<th style="width: 25.5%; padding: 2px;">۳</th>
+				<th style="width: 5%; padding: 2px;">۴</th>
+				<th style="width: 5%; padding: 2px;">۵</th>
+				<th style="width: 9%; padding: 2px;">۶</th>
+				<th style="width: 10%; padding: 2px;">۷</th>
+				<th style="width: 7%; padding: 2px;">۸</th>
+				<th style="width: 9%; padding: 2px;">۹</th>
+				<th style="width: 8%; padding: 2px;">۱۰</th>
+				<th style="width: 10%; padding: 2px;">۱۱</th>
+			</tr>
+			<!-- Statutory Row 2: Standard Titles -->
+			<tr>
+				<th><?php esc_html_e( 'ردیف', 'woo-smart-quote' ); ?></th>
+				<th><?php esc_html_e( 'کد کالا', 'woo-smart-quote' ); ?></th>
+				<th><?php esc_html_e( 'شرح کالا یا خدمات درخواستی', 'woo-smart-quote' ); ?></th>
+				<th><?php esc_html_e( 'مقدار', 'woo-smart-quote' ); ?></th>
+				<th><?php esc_html_e( 'واحد', 'woo-smart-quote' ); ?></th>
+				<th><?php esc_html_e( 'مبلغ واحد', 'woo-smart-quote' ); ?> (<?php echo esc_html( $currency_symbol ); ?>)</th>
+				<th><?php esc_html_e( 'مبلغ کل', 'woo-smart-quote' ); ?> (<?php echo esc_html( $currency_symbol ); ?>)</th>
+				<th><?php esc_html_e( 'تخفیف', 'woo-smart-quote' ); ?></th>
+				<th><?php esc_html_e( 'پس از تخفیف', 'woo-smart-quote' ); ?></th>
+				<th><?php esc_html_e( 'مالیات ۱۰٪', 'woo-smart-quote' ); ?></th>
+				<th><?php esc_html_e( 'مبلغ نهایی', 'woo-smart-quote' ); ?> (<?php echo esc_html( $currency_symbol ); ?>)</th>
+			</tr>
+			<!-- Statutory Row 3: Calculation Formulas -->
+			<tr style="background: #0f172a; color: #94a3b8; font-size: 6.5px;">
+				<th>—</th>
+				<th>—</th>
+				<th>—</th>
+				<th>—</th>
+				<th>—</th>
+				<th>—</th>
+				<th>(۴ × ۶)</th>
+				<th>—</th>
+				<th>(۷ - ۸)</th>
+				<th>(نرخ × ۹)</th>
+				<th>(۹ + ۱۰)</th>
+			</tr>
+			<?php else : ?>
 			<tr>
 				<th style="width: 4%;"><?php esc_html_e( 'ردیف', 'woo-smart-quote' ); ?></th>
 				<th style="width: 9%;"><?php esc_html_e( 'کد کالا', 'woo-smart-quote' ); ?></th>
@@ -454,19 +504,23 @@ $show_stamp           = isset( $show_stamp ) ? (bool) $show_stamp : ( get_option
 				<th style="width: 7%;"><?php esc_html_e( 'مالیات ۱۰٪', 'woo-smart-quote' ); ?></th>
 				<th style="width: 10%;"><?php esc_html_e( 'مبلغ نهایی', 'woo-smart-quote' ); ?> (<?php echo esc_html( $currency_symbol ); ?>)</th>
 			</tr>
+			<?php endif; ?>
 		</thead>
 		<tbody>
 			<?php
-			$row_num = 1;
+			$row_num             = 1;
+			$total_qty           = 0;
 			$has_zero_price_item = false;
 
 			foreach ( $items as $item_id => $item ) {
 				$product       = $item->get_product();
 				$sku           = ( $product && $product->get_sku() ) ? $product->get_sku() : '—';
 				$qty           = (int) $item->get_quantity();
+				$total_qty    += $qty;
 				$line_subtotal = (float) $item->get_subtotal(); // gross before item discount
 				$line_total    = (float) $item->get_total();    // net after item discount
 				$line_discount = $line_subtotal > $line_total ? ( $line_subtotal - $line_total ) : 0;
+				$line_net      = max( 0, $line_subtotal - $line_discount );
 				$line_tax      = (float) $item->get_total_tax();
 				$line_final    = $line_total + $line_tax;
 
@@ -482,9 +536,22 @@ $show_stamp           = isset( $show_stamp ) ? (bool) $show_stamp : ( get_option
 					$unit = __( 'عدد', 'woo-smart-quote' );
 				}
 
+				// Optional Product Thumbnail
+				$product_thumb_html = '';
+				if ( ! empty( $show_product_images ) && $product && method_exists( $product, 'get_image_id' ) ) {
+					$thumb_id = (int) $product->get_image_id();
+					if ( $thumb_id > 0 && function_exists( 'wp_get_attachment_image_url' ) ) {
+						$thumb_url = wp_get_attachment_image_url( $thumb_id, 'thumbnail' );
+						if ( ! empty( $thumb_url ) ) {
+							$product_thumb_html = '<img src="' . esc_url( $thumb_url ) . '" style="max-height: 24px; max-width: 24px; vertical-align: middle; margin-left: 5px; border: 1px solid #cbd5e1; border-radius: 2px;" alt="">';
+						}
+					}
+				}
+
 				$unit_price_text    = $unit_price > 0 ? ( class_exists( 'WSQ_PDF_Generator' ) ? WSQ_PDF_Generator::format_persian_number( $unit_price ) : number_format( $unit_price ) ) : __( 'استعلام', 'woo-smart-quote' );
 				$subtotal_text      = $line_subtotal > 0 ? ( class_exists( 'WSQ_PDF_Generator' ) ? WSQ_PDF_Generator::format_persian_number( $line_subtotal ) : number_format( $line_subtotal ) ) : __( 'استعلام', 'woo-smart-quote' );
 				$discount_text      = $line_discount > 0 ? ( class_exists( 'WSQ_PDF_Generator' ) ? WSQ_PDF_Generator::format_persian_number( $line_discount ) : number_format( $line_discount ) ) : '۰';
+				$net_text           = $line_net > 0 ? ( class_exists( 'WSQ_PDF_Generator' ) ? WSQ_PDF_Generator::format_persian_number( $line_net ) : number_format( $line_net ) ) : __( 'استعلام', 'woo-smart-quote' );
 				$tax_text           = $line_tax > 0 ? ( class_exists( 'WSQ_PDF_Generator' ) ? WSQ_PDF_Generator::format_persian_number( $line_tax ) : number_format( $line_tax ) ) : '۰';
 				$final_text         = $line_final > 0 ? ( class_exists( 'WSQ_PDF_Generator' ) ? WSQ_PDF_Generator::format_persian_number( $line_final ) : number_format( $line_final ) ) : __( 'استعلام', 'woo-smart-quote' );
 				?>
@@ -492,6 +559,7 @@ $show_stamp           = isset( $show_stamp ) ? (bool) $show_stamp : ( get_option
 					<td><?php echo esc_html( class_exists( 'WSQ_PDF_Generator' ) ? WSQ_PDF_Generator::to_persian_digits( $row_num++ ) : $row_num++ ); ?></td>
 					<td style="color:#64748b;"><?php echo esc_html( $sku ); ?></td>
 					<td class="text-right">
+						<?php echo $product_thumb_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 						<strong><?php echo esc_html( $item->get_name() ); ?></strong>
 						<?php
 						$meta_data = $item->get_formatted_meta_data( '' );
@@ -509,6 +577,9 @@ $show_stamp           = isset( $show_stamp ) ? (bool) $show_stamp : ( get_option
 					<td class="text-left"><?php echo esc_html( $unit_price_text ); ?></td>
 					<td class="text-left"><?php echo esc_html( $subtotal_text ); ?></td>
 					<td class="text-left" style="<?php echo $line_discount > 0 ? 'color:#dc2626;' : ''; ?>"><?php echo esc_html( $discount_text ); ?></td>
+					<?php if ( ! empty( $tax169_full_columns ) ) : ?>
+						<td class="text-left"><?php echo esc_html( $net_text ); ?></td>
+					<?php endif; ?>
 					<td class="text-left"><?php echo esc_html( $tax_text ); ?></td>
 					<td class="text-left"><strong><?php echo esc_html( $final_text ); ?></strong></td>
 				</tr>
@@ -516,7 +587,48 @@ $show_stamp           = isset( $show_stamp ) ? (bool) $show_stamp : ( get_option
 			}
 			?>
 		</tbody>
+		<?php if ( ! empty( $show_table_totals ) ) : ?>
+		<tfoot>
+			<tr style="background: #f1f5f9; font-weight: bold; border-top: 1.5px solid #0f172a;">
+				<td colspan="3" style="text-align: center; font-weight: bold; background: #e2e8f0; font-size: 8.5px;"><?php esc_html_e( 'جمع کل', 'woo-smart-quote' ); ?></td>
+				<td><strong><?php echo esc_html( class_exists( 'WSQ_PDF_Generator' ) ? WSQ_PDF_Generator::to_persian_digits( $total_qty ) : $total_qty ); ?></strong></td>
+				<td>—</td>
+				<td>—</td>
+				<td class="text-left"><?php echo esc_html( class_exists( 'WSQ_PDF_Generator' ) ? WSQ_PDF_Generator::format_persian_number( $order_subtotal ) : number_format( $order_subtotal ) ); ?></td>
+				<td class="text-left" style="<?php echo $discount_total > 0 ? 'color:#dc2626;' : ''; ?>"><?php echo esc_html( class_exists( 'WSQ_PDF_Generator' ) ? WSQ_PDF_Generator::format_persian_number( $discount_total ) : number_format( $discount_total ) ); ?></td>
+				<?php if ( ! empty( $tax169_full_columns ) ) : ?>
+					<td class="text-left"><?php echo esc_html( class_exists( 'WSQ_PDF_Generator' ) ? WSQ_PDF_Generator::format_persian_number( $net_subtotal ) : number_format( $net_subtotal ) ); ?></td>
+				<?php endif; ?>
+				<td class="text-left"><?php echo esc_html( class_exists( 'WSQ_PDF_Generator' ) ? WSQ_PDF_Generator::format_persian_number( $tax_total ) : number_format( $tax_total ) ); ?></td>
+				<td class="text-left" style="background: #e2e8f0; color: #0f172a; font-weight: bold;">
+					<strong><?php echo esc_html( class_exists( 'WSQ_PDF_Generator' ) ? WSQ_PDF_Generator::format_persian_number( $order_grandtotal ) : number_format( $order_grandtotal ) ); ?></strong>
+				</td>
+			</tr>
+		</tfoot>
+		<?php endif; ?>
 	</table>
+
+	<!-- Sales Terms Checkboxes (Tax 169 Statutory Format) -->
+	<?php if ( ! empty( $show_sale_terms ) ) : ?>
+	<table style="border: 1px solid #cbd5e1; background: #f8fafc; margin-bottom: 6px; font-size: 8px;">
+		<tr>
+			<td style="width: 22%; font-weight: bold; color: #0f172a; padding: 4px 8px; border: none;">
+				<?php esc_html_e( 'شرایط و نحوه فروش:', 'woo-smart-quote' ); ?>
+			</td>
+			<td style="width: 38%; padding: 4px 8px; border: none;">
+				<span style="display: inline-block; width: 11px; height: 11px; border: 1.5px solid #0f172a; border-radius: 2px; text-align: center; line-height: 10px; font-weight: bold; color: #0f172a; background: #ffffff;">✓</span>
+				<strong style="margin-right: 4px; color: #0f172a;"><?php esc_html_e( 'نقدی', 'woo-smart-quote' ); ?></strong>
+			</td>
+			<td style="width: 40%; padding: 4px 8px; border: none;">
+				<span style="display: inline-block; width: 11px; height: 11px; border: 1px solid #94a3b8; border-radius: 2px; text-align: center; line-height: 10px; background: #ffffff;">&nbsp;</span>
+				<span style="color: #64748b; margin-right: 4px;"><?php esc_html_e( 'غیر نقدی (اعتباری / اقساطی / مدت‌دار)', 'woo-smart-quote' ); ?></span>
+			</td>
+			<td style="width: 15%; text-align: left; padding: 4px 8px; border: none; font-size: 7.5px; color: #64748b;">
+				<?php esc_html_e( 'ماده ۱۶۹ مکرر ق.م.م', 'woo-smart-quote' ); ?>
+			</td>
+		</tr>
+	</table>
+	<?php endif; ?>
 
 	<!-- Bottom Grid: Bank & Terms (Right), Totals Table (Left) -->
 	<table class="bottom-grid">
@@ -562,7 +674,14 @@ $show_stamp           = isset( $show_stamp ) ? (bool) $show_stamp : ( get_option
 					<tr>
 						<td>
 							• <?php printf( esc_html__( 'مهلت اعتبار: این سند تا تاریخ %s به مدت %s روز کاری از تاریخ صدور معتبر است.', 'woo-smart-quote' ), esc_html( class_exists( 'WSQ_PDF_Generator' ) ? WSQ_PDF_Generator::to_persian_digits( $expiry_date_display ) : $expiry_date_display ), esc_html( class_exists( 'WSQ_PDF_Generator' ) ? WSQ_PDF_Generator::to_persian_digits( $validity_days_num ) : $validity_days_num ) ); ?><br>
-							• <?php esc_html_e( 'شرایط تحویل: موجودی اقلام در زمان واریز پیش‌پرداخت ملاک عمل بوده و تسویه پیش از بارگیری الزامی است.', 'woo-smart-quote' ); ?><br>
+							<?php if ( ! empty( $delivery_terms ) ) : ?>
+								• <strong><?php esc_html_e( 'زمان و محل تحویل:', 'woo-smart-quote' ); ?></strong> <?php echo esc_html( $delivery_terms ); ?><br>
+							<?php else : ?>
+								• <?php esc_html_e( 'شرایط تحویل: موجودی اقلام در زمان واریز پیش‌پرداخت ملاک عمل بوده و تسویه پیش از بارگیری الزامی است.', 'woo-smart-quote' ); ?><br>
+							<?php endif; ?>
+							<?php if ( ! empty( $warranty_terms ) ) : ?>
+								• <strong><?php esc_html_e( 'گارانتی و خدمات:', 'woo-smart-quote' ); ?></strong> <?php echo esc_html( $warranty_terms ); ?><br>
+							<?php endif; ?>
 							<?php if ( ! empty( $order->get_customer_note() ) ) : ?>
 								• <strong><?php esc_html_e( 'توضیحات خریدار:', 'woo-smart-quote' ); ?></strong> <?php echo esc_html( $order->get_customer_note() ); ?>
 							<?php endif; ?>

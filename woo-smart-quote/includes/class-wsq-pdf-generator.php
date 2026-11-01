@@ -146,6 +146,12 @@ class WSQ_PDF_Generator {
 				'buyer_national_id'     => $buyer_national_id,
 				'buyer_economic_code'   => $buyer_economic_code,
 				'buyer_registration_no' => $buyer_registration_no,
+				'show_product_images'   => get_option( 'wsq_pdf_show_product_images', 'yes' ) === 'yes',
+				'tax169_full_columns'   => get_option( 'wsq_pdf_tax169_full_columns', 'yes' ) === 'yes',
+				'show_table_totals'     => get_option( 'wsq_pdf_show_table_totals_row', 'yes' ) === 'yes',
+				'show_sale_terms'       => get_option( 'wsq_pdf_show_sale_terms', 'yes' ) === 'yes',
+				'delivery_terms'        => (string) get_option( 'wsq_pdf_delivery_terms', '' ),
+				'warranty_terms'        => (string) get_option( 'wsq_pdf_warranty_terms', '' ),
 			),
 			'woo-smart-quote/',
 			WSQ_PLUGIN_DIR . 'templates/'

@@ -231,6 +231,12 @@ class WSQ_Admin {
 		register_setting( $groups['general'], 'wsq_pdf_validity_days', array( 'sanitize_callback' => array( $this, 'sanitize_validity_days' ) ) );
 		register_setting( $groups['general'], 'wsq_pdf_retention_days', array( 'sanitize_callback' => array( $this, 'sanitize_retention_days' ) ) );
 		register_setting( $groups['general'], 'wsq_pdf_footer_text', array( 'sanitize_callback' => $textarea_cb ) );
+		register_setting( $groups['general'], 'wsq_pdf_show_product_images', array( 'sanitize_callback' => $callbacks['wsq_checkbox'] ) );
+		register_setting( $groups['general'], 'wsq_pdf_tax169_full_columns', array( 'sanitize_callback' => $callbacks['wsq_checkbox'] ) );
+		register_setting( $groups['general'], 'wsq_pdf_show_table_totals_row', array( 'sanitize_callback' => $callbacks['wsq_checkbox'] ) );
+		register_setting( $groups['general'], 'wsq_pdf_show_sale_terms', array( 'sanitize_callback' => $callbacks['wsq_checkbox'] ) );
+		register_setting( $groups['general'], 'wsq_pdf_delivery_terms', array( 'sanitize_callback' => $text_cb ) );
+		register_setting( $groups['general'], 'wsq_pdf_warranty_terms', array( 'sanitize_callback' => $text_cb ) );
 
 		// Messengers / expert notifications.
 		register_setting( $groups['messengers'], 'wsq_bale_token', array( 'sanitize_callback' => $text_cb ) );
@@ -1346,6 +1352,70 @@ class WSQ_Admin {
 								<td>
 									<textarea id="wsq_pdf_footer_text" name="wsq_pdf_footer_text" rows="2" class="large-text" placeholder="<?php esc_attr_e( 'اگر خالی بگذارید، جمله پیش‌فرض کد رهگیری نمایش داده می‌شود.', 'woo-smart-quote' ); ?>" aria-describedby="wsq_pdf_footer_text_help"><?php echo esc_textarea( get_option( 'wsq_pdf_footer_text' ) ); ?></textarea>
 									<p class="description" id="wsq_pdf_footer_text_help"><?php esc_html_e( 'برای لینک‌دار کردن از تگ <a> یا شکست خط از Enter استفاده کنید.', 'woo-smart-quote' ); ?></p>
+								</td>
+							</tr>
+						</table>
+					</div>
+
+					<div class="wsq-section-card">
+						<h3>
+							<span><?php echo WSQ_Icons::get( 'document' ); ?> <?php esc_html_e( 'شخصی‌سازی پیش‌فاکتور (ماده ۱۶۹ مالیاتی و ضوابط بازرگانی)', 'woo-smart-quote' ); ?></span>
+							<span class="wsq-card-header-badge">Tax 169 &amp; Trade</span>
+						</h3>
+						<p class="wsq-section-lead"><?php esc_html_e( 'با گزینه‌های زیر می‌توانید پیش‌فاکتور را با الزامات رسمی سازمان امور مالیاتی (ماده ۱۶۹) یا استانداردهای بازرگانی شرکتی خود هماهنگ نمایید.', 'woo-smart-quote' ); ?></p>
+						<table class="form-table" role="presentation">
+							<tr>
+								<th scope="row"><?php esc_html_e( 'تصویر کالا در پیش‌فاکتور', 'woo-smart-quote' ); ?></th>
+								<td>
+									<label class="wsq-toggle">
+										<input type="checkbox" id="wsq_pdf_show_product_images" name="wsq_pdf_show_product_images" value="yes" <?php checked( 'yes', get_option( 'wsq_pdf_show_product_images', 'yes' ) ); ?> />
+										<span class="wsq-toggle-track"><span class="wsq-toggle-thumb"></span></span>
+										<span class="wsq-toggle-label"><?php esc_html_e( 'نمایش تصویر بندانگشتی محصول در جدول اقلام (پیشنهادی برای استعلام‌های شرکتی، صنعتی و خرده‌فروشی)', 'woo-smart-quote' ); ?></span>
+									</label>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row"><?php esc_html_e( 'ستون‌های ۱۱‌گانه رسمی ماده ۱۶۹', 'woo-smart-quote' ); ?></th>
+								<td>
+									<label class="wsq-toggle">
+										<input type="checkbox" id="wsq_pdf_tax169_full_columns" name="wsq_pdf_tax169_full_columns" value="yes" <?php checked( 'yes', get_option( 'wsq_pdf_tax169_full_columns', 'yes' ) ); ?> />
+										<span class="wsq-toggle-track"><span class="wsq-toggle-thumb"></span></span>
+										<span class="wsq-toggle-label"><?php esc_html_e( 'نمایش کامل ۱۱ ستون مصوب دارایی (شامل شماره‌گذاری ستون‌ها ۱ تا ۱۱، فرمول‌های محاسباتی و ستون مبلغ پس از تخفیف)', 'woo-smart-quote' ); ?></span>
+									</label>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row"><?php esc_html_e( 'ردیف «جمع کل» انتهای جدول', 'woo-smart-quote' ); ?></th>
+								<td>
+									<label class="wsq-toggle">
+										<input type="checkbox" id="wsq_pdf_show_table_totals_row" name="wsq_pdf_show_table_totals_row" value="yes" <?php checked( 'yes', get_option( 'wsq_pdf_show_table_totals_row', 'yes' ) ); ?> />
+										<span class="wsq-toggle-track"><span class="wsq-toggle-thumb"></span></span>
+										<span class="wsq-toggle-label"><?php esc_html_e( 'نمایش سطر تجمیعی زیر جدول اقلام (جمع مقادیر، ناخالص، تخفیف، پس از تخفیف، مالیات و کل)', 'woo-smart-quote' ); ?></span>
+									</label>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row"><?php esc_html_e( 'شرایط و نحوه فروش', 'woo-smart-quote' ); ?></th>
+								<td>
+									<label class="wsq-toggle">
+										<input type="checkbox" id="wsq_pdf_show_sale_terms" name="wsq_pdf_show_sale_terms" value="yes" <?php checked( 'yes', get_option( 'wsq_pdf_show_sale_terms', 'yes' ) ); ?> />
+										<span class="wsq-toggle-track"><span class="wsq-toggle-thumb"></span></span>
+										<span class="wsq-toggle-label"><?php esc_html_e( 'نمایش چک‌باکس‌های رسمی شرایط تسویه: نقدی / غیرنقدی (اعتباری و اقساطی)', 'woo-smart-quote' ); ?></span>
+									</label>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row"><label for="wsq_pdf_delivery_terms"><?php esc_html_e( 'زمان و محل تحویل کالا', 'woo-smart-quote' ); ?></label></th>
+								<td>
+									<input type="text" id="wsq_pdf_delivery_terms" name="wsq_pdf_delivery_terms" value="<?php echo esc_attr( get_option( 'wsq_pdf_delivery_terms', '' ) ); ?>" class="regular-text" placeholder="<?php esc_attr_e( 'مثال: موجود در انبار مرکزی — تحویل فوری پس از تسویه نهایی', 'woo-smart-quote' ); ?>" />
+									<p class="description"><?php esc_html_e( 'در جدول شرایط و ضوابط پیش‌فاکتور قید می‌شود. در صورت خالی بودن، متن پیش‌فرض درج خواهد شد.', 'woo-smart-quote' ); ?></p>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row"><label for="wsq_pdf_warranty_terms"><?php esc_html_e( 'گارانتی و خدمات پس از فروش', 'woo-smart-quote' ); ?></label></th>
+								<td>
+									<input type="text" id="wsq_pdf_warranty_terms" name="wsq_pdf_warranty_terms" value="<?php echo esc_attr( get_option( 'wsq_pdf_warranty_terms', '' ) ); ?>" class="regular-text" placeholder="<?php esc_attr_e( 'مثال: گارانتی اصالت کالا و سلامت فیزیکی / ۱۸ ماه خدمات رسمی', 'woo-smart-quote' ); ?>" />
+									<p class="description"><?php esc_html_e( 'در صورت تمایل می‌توانید مدت گارانتی و خدمات پس از فروش محصولات را مشخص کنید.', 'woo-smart-quote' ); ?></p>
 								</td>
 							</tr>
 						</table>
