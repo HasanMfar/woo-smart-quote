@@ -139,11 +139,6 @@ $tests['orders without a PDF secret never validate'] = function () use ( $genera
 	$GLOBALS['order'] = new PDF_Order( 55, $secret );
 };
 
-$tests['procedural vector signature is completely removed and returns empty string'] = function () {
-	$svg = WSQ_PDF_Generator::get_vector_signature();
-	pdf_assert( is_string( $svg ) && '' === $svg, 'Vector signature must return empty string' );
-};
-
 $tests['corporate seal and signature slots render independently in quote template'] = function () {
 	$order = new PDF_Order( 101, 'dummy' );
 	$items = array();

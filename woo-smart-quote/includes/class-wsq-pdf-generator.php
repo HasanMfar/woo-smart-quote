@@ -704,16 +704,5 @@ class WSQ_PDF_Generator {
   </g>
 </svg>';
 	}
-
-	/**
-	 * Deprecated vector signature SVG (always empty).
-	 *
-	 * Signatures are only rendered if an authentic signature image is uploaded.
-	 *
-	 * @return string
-	 */
-	public static function get_vector_signature() {
-		return '';
-	}
 }
 
