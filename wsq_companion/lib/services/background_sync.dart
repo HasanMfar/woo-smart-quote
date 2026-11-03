@@ -19,7 +19,7 @@ void callbackDispatcher() {
       final token = await LocalStorage.getToken();
 
       if (apiBase.isEmpty || token == null || token.isEmpty) {
-        return Future.value(true);
+        return true;
       }
 
       String effectiveBase = apiBase.endsWith('/') ? apiBase.substring(0, apiBase.length - 1) : apiBase;
@@ -60,9 +60,9 @@ void callbackDispatcher() {
           );
         }
       }
-      return Future.value(true);
+      return true;
     } catch (e) {
-      return Future.value(false);
+      return false;
     }
   });
 }
