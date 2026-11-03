@@ -172,7 +172,9 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
             left: 20,
             right: 20,
             child: Card(
-              color: Colors.white.withOpacity(0.95),
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.darkSurface.withValues(alpha: 0.95)
+                  : Colors.white.withValues(alpha: 0.95),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(

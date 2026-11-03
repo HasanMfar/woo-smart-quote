@@ -33,9 +33,9 @@ android/**/gradle-wrapper.jar
 android/.gradle
 android/captures/
 android/gradleBuild/
-android/**/build/
 android/key.properties
 android/app/upload-keystore.jks
+android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java
 
 # Keystore secret backups
 *.jks

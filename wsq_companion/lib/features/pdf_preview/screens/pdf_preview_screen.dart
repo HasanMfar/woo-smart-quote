@@ -111,14 +111,14 @@ class _PdfPreviewScreenState extends State<PdfPreviewScreen> {
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: _isDownloading
-                ? const Column(
+                ? Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      CircularProgressIndicator(),
-                      SizedBox(height: 16),
+                      const CircularProgressIndicator(),
+                      const SizedBox(height: 16),
                       Text(
                         'در حال دریافت پیش‌فاکتور رسمی PDF…',
-                        style: TextStyle(color: AppColors.textSecondary),
+                        style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color ?? AppColors.textSecondary),
                       ),
                     ],
                   )
@@ -148,7 +148,7 @@ class _PdfPreviewScreenState extends State<PdfPreviewScreen> {
                           Container(
                             padding: const EdgeInsets.all(24),
                             decoration: BoxDecoration(
-                              color: AppColors.secondary.withOpacity(0.12),
+                              color: AppColors.secondary.withValues(alpha: 0.12),
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(Icons.picture_as_pdf, size: 72, color: AppColors.secondary),
@@ -159,10 +159,10 @@ class _PdfPreviewScreenState extends State<PdfPreviewScreen> {
                             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                           ),
                           const SizedBox(height: 8),
-                          const Text(
+                          Text(
                             'سند PDF با فونت وزیرمتن و مطابق با استانداردهای مالیاتی صادر شده است.',
                             textAlign: TextAlign.center,
-                            style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                            style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color ?? AppColors.textSecondary, fontSize: 13),
                           ),
                           const SizedBox(height: 28),
                           SizedBox(

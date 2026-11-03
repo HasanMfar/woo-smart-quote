@@ -69,7 +69,6 @@ if ( ! preg_match( '/^\d+\.\d+\.\d+$/', $version ) ) {
 // Path patterns (relative to the plugin root) that must not ship.
 $excluded_paths = array(
 	'templates/pdf/gemini-code-',
-	'assets/fonts/',
 	'assets/images/marketplace-banner-',
 	'assets/images/marketplace-cover-',
 	'assets/images/infographics/',

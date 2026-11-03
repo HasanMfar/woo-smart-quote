@@ -3,22 +3,30 @@
  * Authentic WordPress Native Enterprise Palette & Modern Settings UI
  * ============================================================ */
 .wsq-admin-wrap {
-	--wsq-primary: #2271b1;
-	--wsq-accent: #135e96;
-	--wsq-ink: #1d2327;
-	--wsq-muted: #646970;
-	--wsq-border: #c3c4c7;
-	--wsq-soft: #f0f0f1;
-	--wsq-card: #ffffff;
-	--wsq-ok: #008a20;
-	--wsq-ok-bg: #edfaef;
-	--wsq-ok-border: #68de7c;
-	--wsq-err: #d63638;
-	--wsq-err-bg: #fcf0f1;
-	--wsq-err-border: #f1aeb5;
-	--wsq-warn: #996800;
-	--wsq-warn-bg: #fcf9e8;
-	--wsq-warn-border: #dba617;
+	--wsq-primary: var(--wsq-ds-primary, #2271b1);
+	--wsq-primary-hover: var(--wsq-ds-primary-hover, #135e96);
+	--wsq-accent: var(--wsq-ds-primary-hover, #135e96);
+	--wsq-ink: var(--wsq-ds-ink, #1d2327);
+	--wsq-ink-light: var(--wsq-ds-ink-light, #2c3338);
+	--wsq-muted: var(--wsq-ds-muted, #646970);
+	--wsq-border: var(--wsq-ds-border, #c3c4c7);
+	--wsq-border-light: var(--wsq-ds-border-light, #dcdcde);
+	--wsq-soft: var(--wsq-ds-soft, #f0f0f1);
+	--wsq-card: var(--wsq-ds-surface, #ffffff);
+	--wsq-ok: var(--wsq-ds-ok, #008a20);
+	--wsq-ok-bg: var(--wsq-ds-ok-bg, #edfaef);
+	--wsq-ok-border: var(--wsq-ds-ok-border, #68de7c);
+	--wsq-err: var(--wsq-ds-err, #d63638);
+	--wsq-err-bg: var(--wsq-ds-err-bg, #fcf0f1);
+	--wsq-err-border: var(--wsq-ds-err-border, #f1aeb5);
+	--wsq-warn: var(--wsq-ds-warn, #996800);
+	--wsq-warn-bg: var(--wsq-ds-warn-bg, #fcf9e8);
+	--wsq-warn-border: var(--wsq-ds-warn-border, #dba617);
+	--wsq-font-sans: var(--wsq-ds-font-family, 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif);
+	font-family: var(--wsq-font-sans);
+	font-feature-settings: "tnum" 1;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 	color-scheme: light;
 	max-width: 1140px;
 	margin-top: 20px;
@@ -290,12 +298,12 @@
 	.wsq-chart-weekday { display: none; }
 	.wsq-dist-row { grid-template-columns: 110px 1fr 40px; gap: 8px; padding: 8px 4px; }
 	.wsq-kpi-value { font-size: 24px; }
-	.wsq-inbox-filter, .wsq-copy-btn, .wsq-read-btn, .wsq-read-all-btn { min-height: 40px; min-width: 40px; touch-action: manipulation; }
-	.wsq-pending-action, .wsq-test-btn, .wsq-webhook-btn { min-height: 40px; touch-action: manipulation; display: inline-flex; align-items: center; justify-content: center; }
-	.wsq-token { min-height: 40px; display: inline-flex; align-items: center; padding: 6px 12px; font-size: 13px; touch-action: manipulation; }
-	.wsq-toggle { min-height: 40px; touch-action: manipulation; }
+	.wsq-inbox-filter, .wsq-copy-btn, .wsq-read-btn, .wsq-read-all-btn { min-height: 44px; min-width: 44px; touch-action: manipulation; }
+	.wsq-pending-action, .wsq-test-btn, .wsq-webhook-btn { min-height: 44px; touch-action: manipulation; display: inline-flex; align-items: center; justify-content: center; }
+	.wsq-token { min-height: 44px; display: inline-flex; align-items: center; padding: 6px 12px; font-size: 13px; touch-action: manipulation; }
+	.wsq-toggle { min-height: 44px; touch-action: manipulation; }
 	.wsq-cat-search-bar { max-width: 100%; }
-	.wsq-cat-search-clear { width: 32px; height: 32px; min-width: 32px; min-height: 32px; }
+	.wsq-cat-search-clear { width: 34px; height: 34px; min-width: 34px; min-height: 34px; }
 	.wsq-inbox-time { margin-inline-start: 0; width: 100%; }
 }
 @media (max-width: 600px) {

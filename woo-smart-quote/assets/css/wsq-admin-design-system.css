@@ -1,0 +1,90 @@
+/**
+ * Nerkhnegar Admin Design System Tokens
+ * Generated via ui-ux-pro-max-cli
+ * Swiss / Minimalism High-Density Admin Tokens & Utilities
+ */
+
+@font-face {
+	font-family: 'Vazirmatn';
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url('../fonts/Vazirmatn-Regular.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: 'Vazirmatn';
+	font-style: normal;
+	font-weight: 700;
+	font-display: swap;
+	src: url('../fonts/Vazirmatn-Bold.ttf') format('truetype');
+}
+
+:root {
+	/* Semantic Brand Palette (WordPress Native Core Compatible) */
+	--wsq-ds-primary: #2271b1;
+	--wsq-ds-primary-hover: #135e96;
+	--wsq-ds-primary-active: #0a4b78;
+	--wsq-ds-ink: #1d2327;
+	--wsq-ds-ink-light: #2c3338;
+	--wsq-ds-muted: #646970;
+	--wsq-ds-border: #c3c4c7;
+	--wsq-ds-border-light: #dcdcde;
+	--wsq-ds-soft: #f0f0f1;
+	--wsq-ds-surface: #ffffff;
+
+	/* Status Accents */
+	--wsq-ds-ok: #008a20;
+	--wsq-ds-ok-bg: #edfaef;
+	--wsq-ds-ok-border: #68de7c;
+	--wsq-ds-warn: #996800;
+	--wsq-ds-warn-bg: #fcf9e8;
+	--wsq-ds-warn-border: #dba617;
+	--wsq-ds-err: #d63638;
+	--wsq-ds-err-bg: #fcf0f1;
+	--wsq-ds-err-border: #f1aeb5;
+	--wsq-ds-info: #2271b1;
+	--wsq-ds-info-bg: #f0f6fc;
+	--wsq-ds-info-border: #c5d9ed;
+
+	/* Persian Typography Hierarchy */
+	--wsq-ds-font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+	--wsq-ds-font-mono: Consolas, 'SF Mono', Menlo, Monaco, monospace;
+	--wsq-ds-font-size-xs: 11px;
+	--wsq-ds-font-size-sm: 12.5px;
+	--wsq-ds-font-size-md: 14px;
+	--wsq-ds-font-size-lg: 16px;
+	--wsq-ds-font-size-xl: 18px;
+	--wsq-ds-font-size-2xl: 24px;
+	--wsq-ds-font-size-3xl: 28px;
+
+	/* Spacing Scale */
+	--wsq-ds-space-2xs: 2px;
+	--wsq-ds-space-xs: 4px;
+	--wsq-ds-space-sm: 8px;
+	--wsq-ds-space-md: 14px;
+	--wsq-ds-space-lg: 20px;
+	--wsq-ds-space-xl: 26px;
+	--wsq-ds-space-2xl: 36px;
+
+	/* Border Radius */
+	--wsq-ds-radius-sm: 4px;
+	--wsq-ds-radius-md: 6px;
+	--wsq-ds-radius-lg: 8px;
+	--wsq-ds-radius-pill: 20px;
+	--wsq-ds-radius-circle: 50%;
+
+	/* Elevation Shadows */
+	--wsq-ds-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+	--wsq-ds-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+	--wsq-ds-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+	--wsq-ds-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.03);
+
+	/* Transitions */
+	--wsq-ds-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+	--wsq-ds-transition-normal: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+	/* Accessibility */
+	--wsq-ds-focus-ring: 2px solid var(--wsq-ds-primary);
+	--wsq-ds-focus-offset: 2px;
+}

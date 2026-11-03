@@ -1,0 +1,6 @@
+/**
+ * Nerkhnegar Admin Styles Entry
+ * Imports Admin Design System and Component Styles
+ */
+@import url('wsq-admin-design-system.css');
+@import url('admin.css');

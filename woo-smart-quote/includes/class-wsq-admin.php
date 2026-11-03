@@ -41,7 +41,8 @@ class WSQ_Admin {
 		if ( function_exists( 'wp_enqueue_media' ) ) {
 			wp_enqueue_media();
 		}
-		wp_enqueue_style( 'woo-smart-quote-admin', WSQ_PLUGIN_URL . 'assets/css/admin.css', array(), WSQ_VERSION );
+		wp_enqueue_style( 'woo-smart-quote-admin-ds', WSQ_PLUGIN_URL . 'assets/css/wsq-admin-design-system.css', array(), WSQ_VERSION );
+		wp_enqueue_style( 'woo-smart-quote-admin', WSQ_PLUGIN_URL . 'assets/css/admin.css', array( 'woo-smart-quote-admin-ds' ), WSQ_VERSION );
 		wp_enqueue_script( 'woo-smart-quote-clipboard', WSQ_PLUGIN_URL . 'assets/js/wsq-clipboard.js', array(), WSQ_VERSION, false );
 		wp_enqueue_script( 'woo-smart-quote-qrcode', WSQ_PLUGIN_URL . 'assets/js/jquery.qrcode.min.js', array( 'jquery' ), WSQ_VERSION, true );
 		wp_enqueue_script( 'woo-smart-quote-admin', WSQ_PLUGIN_URL . 'assets/js/admin.js', array( 'jquery', 'woo-smart-quote-clipboard', 'woo-smart-quote-qrcode' ), WSQ_VERSION, true );

@@ -72,28 +72,42 @@ class _StoreSwitcherScreenState extends State<StoreSwitcherScreen> {
             const SizedBox(height: 10),
             ..._stores.map((st) {
               final isActive = st.storeUrl == _activeUrl;
+              final isDark = Theme.of(context).brightness == Brightness.dark;
               return Card(
-                color: isActive ? AppColors.primaryLight.withOpacity(0.08) : Colors.white,
+                color: isActive
+                    ? (isDark ? AppColors.primaryLight.withValues(alpha: 0.18) : AppColors.primaryLight.withValues(alpha: 0.08))
+                    : AppColors.cardBg(context),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                   side: BorderSide(
-                    color: isActive ? AppColors.primary : AppColors.cardBorder,
+                    color: isActive ? (isDark ? AppColors.primaryLight : AppColors.primary) : AppColors.border(context),
                     width: isActive ? 2 : 1,
                   ),
                 ),
                 margin: const EdgeInsets.only(bottom: 10),
                 child: ListTile(
                   leading: CircleAvatar(
-                    backgroundColor: isActive ? AppColors.primary : AppColors.background,
-                    foregroundColor: isActive ? Colors.white : AppColors.textPrimary,
+                    backgroundColor: isActive
+                        ? (isDark ? AppColors.primaryLight : AppColors.primary)
+                        : AppColors.recessedBg(context),
+                    foregroundColor: isActive
+                        ? Colors.white
+                        : (isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
                     child: const Icon(Icons.storefront),
                   ),
                   title: Text(st.storeName, style: const TextStyle(fontWeight: FontWeight.bold)),
-                  subtitle: Text(st.storeUrl, textDirection: TextDirection.ltr, style: const TextStyle(fontSize: 12)),
+                  subtitle: Text(
+                    st.storeUrl,
+                    textDirection: TextDirection.ltr,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                    ),
+                  ),
                   trailing: isActive
-                      ? const Chip(
-                          label: Text('فعال', style: TextStyle(color: Colors.white, fontSize: 11)),
-                          backgroundColor: AppColors.primary,
+                      ? Chip(
+                          label: const Text('فعال', style: TextStyle(color: Colors.white, fontSize: 11)),
+                          backgroundColor: isDark ? AppColors.primaryLight : AppColors.primary,
                         )
                       : OutlinedButton(
                           onPressed: () => _selectStore(st),
@@ -107,6 +121,7 @@ class _StoreSwitcherScreenState extends State<StoreSwitcherScreen> {
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.secondary,
+                minimumSize: const Size(double.infinity, 48),
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
               onPressed: () async {

@@ -170,7 +170,7 @@ class _QuoteDetailScreenState extends State<QuoteDetailScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: _quote!.isPending ? AppColors.pendingBg : AppColors.pricedBg,
+                    color: AppColors.statusBadgeBg(context, isPending: _quote!.isPending),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
@@ -198,12 +198,15 @@ class _QuoteDetailScreenState extends State<QuoteDetailScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: AppColors.background,
+                  color: AppColors.recessedBg(context),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   'توضیح خریدار: ${_quote!.customerNote}',
-                  style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Theme.of(context).textTheme.bodyMedium?.color ?? AppColors.textSecondary,
+                  ),
                 ),
               ),
             ],
@@ -214,15 +217,16 @@ class _QuoteDetailScreenState extends State<QuoteDetailScreen> {
   }
 
   Widget _buildInfoRow(IconData icon, String label, String value) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
           Icon(icon, size: 16, color: AppColors.textMuted),
           const SizedBox(width: 6),
-          Text(label, style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+          Text(label, style: TextStyle(color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary, fontSize: 13)),
           const SizedBox(width: 6),
-          Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+          Text(value, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Theme.of(context).textTheme.bodyLarge?.color)),
         ],
       ),
     );
@@ -234,7 +238,7 @@ class _QuoteDetailScreenState extends State<QuoteDetailScreen> {
         if (_quote!.isPending)
           SizedBox(
             width: double.infinity,
-            height: 46,
+            height: 48, // 48dp Android Touch Target
             child: ElevatedButton.icon(
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
               onPressed: () async {
@@ -286,7 +290,7 @@ class _QuoteDetailScreenState extends State<QuoteDetailScreen> {
           const SizedBox(height: 10),
           SizedBox(
             width: double.infinity,
-            height: 42,
+            height: 48, // 48dp Android Touch Target
             child: OutlinedButton.icon(
               onPressed: () async {
                 final updated = await Navigator.push(
@@ -313,12 +317,12 @@ class _QuoteDetailScreenState extends State<QuoteDetailScreen> {
                 borderRadius: BorderRadius.circular(6),
                 child: Image.network(item.imageUrl, width: 44, height: 44, fit: BoxFit.cover),
               )
-            : const Icon(Icons.inventory_2_outlined, color: AppColors.textMuted),
+            : Icon(Icons.inventory_2_outlined, color: Theme.of(context).brightness == Brightness.dark ? AppColors.darkTextMuted : AppColors.textMuted),
         title: Text(item.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
         subtitle: Text('تعداد: ${NumberFormatter.toPersianDigits(item.quantity)} × ${NumberFormatter.formatCurrency(item.unitPrice)}'),
         trailing: Text(
           NumberFormatter.formatCurrency(item.total),
-          style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryDark),
+          style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.priceColor(context)),
         ),
       ),
     );
@@ -328,9 +332,9 @@ class _QuoteDetailScreenState extends State<QuoteDetailScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.cardBg(context),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: AppColors.border(context)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -338,7 +342,7 @@ class _QuoteDetailScreenState extends State<QuoteDetailScreen> {
           const Text('جمع کل نهایی استعلام:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
           Text(
             NumberFormatter.formatCurrency(_quote!.total),
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17, color: AppColors.primary),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17, color: AppColors.priceColor(context)),
           ),
         ],
       ),
@@ -348,23 +352,36 @@ class _QuoteDetailScreenState extends State<QuoteDetailScreen> {
   Widget _buildNoteCard(Map<String, dynamic> note) {
     final content = note['content']?.toString() ?? '';
     final date = note['date']?.toString() ?? '';
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: AppColors.recessedBg(context),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: AppColors.border(context)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(content, style: const TextStyle(fontSize: 12, color: AppColors.textPrimary)),
+          Text(
+            content,
+            style: TextStyle(
+              fontSize: 12,
+              color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+            ),
+          ),
           if (date.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(top: 4),
-              child: Text(date, style: const TextStyle(fontSize: 10, color: AppColors.textMuted)),
+              child: Text(
+                date,
+                style: TextStyle(
+                  fontSize: 10,
+                  color: isDark ? AppColors.darkTextMuted : AppColors.textMuted,
+                ),
+              ),
             ),
         ],
       ),
@@ -377,15 +394,20 @@ class _QuoteDetailScreenState extends State<QuoteDetailScreen> {
     final author = history['author']?.toString() ?? 'مدیر فروشگاه';
     final note = history['admin_note']?.toString() ?? '';
     final validity = history['validity']?.toString() ?? '';
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.cardBg(context),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.primaryLight.withOpacity(0.3)),
+        border: Border.all(
+          color: isDark
+              ? AppColors.darkCardBorder
+              : AppColors.primaryLight.withValues(alpha: 0.3),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -395,23 +417,41 @@ class _QuoteDetailScreenState extends State<QuoteDetailScreen> {
             children: [
               Text(
                 'مبلغ: $totalFormatted',
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.primary),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.priceColor(context)),
               ),
               if (date.isNotEmpty)
-                Text(date, style: const TextStyle(fontSize: 11, color: AppColors.textMuted)),
+                Text(
+                  date,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: isDark ? AppColors.darkTextMuted : AppColors.textMuted,
+                  ),
+                ),
             ],
           ),
           const SizedBox(height: 4),
           Row(
             children: [
-              const Icon(Icons.person_outline, size: 14, color: AppColors.textMuted),
+              Icon(Icons.person_outline, size: 14, color: isDark ? AppColors.darkTextMuted : AppColors.textMuted),
               const SizedBox(width: 4),
-              Text('ثبت توسط: $author', style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+              Text(
+                'ثبت توسط: $author',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                ),
+              ),
               if (validity.isNotEmpty) ...[
                 const SizedBox(width: 12),
-                const Icon(Icons.timer_outlined, size: 14, color: AppColors.textMuted),
+                Icon(Icons.timer_outlined, size: 14, color: isDark ? AppColors.darkTextMuted : AppColors.textMuted),
                 const SizedBox(width: 4),
-                Text('اعتبار: $validity', style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                Text(
+                  'اعتبار: $validity',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                  ),
+                ),
               ],
             ],
           ),
@@ -420,12 +460,15 @@ class _QuoteDetailScreenState extends State<QuoteDetailScreen> {
             Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: AppColors.background,
+                color: AppColors.recessedBg(context),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
                 note,
-                style: const TextStyle(fontSize: 11, color: AppColors.textPrimary),
+                style: TextStyle(
+                  fontSize: 11,
+                  color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                ),
               ),
             ),
           ],

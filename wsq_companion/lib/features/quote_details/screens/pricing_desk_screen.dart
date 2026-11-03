@@ -202,16 +202,17 @@ class _PricingDeskScreenState extends State<PricingDeskScreen> {
   }
 
   Widget _buildCustomerBanner() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.primaryLight.withOpacity(0.12),
+        color: isDark ? AppColors.darkSurfaceCard : AppColors.primaryLight.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.primaryLight.withOpacity(0.3)),
+        border: Border.all(color: isDark ? AppColors.darkCardBorder : AppColors.primaryLight.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
-          const Icon(Icons.person, color: AppColors.primary),
+          Icon(Icons.person, color: isDark ? const Color(0xFF60A5FA) : AppColors.primary),
           const SizedBox(width: 8),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -222,7 +223,7 @@ class _PricingDeskScreenState extends State<PricingDeskScreen> {
               ),
               Text(
                 NumberFormatter.toPersianDigits(_quote!.customerPhone),
-                style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                style: TextStyle(color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary, fontSize: 12),
               ),
             ],
           ),
@@ -230,7 +231,7 @@ class _PricingDeskScreenState extends State<PricingDeskScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: AppColors.pendingBg,
+              color: AppColors.statusBadgeBg(context, isPending: true),
               borderRadius: BorderRadius.circular(6),
             ),
             child: Text(
@@ -272,7 +273,7 @@ class _PricingDeskScreenState extends State<PricingDeskScreen> {
                     width: 50,
                     height: 50,
                     decoration: BoxDecoration(
-                      color: AppColors.background,
+                      color: AppColors.recessedBg(context),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Icon(Icons.inventory_2_outlined, color: AppColors.textMuted),
@@ -358,7 +359,7 @@ class _PricingDeskScreenState extends State<PricingDeskScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
-                color: AppColors.background,
+                color: AppColors.recessedBg(context),
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Row(
@@ -367,7 +368,7 @@ class _PricingDeskScreenState extends State<PricingDeskScreen> {
                   const Text('مجموع این ردیف:', style: TextStyle(fontSize: 12, color: AppColors.textMuted)),
                   Text(
                     NumberFormatter.formatCurrency(item.total),
-                    style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary, fontSize: 14),
+                    style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.priceColor(context), fontSize: 14),
                   ),
                 ],
               ),
@@ -398,7 +399,7 @@ class _PricingDeskScreenState extends State<PricingDeskScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: DropdownButtonFormField<String>(
-                    value: _validityOptions.contains(_validity) ? _validity : _validityOptions.first,
+                    initialValue: _validityOptions.contains(_validity) ? _validity : _validityOptions.first,
                     items: _validityOptions.map((opt) {
                       return DropdownMenuItem(value: opt, child: Text(opt));
                     }).toList(),
@@ -435,7 +436,8 @@ class _PricingDeskScreenState extends State<PricingDeskScreen> {
                 style: TextStyle(fontSize: 11, color: AppColors.textMuted),
               ),
               value: _autoNotify,
-              activeColor: AppColors.secondary,
+              activeTrackColor: AppColors.secondary,
+              activeThumbColor: Colors.white,
               onChanged: (val) => setState(() => _autoNotify = val),
             ),
           ],
@@ -446,24 +448,35 @@ class _PricingDeskScreenState extends State<PricingDeskScreen> {
 
   Widget _buildSummaryCard() {
     final grandTotal = _calculateGrandTotal();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.08),
+        color: isDark ? AppColors.darkSurfaceCard : AppColors.primary.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+        border: Border.all(
+          color: isDark ? AppColors.darkCardBorder : AppColors.primary.withValues(alpha: 0.2),
+        ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text(
+          Text(
             AppStrings.grandTotalLabel,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: AppColors.primaryDark),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 15,
+              color: Theme.of(context).textTheme.bodyLarge?.color,
+            ),
           ),
           Text(
             NumberFormatter.formatCurrency(grandTotal),
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: AppColors.primary),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              color: AppColors.priceColor(context),
+            ),
           ),
         ],
       ),
@@ -473,9 +486,9 @@ class _PricingDeskScreenState extends State<PricingDeskScreen> {
   Widget _buildBottomBar() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: AppColors.cardBorder)),
+      decoration: BoxDecoration(
+        color: AppColors.cardBg(context),
+        border: Border(top: BorderSide(color: AppColors.border(context))),
       ),
       child: SafeArea(
         child: SizedBox(

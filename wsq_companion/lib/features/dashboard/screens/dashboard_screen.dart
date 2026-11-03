@@ -259,13 +259,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Widget _buildFilterChip(String filterKey, String label) {
     final isSelected = _selectedFilter == filterKey;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return ChoiceChip(
       label: Text(label),
       selected: isSelected,
-      selectedColor: AppColors.primary,
-      backgroundColor: Colors.white,
+      selectedColor: isDark ? AppColors.primaryLight : AppColors.primary,
+      backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
+      side: BorderSide(
+        color: isSelected
+            ? (isDark ? AppColors.primaryLight : AppColors.primary)
+            : (isDark ? AppColors.darkCardBorder : AppColors.cardBorder),
+      ),
       labelStyle: TextStyle(
-        color: isSelected ? Colors.white : AppColors.textSecondary,
+        color: isSelected
+            ? Colors.white
+            : (isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
         fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
       ),
       onSelected: (selected) {
@@ -278,6 +286,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildQuoteCard(QuoteSummary quote) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final badgeBg = AppColors.statusBadgeBg(context, isPending: quote.isPending);
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
@@ -307,7 +318,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       Container(
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
-                          color: quote.isPending ? AppColors.pendingBg : AppColors.pricedBg,
+                          color: badgeBg,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Icon(
@@ -319,14 +330,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       const SizedBox(width: 8),
                       Text(
                         'استعلام #${NumberFormatter.toPersianDigits(quote.number)}',
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
+                        ),
                       ),
                     ],
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: quote.isPending ? AppColors.pendingBg : AppColors.pricedBg,
+                      color: badgeBg,
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
@@ -349,14 +364,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   const SizedBox(width: 4),
                   Text(
                     quote.customerName,
-                    style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
+                    style: TextStyle(
+                      color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColors.textPrimary,
+                      fontSize: 14,
+                    ),
                   ),
                   const Spacer(),
                   const Icon(Icons.calendar_today_outlined, size: 16, color: AppColors.textMuted),
                   const SizedBox(width: 4),
                   Text(
                     quote.createdAtJalali,
-                    style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                    style: TextStyle(
+                      color: Theme.of(context).textTheme.bodyMedium?.color ?? AppColors.textSecondary,
+                      fontSize: 13,
+                    ),
                   ),
                 ],
               ),
@@ -368,12 +389,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   const SizedBox(width: 4),
                   Text(
                     NumberFormatter.toPersianDigits(quote.customerPhone),
-                    style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                    style: TextStyle(
+                      color: Theme.of(context).textTheme.bodyMedium?.color ?? AppColors.textSecondary,
+                      fontSize: 13,
+                    ),
                   ),
                   const Spacer(),
                   Text(
                     '${NumberFormatter.toPersianDigits(quote.itemsCount)} قلم محصول',
-                    style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 13),
+                    style: TextStyle(
+                      color: isDark ? const Color(0xFF60A5FA) : AppColors.primary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
                   ),
                 ],
               ),
@@ -389,14 +417,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       const Text('مجموع استعلام:', style: TextStyle(fontSize: 11, color: AppColors.textMuted)),
                       Text(
                         NumberFormatter.formatCurrency(quote.total),
-                        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.primaryDark),
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.priceColor(context),
+                        ),
                       ),
                     ],
                   ),
                   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: quote.isPending ? AppColors.primary : AppColors.secondary,
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      backgroundColor: quote.isPending
+                          ? (isDark ? AppColors.primaryLight : AppColors.primary)
+                          : AppColors.secondary,
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      minimumSize: const Size(0, 48), // 48dp Android Touch Target
                     ),
                     onPressed: () async {
                       if (quote.isPending) {
