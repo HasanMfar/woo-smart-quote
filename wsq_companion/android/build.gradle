@@ -3,6 +3,13 @@ allprojects {
         google()
         mavenCentral()
     }
+    configurations.all {
+        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+            if (details.requested.group == 'androidx.core' && !details.requested.name.contains('splashscreen')) {
+                details.useVersion '1.13.1'
+            }
+        }
+    }
 }
 
 rootProject.buildDir = '../build'
