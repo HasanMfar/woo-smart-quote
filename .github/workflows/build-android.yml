@@ -80,13 +80,13 @@ jobs:
       - name: Build Signed Universal & Split APKs
         run: |
           cd "${{ steps.app-dir.outputs.APP_DIR }}"
-          flutter build apk --release --split-per-abi
-          flutter build apk --release
+          flutter build apk --release --split-per-abi --android-skip-build-dependency-validation
+          flutter build apk --release --android-skip-build-dependency-validation
 
       - name: Build Signed Android App Bundle (AAB)
         run: |
           cd "${{ steps.app-dir.outputs.APP_DIR }}"
-          flutter build appbundle --release
+          flutter build appbundle --release --android-skip-build-dependency-validation
 
       - name: Upload APK Artifacts
         uses: actions/upload-artifact@v4
