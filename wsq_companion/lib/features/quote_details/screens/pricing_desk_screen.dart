@@ -1,9 +1,12 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
+import '../../../core/constants/app_theme.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/network/api_endpoints.dart';
 import '../../../core/utils/number_formatter.dart';
+import '../../../core/widgets/wsq_empty_state.dart';
 import '../models/quote_detail.dart';
 import '../../pdf_preview/screens/pdf_preview_screen.dart';
 
@@ -112,7 +115,7 @@ class _PricingDeskScreenState extends State<PricingDeskScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(AppStrings.pricingSuccess),
-            backgroundColor: AppColors.secondary,
+            backgroundColor: AppColors.completed,
           ),
         );
 
@@ -139,8 +142,11 @@ class _PricingDeskScreenState extends State<PricingDeskScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() => _isSaving = false);
+      final errorMsg = e is DioException && e.response?.statusCode != null
+          ? 'خطا در ارتباط با سرور (کد ${e.response?.statusCode})'
+          : 'خطا در ارتباط با سرور. لطفاً اتصال اینترنت خود را بررسی کنید.';
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('خطا در ارتباط با سرور: $e'), backgroundColor: AppColors.error),
+        SnackBar(content: Text(errorMsg), backgroundColor: AppColors.error),
       );
     }
   }
@@ -158,7 +164,15 @@ class _PricingDeskScreenState extends State<PricingDeskScreen> {
         body: _isLoading
             ? const Center(child: CircularProgressIndicator())
             : _quote == null
-                ? const Center(child: Text('خطا در بارگذاری استعلام'))
+                ? WsqEmptyState(
+                    icon: Icons.error_outline,
+                    title: 'خطا در بارگذاری استعلام',
+                    message: 'امکان دریافت اطلاعات اقلام استعلام جهت قیمت‌گذاری میسر نشد.',
+                    actionLabel: 'تلاش مجدد',
+                    actionIcon: Icons.refresh,
+                    onAction: _fetchQuoteDetail,
+                    isError: true,
+                  )
                 : Column(
                     children: [
                       Expanded(
@@ -314,6 +328,11 @@ class _PricingDeskScreenState extends State<PricingDeskScreen> {
                     decoration: const InputDecoration(
                       hintText: 'مبلغ به تومان',
                       suffixText: 'تومان',
+                      suffixStyle: TextStyle(
+                        fontFamily: AppTheme.fontFamily,
+                        fontSize: 12,
+                        color: AppColors.textMuted,
+                      ),
                       isDense: true,
                     ),
                     onChanged: (val) {
@@ -496,7 +515,7 @@ class _PricingDeskScreenState extends State<PricingDeskScreen> {
           height: 48,
           child: ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.secondary,
+              backgroundColor: AppColors.accent,
             ),
             onPressed: _isSaving ? null : _saveAndDispatch,
             icon: _isSaving

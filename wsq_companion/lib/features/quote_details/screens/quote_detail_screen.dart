@@ -1,8 +1,10 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/network/api_endpoints.dart';
 import '../../../core/utils/number_formatter.dart';
+import '../../../core/widgets/wsq_empty_state.dart';
 import '../models/quote_detail.dart';
 import 'pricing_desk_screen.dart';
 import '../../pdf_preview/screens/pdf_preview_screen.dart';
@@ -62,7 +64,7 @@ class _QuoteDetailScreenState extends State<QuoteDetailScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('اعلان با موفقیت برای خریدار ارسال گردید.'),
-            backgroundColor: AppColors.secondary,
+            backgroundColor: AppColors.completed,
           ),
         );
         _fetchQuote();
@@ -74,8 +76,11 @@ class _QuoteDetailScreenState extends State<QuoteDetailScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() => _isNotifying = false);
+      final errorMsg = e is DioException && e.response?.statusCode != null
+          ? 'خطا در ارتباط با سرور (کد ${e.response?.statusCode})'
+          : 'خطا در ارسال اعلان خریدار. لطفاً اتصال اینترنت خود را بررسی کنید.';
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('خطا در اتصال: $e'), backgroundColor: AppColors.error),
+        SnackBar(content: Text(errorMsg), backgroundColor: AppColors.error),
       );
     }
   }
@@ -99,7 +104,15 @@ class _QuoteDetailScreenState extends State<QuoteDetailScreen> {
         body: _isLoading
             ? const Center(child: CircularProgressIndicator())
             : _quote == null
-                ? const Center(child: Text('استعلام یافت نشد'))
+                ? WsqEmptyState(
+                    icon: Icons.receipt_long_outlined,
+                    title: 'استعلام یافت نشد',
+                    message: 'اطلاعات این استعلام در دسترس نیست یا ممکن است حذف شده باشد.',
+                    actionLabel: 'تلاش مجدد',
+                    actionIcon: Icons.refresh,
+                    onAction: _fetchQuote,
+                    isError: true,
+                  )
                 : SingleChildScrollView(
                     padding: const EdgeInsets.all(16),
                     child: Column(
@@ -277,7 +290,7 @@ class _QuoteDetailScreenState extends State<QuoteDetailScreen> {
               const SizedBox(width: 10),
               Expanded(
                 child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(backgroundColor: AppColors.secondary),
+                  style: ElevatedButton.styleFrom(backgroundColor: AppColors.accent),
                   onPressed: _isNotifying ? null : _notifyCustomer,
                   icon: _isNotifying
                       ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))

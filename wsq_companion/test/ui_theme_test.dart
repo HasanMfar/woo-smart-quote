@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wsq_companion/core/constants/app_colors.dart';
 import 'package:wsq_companion/core/constants/app_theme.dart';
+import 'package:wsq_companion/core/widgets/wsq_empty_state.dart';
 
 void main() {
   group('UI/UX Pro Max Theme & RTL Tests', () {
@@ -163,6 +164,74 @@ void main() {
       final btnSize = tester.getSize(buttonFinder);
       expect(btnSize.height, greaterThanOrEqualTo(48.0));
       expect(find.text('در انتظار قیمت'), findsOneWidget);
+    });
+
+    testWidgets('WsqEmptyState renders icon, title, guidance and triggers action callback', (tester) async {
+      bool actionTriggered = false;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.lightTheme,
+          home: Directionality(
+            textDirection: TextDirection.rtl,
+            child: Scaffold(
+              body: WsqEmptyState(
+                icon: Icons.receipt_long_outlined,
+                title: 'هیچ استعلامی یافت نشد.',
+                message: 'استعلام‌های ثبت‌شده در فروشگاه به صورت خودکار در این صفحه نمایش داده می‌شوند.',
+                actionLabel: 'به‌روزرسانی لیست',
+                actionIcon: Icons.refresh,
+                onAction: () => actionTriggered = true,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byIcon(Icons.receipt_long_outlined), findsOneWidget);
+      expect(find.text('هیچ استعلامی یافت نشد.'), findsOneWidget);
+      expect(find.text('استعلام‌های ثبت‌شده در فروشگاه به صورت خودکار در این صفحه نمایش داده می‌شوند.'), findsOneWidget);
+      expect(find.byType(OutlinedButton), findsOneWidget);
+
+      await tester.tap(find.byType(OutlinedButton));
+      await tester.pump();
+      expect(actionTriggered, isTrue);
+    });
+
+    testWidgets('WsqEmptyState renders error state with distinct error styling and retry button', (tester) async {
+      bool retryTriggered = false;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.lightTheme,
+          home: Directionality(
+            textDirection: TextDirection.rtl,
+            child: Scaffold(
+              body: WsqEmptyState(
+                icon: Icons.cloud_off_outlined,
+                title: 'خطا در ارتباط',
+                message: 'اتصال به فروشگاه برقرار نشد.',
+                actionLabel: 'تلاش مجدد',
+                actionIcon: Icons.refresh,
+                onAction: () => retryTriggered = true,
+                isError: true,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final iconFinder = find.byIcon(Icons.cloud_off_outlined);
+      expect(iconFinder, findsOneWidget);
+      final iconWidget = tester.widget<Icon>(iconFinder);
+      expect(iconWidget.color, AppColors.error);
+
+      expect(find.text('خطا در ارتباط'), findsOneWidget);
+      expect(find.text('اتصال به فروشگاه برقرار نشد.'), findsOneWidget);
+
+      await tester.tap(find.byType(OutlinedButton));
+      await tester.pump();
+      expect(retryTriggered, isTrue);
     });
   });
 }

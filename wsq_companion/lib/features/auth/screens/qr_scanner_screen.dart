@@ -61,7 +61,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(AppStrings.pairingSuccess),
-          backgroundColor: AppColors.secondary,
+          backgroundColor: AppColors.completed,
         ),
       );
       _completePairing();
@@ -86,6 +86,8 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
           children: [
             TextField(
               controller: _manualUrlController,
+              keyboardType: TextInputType.url,
+              autocorrect: false,
               decoration: const InputDecoration(
                 labelText: 'آدرس وبسایت فروشگاه (URL)',
                 hintText: 'https://example.com',
@@ -95,9 +97,11 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
             const SizedBox(height: 12),
             TextField(
               controller: _manualCodeController,
+              keyboardType: TextInputType.number,
               decoration: const InputDecoration(
                 labelText: 'کد جفت‌سازی ۸ رقمی',
                 hintText: '1234-5678',
+                helperText: 'کد عددی در تب اپلیکیشن پیشخوان وردپرس',
               ),
               textDirection: TextDirection.ltr,
             ),
@@ -109,12 +113,24 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
             child: const Text('انصراف'),
           ),
           ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.accent),
             onPressed: () async {
+              final url = _manualUrlController.text.trim();
+              final code = _manualCodeController.text.trim();
+              if (url.isEmpty || code.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('لطفاً آدرس وبسایت و کد جفت‌سازی را وارد نمایید.'),
+                    backgroundColor: AppColors.error,
+                  ),
+                );
+                return;
+              }
               Navigator.pop(ctx);
               setState(() => _isProcessing = true);
               final ok = await AuthService.pairWithManualEntry(
-                siteUrl: _manualUrlController.text,
-                pairingCode: _manualCodeController.text,
+                siteUrl: url,
+                pairingCode: code,
               );
               if (!mounted) return;
               if (ok) {
@@ -135,75 +151,78 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(AppStrings.scanQrTitle),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.flash_on),
-            onPressed: () => _controller.toggleTorch(),
-          ),
-          IconButton(
-            icon: const Icon(Icons.cameraswitch),
-            onPressed: () => _controller.switchCamera(),
-          ),
-        ],
-      ),
-      body: Stack(
-        children: [
-          MobileScanner(
-            controller: _controller,
-            onDetect: _onDetect,
-          ),
-          // Viewfinder Overlay
-          Center(
-            child: Container(
-              width: 250,
-              height: 250,
-              decoration: BoxDecoration(
-                border: Border.all(color: AppColors.primaryLight, width: 3),
-                borderRadius: BorderRadius.circular(20),
-              ),
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text(AppStrings.scanQrTitle),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.flash_on),
+              onPressed: () => _controller.toggleTorch(),
             ),
-          ),
-          // Instruction Card
-          Positioned(
-            bottom: 30,
-            left: 20,
-            right: 20,
-            child: Card(
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? AppColors.darkSurface.withValues(alpha: 0.95)
-                  : Colors.white.withValues(alpha: 0.95),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      AppStrings.scanQrSubtitle,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 12),
-                    TextButton.icon(
-                      onPressed: _showManualDialog,
-                      icon: const Icon(Icons.keyboard),
-                      label: const Text('وارد کردن دستی کد اتصال'),
-                    ),
-                  ],
+            IconButton(
+              icon: const Icon(Icons.cameraswitch),
+              onPressed: () => _controller.switchCamera(),
+            ),
+          ],
+        ),
+        body: Stack(
+          children: [
+            MobileScanner(
+              controller: _controller,
+              onDetect: _onDetect,
+            ),
+            // Viewfinder Overlay
+            Center(
+              child: Container(
+                width: 250,
+                height: 250,
+                decoration: BoxDecoration(
+                  border: Border.all(color: AppColors.primaryLight, width: 3),
+                  borderRadius: BorderRadius.circular(20),
                 ),
               ),
             ),
-          ),
-          if (_isProcessing)
-            Container(
-              color: Colors.black54,
-              child: const Center(
-                child: CircularProgressIndicator(color: Colors.white),
+            // Instruction Card
+            Positioned(
+              bottom: 30,
+              left: 20,
+              right: 20,
+              child: Card(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.darkSurface.withValues(alpha: 0.95)
+                    : Colors.white.withValues(alpha: 0.95),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        AppStrings.scanQrSubtitle,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 12),
+                      TextButton.icon(
+                        onPressed: _showManualDialog,
+                        icon: const Icon(Icons.keyboard),
+                        label: const Text('وارد کردن دستی کد اتصال'),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
-        ],
+            if (_isProcessing)
+              Container(
+                color: Colors.black54,
+                child: const Center(
+                  child: CircularProgressIndicator(color: Colors.white),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

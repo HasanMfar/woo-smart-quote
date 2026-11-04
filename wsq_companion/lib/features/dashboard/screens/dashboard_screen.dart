@@ -12,6 +12,7 @@ import '../../quote_details/screens/pricing_desk_screen.dart';
 import '../../multi_store/screens/store_switcher_screen.dart';
 import '../../auth/screens/qr_scanner_screen.dart';
 import '../../../services/notification_service.dart';
+import '../../../core/widgets/wsq_empty_state.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -216,29 +217,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   : RefreshIndicator(
                       onRefresh: _loadQuotes,
                       child: _quotes.isEmpty
-                          ? Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(24),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      _loadError ?? AppStrings.emptyQuotes,
-                                      textAlign: TextAlign.center,
-                                      style: const TextStyle(
-                                        color: AppColors.textMuted,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    if (_loadError != null) ...[
-                                      const SizedBox(height: 16),
-                                      ElevatedButton.icon(
-                                        onPressed: _loadQuotes,
-                                        icon: const Icon(Icons.refresh),
-                                        label: const Text(AppStrings.retry),
-                                      ),
-                                    ],
-                                  ],
+                          ? LayoutBuilder(
+                              builder: (context, constraints) => SingleChildScrollView(
+                                physics: const AlwaysScrollableScrollPhysics(),
+                                child: ConstrainedBox(
+                                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                                  child: _buildEmptyOrErrorState(),
                                 ),
                               ),
                             )
@@ -254,6 +238,46 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildEmptyOrErrorState() {
+    if (_loadError != null) {
+      return WsqEmptyState(
+        icon: Icons.cloud_off_outlined,
+        title: 'خطا در ارتباط',
+        message: _loadError!,
+        actionLabel: AppStrings.retry,
+        actionIcon: Icons.refresh,
+        onAction: _loadQuotes,
+        isError: true,
+      );
+    }
+
+    if (_searchQuery.isNotEmpty) {
+      return WsqEmptyState(
+        icon: Icons.search_off_outlined,
+        title: 'نتیجه‌ای یافت نشد',
+        message: 'هیچ استعلامی با عبارت «$_searchQuery» پیدا نشد. عبارت دیگری را امتحان کنید.',
+        actionLabel: 'پاک کردن جستجو',
+        actionIcon: Icons.clear,
+        onAction: () {
+          _searchController.clear();
+          setState(() {
+            _searchQuery = '';
+          });
+          _loadQuotes();
+        },
+      );
+    }
+
+    return WsqEmptyState(
+      icon: Icons.receipt_long_outlined,
+      title: AppStrings.emptyQuotes,
+      message: 'استعلام‌های ثبت‌شده در فروشگاه به صورت خودکار در این صفحه نمایش داده می‌شوند.',
+      actionLabel: 'به‌روزرسانی لیست',
+      actionIcon: Icons.refresh,
+      onAction: _loadQuotes,
     );
   }
 
@@ -427,9 +451,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: quote.isPending
-                          ? (isDark ? AppColors.primaryLight : AppColors.primary)
-                          : AppColors.secondary,
+                      backgroundColor: isDark ? AppColors.primaryLight : AppColors.primary,
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                       minimumSize: const Size(0, 48), // 48dp Android Touch Target
                     ),

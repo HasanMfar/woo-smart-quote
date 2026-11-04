@@ -482,6 +482,15 @@
 	gap: 10px;
 	margin-bottom: 12px;
 }
+.wsq-app-action-row .button {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	min-height: 38px;
+}
+.wsq-app-action-row .wsq-toggle-custom-apk-btn {
+	color: var(--wsq-muted);
+}
 .wsq-apk-download-btn {
 	background: var(--wsq-primary) !important;
 	border-color: var(--wsq-accent) !important;
@@ -500,7 +509,7 @@
 .wsq-apk-download-btn:hover,
 .wsq-apk-download-btn:focus {
 	background: var(--wsq-accent) !important;
-	border-color: #0c4a6e !important;
+	border-color: var(--wsq-ds-primary-active, #0a4b78) !important;
 	color: #ffffff !important;
 }
 .wsq-apk-download-btn:active {
@@ -580,6 +589,45 @@
 	font-size: 13px;
 	color: var(--wsq-ink);
 	margin-bottom: 6px;
+}
+.wsq-refresh-pairing-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+.wsq-app-collapsible-box.is-fit-content {
+	width: fit-content;
+}
+.wsq-app-collapsible-box.is-custom-url {
+	max-width: 540px;
+}
+.wsq-app-qr-flex {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	flex-wrap: wrap;
+}
+.wsq-app-qr-info {
+	max-width: 320px;
+}
+.wsq-app-custom-row {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+}
+.wsq-app-custom-input {
+	flex-grow: 1;
+	direction: ltr;
+}
+.wsq-app-custom-status {
+	display: block;
+	margin-top: 6px;
+	font-size: 12px;
+}
+.wsq-app-custom-desc {
+	margin-top: 0;
+	margin-bottom: 8px;
+	font-size: 12px;
 }
 .wsq-app-empty-state {
 	background: var(--wsq-soft);

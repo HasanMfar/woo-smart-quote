@@ -59,10 +59,10 @@ class _PdfPreviewScreenState extends State<PdfPreviewScreen> {
           _errorMessage = 'فایل پیش‌فاکتور یافت نشد.';
         });
       }
-    } catch (e) {
+    } catch (_) {
       setState(() {
         _isDownloading = false;
-        _errorMessage = 'خطا در بارگیری فایل پیش‌فاکتور: $e';
+        _errorMessage = 'خطا در بارگیری فایل پیش‌فاکتور. لطفاً اتصال اینترنت خود را بررسی کرده و دوباره تلاش کنید.';
       });
     }
   }
@@ -148,10 +148,19 @@ class _PdfPreviewScreenState extends State<PdfPreviewScreen> {
                           Container(
                             padding: const EdgeInsets.all(24),
                             decoration: BoxDecoration(
-                              color: AppColors.secondary.withValues(alpha: 0.12),
+                              color: (Theme.of(context).brightness == Brightness.dark
+                                      ? AppColors.primaryLight
+                                      : AppColors.primary)
+                                  .withValues(alpha: 0.12),
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(Icons.picture_as_pdf, size: 72, color: AppColors.secondary),
+                            child: Icon(
+                              Icons.picture_as_pdf,
+                              size: 72,
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? AppColors.primaryLight
+                                  : AppColors.primary,
+                            ),
                           ),
                           const SizedBox(height: 20),
                           Text(
@@ -169,7 +178,7 @@ class _PdfPreviewScreenState extends State<PdfPreviewScreen> {
                             width: 240,
                             height: 48,
                             child: ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(backgroundColor: AppColors.secondary),
+                              style: ElevatedButton.styleFrom(backgroundColor: AppColors.accent),
                               onPressed: _sharePdf,
                               icon: const Icon(Icons.share),
                               label: const Text('اشتراک‌گذاری و ارسال'),

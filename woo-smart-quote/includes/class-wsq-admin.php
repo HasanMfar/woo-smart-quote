@@ -914,7 +914,7 @@ class WSQ_Admin {
 									</label>
 									<p class="description" id="wsq_polling_help"><?php esc_html_e( 'اگر وبهوک بله ثبت شده باشد، پولینگ فقط برای ایتا به کار می‌رود.', 'woo-smart-quote' ); ?></p>
 									<?php if ( ! empty( $poll_off['eitaa'] ) ) : ?>
-										<p class="description" style="color:#b32d2e;"><?php esc_html_e( 'پنل ایتای شما', 'woo-smart-quote' ); ?> <code>getUpdates</code> <?php esc_html_e( 'را پشتیبانی نمی‌کند؛ پولینگ برای ایتا غیرفعال شده است. فقط ارسال فعال می‌ماند.', 'woo-smart-quote' ); ?></p>
+										<p class="description" style="color:var(--wsq-err);"><?php esc_html_e( 'پنل ایتای شما', 'woo-smart-quote' ); ?> <code>getUpdates</code> <?php esc_html_e( 'را پشتیبانی نمی‌کند؛ پولینگ برای ایتا غیرفعال شده است. فقط ارسال فعال می‌ماند.', 'woo-smart-quote' ); ?></p>
 									<?php endif; ?>
 								</td>
 							</tr>
@@ -1282,9 +1282,9 @@ class WSQ_Admin {
 									<div class="wsq-stamp-preview-card">
 										<div class="wsq-digital-seal-demo" aria-hidden="true">
 											<span id="wsq-stamp-company-preview" style="font-weight:900;"><?php echo esc_html( get_option( 'wsq_company_name', get_bloginfo( 'name' ) ) ); ?></span>
-											<span style="font-size:7.5px;color:#a81d1d;margin:2px 0;"><?php esc_html_e( 'شماره ثبت رسمی', 'woo-smart-quote' ); ?></span>
-											<span id="wsq-stamp-text-preview" style="font-size:8px;font-weight:700;background:#fef2f2;border:1px solid #b91c1c;padding:1px 4px;border-radius:2px;"><?php echo esc_html( get_option( 'wsq_stamp_text', __( 'تأیید شد — پیش‌فاکتور رسمی', 'woo-smart-quote' ) ) ); ?></span>
-											<span style="font-size:7.5px;color:#a81d1d;margin-top:2px;"><?php esc_html_e( 'امور مالی و فروش', 'woo-smart-quote' ); ?></span>
+											<span style="font-size:7.5px;color:var(--wsq-err);margin:2px 0;"><?php esc_html_e( 'شماره ثبت رسمی', 'woo-smart-quote' ); ?></span>
+											<span id="wsq-stamp-text-preview" style="font-size:8px;font-weight:700;background:var(--wsq-err-bg);border:1px solid var(--wsq-err-border);color:var(--wsq-err);padding:1px 4px;border-radius:2px;"><?php echo esc_html( get_option( 'wsq_stamp_text', __( 'تأیید شد — پیش‌فاکتور رسمی', 'woo-smart-quote' ) ) ); ?></span>
+											<span style="font-size:7.5px;color:var(--wsq-err);margin-top:2px;"><?php esc_html_e( 'امور مالی و فروش', 'woo-smart-quote' ); ?></span>
 										</div>
 										<p class="description" id="wsq_stamp_preview_help" style="margin:0;"><?php esc_html_e( 'پیش‌نمایش مهر رسمی شرکت که به‌صورت برداری با حاشیه دایره‌ای دوخطه، شناسه ملی، شماره ثبت و تاریخ صدور در پایین سند PDF الصاق می‌شود.', 'woo-smart-quote' ); ?></p>
 									</div>
@@ -1640,7 +1640,7 @@ class WSQ_Admin {
 						<div class="wsq-live-preview-card" aria-label="<?php esc_attr_e( 'پیش‌نمایش زنده المان‌ها در فروشگاه', 'woo-smart-quote' ); ?>">
 							<div class="wsq-preview-title">
 								<span><?php echo WSQ_Icons::get( 'sparkles' ); ?> <?php esc_html_e( 'پیش‌نمایش زنده در فروشگاه', 'woo-smart-quote' ); ?></span>
-								<span class="wsq-version-badge" style="background:#eef2ff;color:#4f46e5;border-color:#c7d2fe;padding:2px 8px;font-size:10.5px;">Live Mockup</span>
+								<span class="wsq-version-badge" style="background:var(--wsq-ds-info-bg);color:var(--wsq-ds-info);border-color:var(--wsq-ds-info-border);padding:2px 8px;font-size:10.5px;">Live Mockup</span>
 							</div>
 							<div class="wsq-preview-screen">
 								<div class="wsq-preview-product">
@@ -1659,7 +1659,7 @@ class WSQ_Admin {
 									</div>
 								</div>
 								<div class="wsq-preview-floating-demo">
-									<span style="font-size:11.5px;color:#64748b;font-weight:700;"><?php esc_html_e( 'ویجت شناور گوشه صفحه:', 'woo-smart-quote' ); ?></span>
+									<span style="font-size:11.5px;color:var(--wsq-muted);font-weight:700;"><?php esc_html_e( 'ویجت شناور گوشه صفحه:', 'woo-smart-quote' ); ?></span>
 									<div class="wsq-preview-floating-pill">
 										<span aria-hidden="true"><?php echo WSQ_Icons::get( 'clipboard' ); ?></span>
 										<span><?php esc_html_e( 'سبد استعلام:', 'woo-smart-quote' ); ?></span>
@@ -1803,7 +1803,7 @@ class WSQ_Admin {
 					</div>
 
 					<div>
-						<button type="button" class="button wsq-refresh-pairing-btn" style="display:inline-flex; align-items:center; gap:6px;">
+						<button type="button" class="button wsq-refresh-pairing-btn">
 							<?php echo WSQ_Icons::get( 'refresh' ); ?>
 							<span><?php esc_html_e( 'تولید بارکد جدید', 'woo-smart-quote' ); ?></span>
 						</button>
@@ -1835,29 +1835,29 @@ class WSQ_Admin {
 										<span><?php esc_html_e( 'دانلود مستقیم فایل APK (اندروید)', 'woo-smart-quote' ); ?></span>
 									</a>
 
-									<button type="button" class="button wsq-toggle-apk-qr-btn" aria-expanded="false" style="display:inline-flex; align-items:center; gap:6px; min-height:38px;" title="<?php esc_attr_e( 'نمایش بارکد برای اسکن با گوشی و دانلود مستقیم', 'woo-smart-quote' ); ?>">
+									<button type="button" class="button wsq-toggle-apk-qr-btn" aria-expanded="false" title="<?php esc_attr_e( 'نمایش بارکد برای اسکن با گوشی و دانلود مستقیم', 'woo-smart-quote' ); ?>">
 										<?php echo WSQ_Icons::get( 'phone' ); ?>
 										<span><?php esc_html_e( 'دانلود مستقیم روی گوشی (QR Code)', 'woo-smart-quote' ); ?></span>
 									</button>
 
-									<a href="<?php echo esc_url( $releases_url ); ?>" class="button" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:6px; min-height:38px;" title="<?php esc_attr_e( 'مشاهده تمامی فایل‌های خروجی و یادداشت انتشار در گیت‌هاب', 'woo-smart-quote' ); ?>">
+									<a href="<?php echo esc_url( $releases_url ); ?>" class="button" target="_blank" rel="noopener noreferrer" title="<?php esc_attr_e( 'مشاهده تمامی فایل‌های خروجی و یادداشت انتشار در گیت‌هاب', 'woo-smart-quote' ); ?>">
 										<?php echo WSQ_Icons::get( 'link' ); ?>
 										<span><?php esc_html_e( 'انتشارهای گیت‌هاب (Releases)', 'woo-smart-quote' ); ?></span>
 									</a>
 
-									<button type="button" class="button wsq-toggle-custom-apk-btn" aria-expanded="false" style="display:inline-flex; align-items:center; gap:4px; min-height:38px; color:var(--wsq-muted);" title="<?php esc_attr_e( 'تنظیم لینک دانلود اختصاصی یا هاست شخصی', 'woo-smart-quote' ); ?>">
+									<button type="button" class="button wsq-toggle-custom-apk-btn" aria-expanded="false" title="<?php esc_attr_e( 'تنظیم لینک دانلود اختصاصی یا هاست شخصی', 'woo-smart-quote' ); ?>">
 										<?php echo WSQ_Icons::get( 'palette' ); ?>
 										<span><?php esc_html_e( 'آدرس اختصاصی…', 'woo-smart-quote' ); ?></span>
 									</button>
 								</div>
 
 								<!-- Direct Mobile Download QR Code Box (Toggleable) -->
-								<div id="wsq-apk-qr-container" class="wsq-app-collapsible-box" style="display:none; width:fit-content;">
-									<div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+								<div id="wsq-apk-qr-container" class="wsq-app-collapsible-box is-fit-content" style="display:none;">
+									<div class="wsq-app-qr-flex">
 										<div class="wsq-app-qr-preview-box">
 											<div id="wsq-apk-qrcode" data-url="<?php echo esc_attr( $apk_url ); ?>" style="display:flex; justify-content:center;"></div>
 										</div>
-										<div style="max-width:320px;">
+										<div class="wsq-app-qr-info">
 											<strong class="wsq-app-qr-info-title"><?php esc_html_e( 'اسکن بارکد با دوربین گوشی', 'woo-smart-quote' ); ?></strong>
 											<p class="wsq-app-qr-info-desc"><?php esc_html_e( 'دوربین گوشی اندرویدی خود را مقابل این بارکد بگیرید تا فایل APK مستقیماً روی گوشی دانلود شود.', 'woo-smart-quote' ); ?></p>
 											<span class="wsq-app-qr-info-meta">Universal APK &bull; <?php echo esc_html( sprintf( __( 'نسخه %s', 'woo-smart-quote' ), defined( 'WSQ_VERSION' ) ? WSQ_VERSION : '1.0.0' ) ); ?></span>
@@ -1866,19 +1866,19 @@ class WSQ_Admin {
 								</div>
 
 								<!-- Custom Download URL Editor Box (Toggleable) -->
-								<div id="wsq-custom-apk-container" class="wsq-app-collapsible-box" style="display:none; max-width:540px;">
+								<div id="wsq-custom-apk-container" class="wsq-app-collapsible-box is-custom-url" style="display:none;">
 									<label for="wsq_companion_apk_url_input" class="wsq-app-custom-label">
 										<?php esc_html_e( 'آدرس مستقیم فایل APK اختصاصی (اختیاری):', 'woo-smart-quote' ); ?>
 									</label>
-									<p class="description" style="margin-top:0; margin-bottom:8px; font-size:12px;">
+									<p class="description wsq-app-custom-desc">
 										<?php esc_html_e( 'در صورتی که فایل APK را در هاست اختصاصی یا رسانه وردپرس آپلود کرده‌اید، آدرس مستقیم آن را اینجا وارد کنید. در صورت خالی گذاشتن، لینک به مخزن رسمی انتشارهای گیت‌هاب برمی‌گردد.', 'woo-smart-quote' ); ?>
 									</p>
-									<div style="display:flex; gap:8px; align-items:center;">
-										<input type="url" id="wsq_companion_apk_url_input" class="regular-text code" style="flex-grow:1; direction:ltr;" placeholder="https://..." value="<?php echo esc_attr( $custom_url ); ?>" />
+									<div class="wsq-app-custom-row">
+										<input type="url" id="wsq_companion_apk_url_input" class="regular-text code wsq-app-custom-input" placeholder="https://..." value="<?php echo esc_attr( $custom_url ); ?>" />
 										<button type="button" class="button button-primary wsq-save-apk-url-btn"><?php esc_html_e( 'ذخیره', 'woo-smart-quote' ); ?></button>
 										<button type="button" class="button wsq-reset-apk-url-btn" title="<?php esc_attr_e( 'بازنشانی به گیت‌هاب رسمی', 'woo-smart-quote' ); ?>"><?php esc_html_e( 'پیش‌فرض', 'woo-smart-quote' ); ?></button>
 									</div>
-									<span id="wsq-custom-apk-status" style="display:block; margin-top:6px; font-size:12px;"></span>
+									<span id="wsq-custom-apk-status" class="wsq-app-custom-status"></span>
 								</div>
 
 								<div class="wsq-app-variants-note">
