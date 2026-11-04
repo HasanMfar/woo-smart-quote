@@ -25,7 +25,7 @@ dependencies:
   mobile_scanner: ^5.2.3
 
   # Background Sync & Notifications (No Firebase dependency)
-  workmanager: ^0.5.2
+  workmanager: ^0.10.10
   flutter_local_notifications: ^17.2.3
 
   # Utilities

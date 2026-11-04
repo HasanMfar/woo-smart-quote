@@ -71,7 +71,6 @@ class BackgroundSync {
   static Future<void> init() async {
     await Workmanager().initialize(
       callbackDispatcher,
-      isInDebugMode: false,
     );
 
     await Workmanager().registerPeriodicTask(
@@ -81,7 +80,7 @@ class BackgroundSync {
       constraints: Constraints(
         networkType: NetworkType.connected,
       ),
-      existingWorkPolicy: ExistingWorkPolicy.keep,
+      existingWorkPolicy: ExistingPeriodicWorkPolicy.keep,
     );
   }
 }
