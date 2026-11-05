@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/network/api_endpoints.dart';
@@ -255,6 +256,7 @@ class _QuoteDetailScreenState extends State<QuoteDetailScreen> {
             child: ElevatedButton.icon(
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
               onPressed: () async {
+                HapticFeedback.lightImpact();
                 final updated = await Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => PricingDeskScreen(quoteId: _quote!.id)),
@@ -269,33 +271,43 @@ class _QuoteDetailScreenState extends State<QuoteDetailScreen> {
           Row(
             children: [
               Expanded(
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => PdfPreviewScreen(
-                          quoteId: _quote!.id,
-                          quoteNumber: _quote!.number,
-                          pdfUrl: _quote!.pdfUrl,
+                child: SizedBox(
+                  height: 48,
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
+                    onPressed: () {
+                      HapticFeedback.lightImpact();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => PdfPreviewScreen(
+                            quoteId: _quote!.id,
+                            quoteNumber: _quote!.number,
+                            pdfUrl: _quote!.pdfUrl,
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.picture_as_pdf, size: 18),
-                  label: const Text('مشاهده PDF'),
+                      );
+                    },
+                    icon: const Icon(Icons.picture_as_pdf, size: 18),
+                    label: const Text('مشاهده PDF'),
+                  ),
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(backgroundColor: AppColors.accent),
-                  onPressed: _isNotifying ? null : _notifyCustomer,
-                  icon: _isNotifying
-                      ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : const Icon(Icons.send_rounded, size: 18),
-                  label: const Text('ارسال به خریدار'),
+                child: SizedBox(
+                  height: 48,
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(backgroundColor: AppColors.accent),
+                    onPressed: _isNotifying ? null : () {
+                      HapticFeedback.mediumImpact();
+                      _notifyCustomer();
+                    },
+                    icon: _isNotifying
+                        ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                        : const Icon(Icons.send_rounded, size: 18),
+                    label: const Text('ارسال به خریدار'),
+                  ),
                 ),
               ),
             ],
@@ -306,6 +318,7 @@ class _QuoteDetailScreenState extends State<QuoteDetailScreen> {
             height: 48, // 48dp Android Touch Target
             child: OutlinedButton.icon(
               onPressed: () async {
+                HapticFeedback.lightImpact();
                 final updated = await Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => PricingDeskScreen(quoteId: _quote!.id)),
@@ -328,9 +341,25 @@ class _QuoteDetailScreenState extends State<QuoteDetailScreen> {
         leading: item.imageUrl.isNotEmpty
             ? ClipRRect(
                 borderRadius: BorderRadius.circular(6),
-                child: Image.network(item.imageUrl, width: 44, height: 44, fit: BoxFit.cover),
+                child: Image.network(
+                  item.imageUrl,
+                  width: 44,
+                  height: 44,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Icon(
+                    Icons.inventory_2_outlined,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.darkTextMuted
+                        : AppColors.textMuted,
+                  ),
+                ),
               )
-            : Icon(Icons.inventory_2_outlined, color: Theme.of(context).brightness == Brightness.dark ? AppColors.darkTextMuted : AppColors.textMuted),
+            : Icon(
+                Icons.inventory_2_outlined,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.darkTextMuted
+                    : AppColors.textMuted,
+              ),
         title: Text(item.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
         subtitle: Text('تعداد: ${NumberFormatter.toPersianDigits(item.quantity)} × ${NumberFormatter.formatCurrency(item.unitPrice)}'),
         trailing: Text(

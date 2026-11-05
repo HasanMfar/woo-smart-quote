@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -68,6 +69,7 @@ class _PdfPreviewScreenState extends State<PdfPreviewScreen> {
   }
 
   void _sharePdf() async {
+    HapticFeedback.lightImpact();
     if (_localFilePath != null && File(_localFilePath!).existsSync()) {
       await Share.shareXFiles(
         [XFile(_localFilePath!)],
@@ -81,6 +83,7 @@ class _PdfPreviewScreenState extends State<PdfPreviewScreen> {
   }
 
   void _openInBrowser() async {
+    HapticFeedback.lightImpact();
     final uri = Uri.parse(widget.pdfUrl);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);

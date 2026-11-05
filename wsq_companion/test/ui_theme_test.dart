@@ -14,8 +14,18 @@ void main() {
       expect(theme.colorScheme.primary, AppColors.primary);
       expect(theme.cardTheme.shape, isA<RoundedRectangleBorder>());
       expect(theme.textTheme.bodyLarge?.fontFamily, 'Vazirmatn');
+      expect(theme.textTheme.bodyLarge?.letterSpacing, 0.0);
+      expect(theme.appBarTheme.titleTextStyle?.letterSpacing, 0.0);
+      expect(theme.dialogTheme.titleTextStyle?.letterSpacing, 0.0);
+      expect(theme.dialogTheme.contentTextStyle?.letterSpacing, 0.0);
+      expect(theme.chipTheme.labelStyle?.letterSpacing, 0.0);
       expect(theme.elevatedButtonTheme.style?.textStyle?.resolve({})?.fontFamily, 'Vazirmatn');
       expect(theme.dialogTheme.backgroundColor, AppColors.surface);
+      expect(theme.pageTransitionsTheme.builders[TargetPlatform.android], isA<FadeForwardsPageTransitionsBuilder>());
+      expect(theme.iconButtonTheme.style?.minimumSize?.resolve({}), const Size(48, 48));
+      expect(theme.textButtonTheme.style?.foregroundColor?.resolve({}), AppColors.primary);
+      expect(theme.textButtonTheme.style?.textStyle?.resolve({})?.letterSpacing, 0.0);
+      expect(theme.textButtonTheme.style?.minimumSize?.resolve({}), const Size(48, 48));
     });
 
     test('Dark theme configures dark surfaces, chipTheme, dialogTheme, and Vazirmatn', () {
@@ -26,9 +36,19 @@ void main() {
       expect(darkTheme.scaffoldBackgroundColor, AppColors.darkBackground);
       expect(darkTheme.cardTheme.color, AppColors.darkSurface);
       expect(darkTheme.textTheme.bodyMedium?.fontFamily, 'Vazirmatn');
+      expect(darkTheme.textTheme.bodyMedium?.letterSpacing, 0.0);
+      expect(darkTheme.appBarTheme.titleTextStyle?.letterSpacing, 0.0);
+      expect(darkTheme.dialogTheme.titleTextStyle?.letterSpacing, 0.0);
+      expect(darkTheme.dialogTheme.contentTextStyle?.letterSpacing, 0.0);
+      expect(darkTheme.chipTheme.labelStyle?.letterSpacing, 0.0);
       expect(darkTheme.chipTheme.backgroundColor, AppColors.darkSurface);
       expect(darkTheme.dialogTheme.backgroundColor, AppColors.darkSurface);
       expect(darkTheme.snackBarTheme.backgroundColor, AppColors.darkSurfaceCard);
+      expect(darkTheme.pageTransitionsTheme.builders[TargetPlatform.android], isA<FadeForwardsPageTransitionsBuilder>());
+      expect(darkTheme.iconButtonTheme.style?.minimumSize?.resolve({}), const Size(48, 48));
+      expect(darkTheme.textButtonTheme.style?.foregroundColor?.resolve({}), AppColors.primaryLight);
+      expect(darkTheme.textButtonTheme.style?.textStyle?.resolve({})?.letterSpacing, 0.0);
+      expect(darkTheme.textButtonTheme.style?.minimumSize?.resolve({}), const Size(48, 48));
     });
 
     testWidgets('AppColors helpers return contrast-safe colors across Light and Dark brightness', (tester) async {
@@ -192,6 +212,8 @@ void main() {
       expect(find.text('هیچ استعلامی یافت نشد.'), findsOneWidget);
       expect(find.text('استعلام‌های ثبت‌شده در فروشگاه به صورت خودکار در این صفحه نمایش داده می‌شوند.'), findsOneWidget);
       expect(find.byType(OutlinedButton), findsOneWidget);
+      final btnSize = tester.getSize(find.byType(OutlinedButton));
+      expect(btnSize.height, greaterThanOrEqualTo(48.0));
 
       await tester.tap(find.byType(OutlinedButton));
       await tester.pump();
@@ -228,6 +250,9 @@ void main() {
 
       expect(find.text('خطا در ارتباط'), findsOneWidget);
       expect(find.text('اتصال به فروشگاه برقرار نشد.'), findsOneWidget);
+
+      final btnWidget = tester.widget<OutlinedButton>(find.byType(OutlinedButton));
+      expect(btnWidget.style?.foregroundColor?.resolve({}), AppColors.error);
 
       await tester.tap(find.byType(OutlinedButton));
       await tester.pump();

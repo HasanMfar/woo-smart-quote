@@ -1147,6 +1147,10 @@ class WSQ_Admin {
 						</div>
 					</div>
 					<div class="wsq-brand-meta">
+						<span class="wsq-setup-badge<?php echo 100 === (int) $wsq_setup['percent'] ? ' is-complete' : ''; ?>" title="<?php esc_attr_e( 'میزان تکمیل تنظیمات سامانه', 'woo-smart-quote' ); ?>">
+							<span class="wsq-setup-label"><?php esc_html_e( 'راه‌اندازی:', 'woo-smart-quote' ); ?></span>
+							<strong class="wsq-setup-percent"><?php echo esc_html( number_format_i18n( (int) $wsq_setup['percent'] ) ); ?>٪</strong>
+						</span>
 						<span class="wsq-version-badge"><?php echo esc_html( sprintf( __( 'نسخه %s', 'woo-smart-quote' ), defined( 'WSQ_VERSION' ) ? WSQ_VERSION : '1.0.0' ) ); ?></span>
 					</div>
 				</div>

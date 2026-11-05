@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/constants/app_theme.dart';
@@ -87,6 +88,7 @@ class _PricingDeskScreenState extends State<PricingDeskScreen> {
   Future<void> _saveAndDispatch() async {
     if (_quote == null || _isSaving) return;
 
+    HapticFeedback.mediumImpact();
     setState(() => _isSaving = true);
 
     final itemsPayload = _quote!.items.map((it) {
@@ -364,6 +366,9 @@ class _PricingDeskScreenState extends State<PricingDeskScreen> {
                     label: '${item.discountPercent.toInt()}٪',
                     activeColor: AppColors.secondary,
                     onChanged: (val) {
+                      if (val.toInt() != item.discountPercent.toInt()) {
+                        HapticFeedback.selectionClick();
+                      }
                       setState(() {
                         item.discountPercent = val;
                         item.recalculate();
@@ -423,7 +428,10 @@ class _PricingDeskScreenState extends State<PricingDeskScreen> {
                       return DropdownMenuItem(value: opt, child: Text(opt));
                     }).toList(),
                     onChanged: (val) {
-                      if (val != null) setState(() => _validity = val);
+                      if (val != null) {
+                        HapticFeedback.selectionClick();
+                        setState(() => _validity = val);
+                      }
                     },
                     decoration: const InputDecoration(isDense: true),
                   ),
@@ -457,7 +465,10 @@ class _PricingDeskScreenState extends State<PricingDeskScreen> {
               value: _autoNotify,
               activeTrackColor: AppColors.secondary,
               activeThumbColor: Colors.white,
-              onChanged: (val) => setState(() => _autoNotify = val),
+              onChanged: (val) {
+                HapticFeedback.lightImpact();
+                setState(() => _autoNotify = val);
+              },
             ),
           ],
         ),

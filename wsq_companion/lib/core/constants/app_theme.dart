@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'app_colors.dart';
 
@@ -13,19 +14,21 @@ class AppTheme {
         fontFamily: fontFamily,
         fontSize: 32,
         fontWeight: FontWeight.bold,
-        letterSpacing: -0.5,
+        letterSpacing: 0.0,
         height: 1.3,
       ),
       displayMedium: const TextStyle(
         fontFamily: fontFamily,
         fontSize: 28,
         fontWeight: FontWeight.bold,
+        letterSpacing: 0.0,
         height: 1.35,
       ),
       headlineMedium: TextStyle(
         fontFamily: fontFamily,
         fontSize: 22,
         fontWeight: FontWeight.w700,
+        letterSpacing: 0.0,
         color: primaryColor,
         height: 1.4,
       ),
@@ -33,6 +36,7 @@ class AppTheme {
         fontFamily: fontFamily,
         fontSize: 19,
         fontWeight: FontWeight.w700,
+        letterSpacing: 0.0,
         color: primaryColor,
         height: 1.4,
       ),
@@ -40,6 +44,7 @@ class AppTheme {
         fontFamily: fontFamily,
         fontSize: 17,
         fontWeight: FontWeight.w700,
+        letterSpacing: 0.0,
         color: primaryColor,
         height: 1.45,
       ),
@@ -47,6 +52,7 @@ class AppTheme {
         fontFamily: fontFamily,
         fontSize: 15,
         fontWeight: FontWeight.w600,
+        letterSpacing: 0.0,
         color: primaryColor,
         height: 1.5,
       ),
@@ -54,6 +60,7 @@ class AppTheme {
         fontFamily: fontFamily,
         fontSize: 13.5,
         fontWeight: FontWeight.w600,
+        letterSpacing: 0.0,
         color: secondaryColor,
         height: 1.5,
       ),
@@ -61,6 +68,7 @@ class AppTheme {
         fontFamily: fontFamily,
         fontSize: 15,
         fontWeight: FontWeight.normal,
+        letterSpacing: 0.0,
         color: primaryColor,
         height: 1.6,
       ),
@@ -68,6 +76,7 @@ class AppTheme {
         fontFamily: fontFamily,
         fontSize: 13.5,
         fontWeight: FontWeight.normal,
+        letterSpacing: 0.0,
         color: secondaryColor,
         height: 1.6,
       ),
@@ -75,6 +84,7 @@ class AppTheme {
         fontFamily: fontFamily,
         fontSize: 12,
         fontWeight: FontWeight.normal,
+        letterSpacing: 0.0,
         color: secondaryColor,
         height: 1.5,
       ),
@@ -82,12 +92,14 @@ class AppTheme {
         fontFamily: fontFamily,
         fontSize: 14,
         fontWeight: FontWeight.w700,
+        letterSpacing: 0.0,
         height: 1.4,
       ),
       labelMedium: TextStyle(
         fontFamily: fontFamily,
         fontSize: 12,
         fontWeight: FontWeight.w600,
+        letterSpacing: 0.0,
         color: secondaryColor,
         height: 1.4,
       ),
@@ -95,6 +107,7 @@ class AppTheme {
         fontFamily: fontFamily,
         fontSize: 11,
         fontWeight: FontWeight.w500,
+        letterSpacing: 0.0,
         color: secondaryColor,
         height: 1.3,
       ),
@@ -107,6 +120,12 @@ class AppTheme {
       useMaterial3: true,
       fontFamily: fontFamily,
       brightness: Brightness.light,
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: FadeForwardsPageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+        },
+      ),
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primary,
         primary: AppColors.primary,
@@ -115,6 +134,11 @@ class AppTheme {
         brightness: Brightness.light,
       ),
       scaffoldBackgroundColor: AppColors.background,
+      iconButtonTheme: IconButtonThemeData(
+        style: IconButton.styleFrom(
+          minimumSize: const Size(48, 48),
+        ),
+      ),
       textTheme: _buildTextTheme(
         primaryColor: AppColors.textPrimary,
         secondaryColor: AppColors.textSecondary,
@@ -129,6 +153,7 @@ class AppTheme {
           fontFamily: fontFamily,
           fontSize: 17,
           fontWeight: FontWeight.bold,
+          letterSpacing: 0.0,
           color: AppColors.textPrimary,
         ),
       ),
@@ -154,6 +179,7 @@ class AppTheme {
             fontFamily: fontFamily,
             fontWeight: FontWeight.bold,
             fontSize: 14.5,
+            letterSpacing: 0.0,
           ),
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
         ),
@@ -170,6 +196,7 @@ class AppTheme {
             fontFamily: fontFamily,
             fontWeight: FontWeight.w600,
             fontSize: 14,
+            letterSpacing: 0.0,
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         ),
@@ -177,10 +204,12 @@ class AppTheme {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: AppColors.primary,
+          minimumSize: const Size(48, 48),
           textStyle: const TextStyle(
             fontFamily: fontFamily,
             fontWeight: FontWeight.bold,
             fontSize: 13.5,
+            letterSpacing: 0.0,
           ),
         ),
       ),
@@ -191,11 +220,13 @@ class AppTheme {
         hintStyle: const TextStyle(
           fontFamily: fontFamily,
           fontSize: 13,
+          letterSpacing: 0.0,
           color: AppColors.textMuted,
         ),
         labelStyle: const TextStyle(
           fontFamily: fontFamily,
           fontSize: 13.5,
+          letterSpacing: 0.0,
           color: AppColors.textSecondary,
         ),
         border: OutlineInputBorder(
@@ -221,6 +252,7 @@ class AppTheme {
         labelStyle: const TextStyle(
           fontFamily: fontFamily,
           fontSize: 12.5,
+          letterSpacing: 0.0,
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
@@ -242,11 +274,13 @@ class AppTheme {
           fontFamily: fontFamily,
           fontSize: 17,
           fontWeight: FontWeight.bold,
+          letterSpacing: 0.0,
           color: AppColors.textPrimary,
         ),
         contentTextStyle: const TextStyle(
           fontFamily: fontFamily,
           fontSize: 13.5,
+          letterSpacing: 0.0,
           color: AppColors.textSecondary,
         ),
       ),
@@ -256,6 +290,7 @@ class AppTheme {
         contentTextStyle: const TextStyle(
           fontFamily: fontFamily,
           fontSize: 13,
+          letterSpacing: 0.0,
         ),
       ),
     );
@@ -267,6 +302,12 @@ class AppTheme {
       useMaterial3: true,
       fontFamily: fontFamily,
       brightness: Brightness.dark,
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: FadeForwardsPageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+        },
+      ),
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primaryLight,
         primary: AppColors.primaryLight,
@@ -275,6 +316,11 @@ class AppTheme {
         brightness: Brightness.dark,
       ),
       scaffoldBackgroundColor: AppColors.darkBackground,
+      iconButtonTheme: IconButtonThemeData(
+        style: IconButton.styleFrom(
+          minimumSize: const Size(48, 48),
+        ),
+      ),
       textTheme: _buildTextTheme(
         primaryColor: AppColors.darkTextPrimary,
         secondaryColor: AppColors.darkTextSecondary,
@@ -289,6 +335,7 @@ class AppTheme {
           fontFamily: fontFamily,
           fontSize: 17,
           fontWeight: FontWeight.bold,
+          letterSpacing: 0.0,
           color: AppColors.darkTextPrimary,
         ),
       ),
@@ -314,6 +361,7 @@ class AppTheme {
             fontFamily: fontFamily,
             fontWeight: FontWeight.bold,
             fontSize: 14.5,
+            letterSpacing: 0.0,
           ),
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
         ),
@@ -330,8 +378,21 @@ class AppTheme {
             fontFamily: fontFamily,
             fontWeight: FontWeight.w600,
             fontSize: 14,
+            letterSpacing: 0.0,
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: AppColors.primaryLight,
+          minimumSize: const Size(48, 48),
+          textStyle: const TextStyle(
+            fontFamily: fontFamily,
+            fontWeight: FontWeight.bold,
+            fontSize: 13.5,
+            letterSpacing: 0.0,
+          ),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -341,11 +402,13 @@ class AppTheme {
         hintStyle: const TextStyle(
           fontFamily: fontFamily,
           fontSize: 13,
+          letterSpacing: 0.0,
           color: AppColors.darkTextMuted,
         ),
         labelStyle: const TextStyle(
           fontFamily: fontFamily,
           fontSize: 13.5,
+          letterSpacing: 0.0,
           color: AppColors.darkTextSecondary,
         ),
         border: OutlineInputBorder(
@@ -372,6 +435,7 @@ class AppTheme {
         labelStyle: const TextStyle(
           fontFamily: fontFamily,
           fontSize: 12.5,
+          letterSpacing: 0.0,
           color: AppColors.darkTextPrimary,
         ),
         shape: RoundedRectangleBorder(
@@ -389,11 +453,13 @@ class AppTheme {
           fontFamily: fontFamily,
           fontSize: 17,
           fontWeight: FontWeight.bold,
+          letterSpacing: 0.0,
           color: AppColors.darkTextPrimary,
         ),
         contentTextStyle: const TextStyle(
           fontFamily: fontFamily,
           fontSize: 13.5,
+          letterSpacing: 0.0,
           color: AppColors.darkTextSecondary,
         ),
       ),
@@ -404,6 +470,7 @@ class AppTheme {
         contentTextStyle: const TextStyle(
           fontFamily: fontFamily,
           fontSize: 13,
+          letterSpacing: 0.0,
           color: AppColors.darkTextPrimary,
         ),
       ),

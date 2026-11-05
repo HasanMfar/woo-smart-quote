@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../constants/app_colors.dart';
 
 /// Reusable, accessible empty and error state component for Nerkhnegar.
@@ -41,9 +42,15 @@ class WsqEmptyState extends StatelessWidget {
               width: 64,
               height: 64,
               decoration: BoxDecoration(
-                color: AppColors.recessedBg(context),
+                color: isError
+                    ? (isDark ? AppColors.darkErrorBg : AppColors.errorBg)
+                    : AppColors.recessedBg(context),
                 shape: BoxShape.circle,
-                border: Border.all(color: AppColors.border(context)),
+                border: Border.all(
+                  color: isError
+                      ? AppColors.error.withValues(alpha: 0.35)
+                      : AppColors.border(context),
+                ),
               ),
               child: Icon(
                 icon,
@@ -56,8 +63,10 @@ class WsqEmptyState extends StatelessWidget {
               title,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: Theme.of(context).textTheme.titleMedium?.color ??
-                    AppColors.textPrimary,
+                color: isError
+                    ? (isDark ? const Color(0xFFFCA5A5) : AppColors.error)
+                    : (Theme.of(context).textTheme.titleMedium?.color ??
+                        AppColors.textPrimary),
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
@@ -78,9 +87,20 @@ class WsqEmptyState extends StatelessWidget {
               const SizedBox(height: 20),
               OutlinedButton.icon(
                 style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(180, 44),
+                  minimumSize: const Size(180, 48), // 48dp Android Touch Target
+                  foregroundColor: isError
+                      ? AppColors.error
+                      : (isDark ? AppColors.primaryLight : AppColors.primary),
+                  side: BorderSide(
+                    color: isError
+                        ? AppColors.error.withValues(alpha: 0.5)
+                        : (isDark ? AppColors.darkCardBorder : AppColors.cardBorder),
+                  ),
                 ),
-                onPressed: onAction,
+                onPressed: () {
+                  HapticFeedback.lightImpact();
+                  onAction!();
+                },
                 icon: Icon(actionIcon ?? Icons.refresh, size: 18),
                 label: Text(actionLabel!),
               ),

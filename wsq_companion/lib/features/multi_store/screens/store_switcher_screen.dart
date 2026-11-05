@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/storage/local_storage.dart';
@@ -33,6 +34,7 @@ class _StoreSwitcherScreenState extends State<StoreSwitcherScreen> {
   }
 
   Future<void> _selectStore(StoreProfile store) async {
+    HapticFeedback.lightImpact();
     final token = await LocalStorage.getToken(store.storeUrl);
     if (token == null) {
       if (!mounted) return;
@@ -134,6 +136,7 @@ class _StoreSwitcherScreenState extends State<StoreSwitcherScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
               onPressed: () async {
+                HapticFeedback.lightImpact();
                 await Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const QrScannerScreen()),

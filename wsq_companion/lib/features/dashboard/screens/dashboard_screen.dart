@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/network/api_client.dart';
@@ -46,8 +47,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
         title: const Text('خروج از حساب'),
         content: const Text('برای اتصال مجدد باید بارکد جفت‌سازی فروشگاه را دوباره اسکن کنید. ادامه می‌دهید؟'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('انصراف')),
-          ElevatedButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('خروج')),
+          TextButton(
+            onPressed: () {
+              HapticFeedback.lightImpact();
+              Navigator.pop(ctx, false);
+            },
+            child: const Text('انصراف'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+            onPressed: () {
+              HapticFeedback.mediumImpact();
+              Navigator.pop(ctx, true);
+            },
+            child: const Text('خروج'),
+          ),
         ],
       ),
     );
@@ -287,6 +301,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return ChoiceChip(
       label: Text(label),
       selected: isSelected,
+      materialTapTargetSize: MaterialTapTargetSize.padded,
       selectedColor: isDark ? AppColors.primaryLight : AppColors.primary,
       backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
       side: BorderSide(
@@ -302,6 +317,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
       onSelected: (selected) {
         if (selected) {
+          HapticFeedback.selectionClick();
           setState(() => _selectedFilter = filterKey);
           _loadQuotes();
         }
@@ -318,6 +334,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: () async {
+          HapticFeedback.lightImpact();
           final updated = await Navigator.push(
             context,
             MaterialPageRoute(
@@ -456,6 +473,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       minimumSize: const Size(0, 48), // 48dp Android Touch Target
                     ),
                     onPressed: () async {
+                      HapticFeedback.lightImpact();
                       if (quote.isPending) {
                         final updated = await Navigator.push(
                           context,
@@ -465,12 +483,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         );
                         if (updated == true) _loadQuotes();
                       } else {
-                        Navigator.push(
+                        final updated = await Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (_) => QuoteDetailScreen(quoteId: quote.id),
                           ),
                         );
+                        if (updated == true) _loadQuotes();
                       }
                     },
                     icon: Icon(quote.isPending ? Icons.edit_note : Icons.visibility, size: 18),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
@@ -58,6 +59,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
     if (!mounted) return;
 
     if (success) {
+      HapticFeedback.mediumImpact();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(AppStrings.pairingSuccess),
@@ -66,6 +68,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
       );
       _completePairing();
     } else {
+      HapticFeedback.heavyImpact();
       setState(() => _isProcessing = false);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -77,6 +80,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
   }
 
   void _showManualDialog() {
+    HapticFeedback.lightImpact();
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -109,12 +113,16 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(ctx),
+            onPressed: () {
+              HapticFeedback.lightImpact();
+              Navigator.pop(ctx);
+            },
             child: const Text('انصراف'),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.accent),
             onPressed: () async {
+              HapticFeedback.mediumImpact();
               final url = _manualUrlController.text.trim();
               final code = _manualCodeController.text.trim();
               if (url.isEmpty || code.isEmpty) {
@@ -159,11 +167,17 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
           actions: [
             IconButton(
               icon: const Icon(Icons.flash_on),
-              onPressed: () => _controller.toggleTorch(),
+              onPressed: () {
+                HapticFeedback.lightImpact();
+                _controller.toggleTorch();
+              },
             ),
             IconButton(
               icon: const Icon(Icons.cameraswitch),
-              onPressed: () => _controller.switchCamera(),
+              onPressed: () {
+                HapticFeedback.lightImpact();
+                _controller.switchCamera();
+              },
             ),
           ],
         ),
@@ -205,7 +219,10 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
                       ),
                       const SizedBox(height: 12),
                       TextButton.icon(
-                        onPressed: _showManualDialog,
+                        onPressed: () {
+                          HapticFeedback.lightImpact();
+                          _showManualDialog();
+                        },
                         icon: const Icon(Icons.keyboard),
                         label: const Text('وارد کردن دستی کد اتصال'),
                       ),
