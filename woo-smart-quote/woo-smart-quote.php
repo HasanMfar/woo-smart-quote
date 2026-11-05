@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-// Encoded files terminate the entire request if their loader is unavailable.
+// Check server runtime requirements.
 $wsq_missing_requirements = array();
 if ( PHP_VERSION_ID < 80000 ) {
 	$wsq_missing_requirements[] = 'PHP 8.0+';
@@ -27,9 +27,6 @@ foreach ( array( 'gd', 'mbstring' ) as $wsq_extension ) {
 	if ( ! extension_loaded( $wsq_extension ) ) {
 		$wsq_missing_requirements[] = $wsq_extension;
 	}
-}
-if ( ( is_file( __DIR__ . '/RTL_License_c5f8dd81a1c04a46.php' ) || is_file( __DIR__ . '/ProFeature.php' ) ) && ! extension_loaded( 'ionCube Loader' ) ) {
-	$wsq_missing_requirements[] = 'ionCube Loader';
 }
 /**
  * Deactivation: drop the plugin's cron events so a deactivated install stops
@@ -57,13 +54,6 @@ if ( $wsq_missing_requirements ) {
 	return;
 }
 
-// RTL License Loader
-$rtlLicenseFilePath = __DIR__ . DIRECTORY_SEPARATOR . 'RTL_License_c5f8dd81a1c04a46.php';
-
-if ( is_file( $rtlLicenseFilePath ) ) {
-	require_once $rtlLicenseFilePath;
-}
-
 // Define constants.
 define( 'WSQ_VERSION', '1.0.0' );
 define( 'WSQ_PLUGIN_FILE', __FILE__ );
@@ -87,14 +77,8 @@ function woo_smart_quote_init() {
 	WSQ_Plugin::instance();
 }
 
-// ProFeature License Gate (Protected via Rastchin Guard)
-$wsq_pro_feature_file = __DIR__ . DIRECTORY_SEPARATOR . 'ProFeature.php';
-if ( is_file( $wsq_pro_feature_file ) ) {
-	require_once $wsq_pro_feature_file;
-} else {
-	// Fallback for development / test environments without license guard
-	add_action( 'plugins_loaded', 'woo_smart_quote_init', 20 );
-}
+// Register plugin initialization directly and unconditionally.
+add_action( 'plugins_loaded', 'woo_smart_quote_init', 20 );
 
 /**
  * Activation: create the inbound-messages table. The polling schedule is

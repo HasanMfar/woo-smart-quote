@@ -68,32 +68,22 @@ $html = <<<HTML
   }
   .brand-title {
     font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, Tahoma, sans-serif;
-    font-size: 76px;
+    font-size: 82px;
     font-weight: 700;
-    line-height: 1.05;
+    line-height: 1.1;
     color: #ffffff;
     text-align: center;
     direction: rtl;
-    margin-top: 10px;
-    margin-bottom: 8px;
+    margin-top: 14px;
     letter-spacing: -1px;
     text-shadow: 0 4px 20px rgba(0, 0, 0, 0.85), 0 1px 3px rgba(0, 0, 0, 0.9);
-  }
-  .brand-sub {
-    font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, Tahoma, sans-serif;
-    font-size: 13.5px;
-    font-weight: 700;
-    color: #7dd3fc;
-    letter-spacing: 0.2px;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
-    direction: rtl;
   }
 </style>
 </head>
 <body>
 <div class="icon-canvas">
   <!-- Designer Twin Quotation Mark with Verification Node -->
-  <svg class="brand-mark" width="60" height="42" viewBox="0 0 76 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg class="brand-mark" width="66" height="46" viewBox="0 0 76 54" fill="none" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <linearGradient id="icnWhite" x1="0%" y1="0%" x2="100%" y2="100%">
         <stop offset="0%" stop-color="#FFFFFF"/>
@@ -119,9 +109,6 @@ $html = <<<HTML
 
   <!-- Large Centered Persian Product Name -->
   <div class="brand-title">نرخنگار</div>
-
-  <!-- Subtitle Text -->
-  <div class="brand-sub">پیش‌فاکتور رسمی • ووکامرس</div>
 </div>
 </body>
 </html>
@@ -135,7 +122,18 @@ $png_file = $root . '/docs/icon-320x320.png';
 $jpg_file = $root . '/docs/icon-320x320.jpg';
 
 // Run headless Chrome to capture 320x320 screenshot
-$chrome = 'C:\Program Files\Google\Chrome\Application\chrome.exe';
+$chrome_paths = array(
+    'C:\Program Files\Google\Chrome\Application\chrome.exe',
+    'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe',
+    getenv( 'LOCALAPPDATA' ) . '\Google\Chrome\Application\chrome.exe',
+);
+$chrome = 'chrome.exe';
+foreach ( $chrome_paths as $cp ) {
+    if ( file_exists( $cp ) ) {
+        $chrome = $cp;
+        break;
+    }
+}
 $user_data = sys_get_temp_dir() . '/chrome_wsq_render_' . time();
 $cmd = "cmd.exe /c \"\"$chrome\" --headless=new --user-data-dir=\"$user_data\" --hide-scrollbars --window-size=320,320 --screenshot=\"$png_file\" \"file:///$html_file\"\"";
 exec( $cmd, $output, $return_var );

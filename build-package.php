@@ -74,6 +74,8 @@ $excluded_paths = array(
 	'assets/images/infographics/',
 	'assets/images/mazanneh-logo-3d.jpg',
 	'assets/images/logo-3d.jpg',
+	'ProFeature.php',
+	'RTL_License_',
 	'lib/mpdf/vendor/mpdf/mpdf/.github/',
 	'lib/mpdf/vendor/mpdf/mpdf/.gitignore',
 	'lib/mpdf/vendor/mpdf/mpdf/phpstan',
@@ -169,6 +171,12 @@ for ( $i = 0; $i < $verify->numFiles; $i++ ) {
 	}
 	if ( 'woo-smart-quote/woo-smart-quote.php' === $name ) {
 		$has_entry = true;
+	}
+	if ( false !== stripos( $name, 'ProFeature' ) || false !== stripos( basename( $name ), 'RTL_License' ) ) {
+		$verify->close();
+		@unlink( $tmp_name );
+		fwrite( STDERR, "Archive contains prohibited license stub: " . (string) $name . "\n" );
+		exit( 1 );
 	}
 }
 $verify->close();

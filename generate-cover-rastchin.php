@@ -98,23 +98,6 @@ $html = <<<HTML
     text-align: right;
   }
 
-  .tag-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    background: rgba(56, 189, 248, 0.12);
-    border: 1.5px solid rgba(56, 189, 248, 0.45);
-    padding: 8px 22px;
-    border-radius: 100px;
-    width: fit-content;
-  }
-  .tag-pill .pill-text {
-    font-size: 19px;
-    font-weight: 800;
-    color: #38bdf8;
-    letter-spacing: -0.2px;
-  }
-
   .brand-row {
     display: flex;
     align-items: center;
@@ -151,61 +134,29 @@ $html = <<<HTML
     background: #ffffff;
     border: 3.5px solid #f59e0b;
     border-radius: 24px;
-    padding: 28px 36px;
+    padding: 34px 44px;
     box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.8);
     display: flex;
     flex-direction: column;
-    gap: 20px;
-  }
-
-  .amber-box-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-bottom: 12px;
-    border-bottom: 2px solid #fef3c7;
-  }
-  .amber-box-title {
-    font-size: 26px;
-    font-weight: 900;
-    color: #b45309;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    letter-spacing: -0.3px;
+    justify-content: center;
   }
 
   /* Single clean column of 4 features with large font (>= 50px bold) */
   .features-column {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 18px;
   }
   .feature-item {
     display: flex;
     align-items: center;
-    gap: 16px;
-  }
-  .feature-check {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    background: #f59e0b;
-    color: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-    font-weight: 900;
-    flex-shrink: 0;
-    box-shadow: 0 4px 10px rgba(245, 158, 11, 0.35);
   }
   .feature-text {
-    font-size: 52px;
+    font-size: 54px;
     font-weight: 900;
     color: #0f172a;
     white-space: nowrap;
-    line-height: 1.15;
+    line-height: 1.2;
     letter-spacing: -0.5px;
   }
 
@@ -272,10 +223,6 @@ $html = <<<HTML
 
   <!-- Right: Brand Typography & High-Contrast Features -->
   <div class="right-col">
-    <div class="tag-pill">
-      <span class="pill-text">افزونه اختصاصی استعلام قیمت ووکامرس</span>
-    </div>
-
     <div class="brand-row">
       <img src="{$emblem_b64}" class="brand-logo-img" alt="نرخنگار">
       <h1 class="brand-name">نرخنگار</h1>
@@ -286,27 +233,17 @@ $html = <<<HTML
 
     <!-- Amber High-Contrast Box: 4 key features in a single clean column (>= 50px bold) -->
     <div class="amber-box">
-      <div class="amber-box-header">
-        <div class="amber-box-title">
-          <span>ویژگی‌های کلیدی نرخنگار</span>
-        </div>
-      </div>
-
       <div class="features-column">
         <div class="feature-item">
-          <div class="feature-check">✓</div>
           <span class="feature-text">پیش‌فاکتور رسمی ۱۶۹</span>
         </div>
         <div class="feature-item">
-          <div class="feature-check">✓</div>
           <span class="feature-text">اتصال بله و ایتا</span>
         </div>
         <div class="feature-item">
-          <div class="feature-check">✓</div>
           <span class="feature-text">اپلیکیشن اختصاصی اندروید</span>
         </div>
         <div class="feature-item">
-          <div class="feature-check">✓</div>
           <span class="feature-text">سازگاری کامل HPOS</span>
         </div>
       </div>
@@ -326,7 +263,18 @@ echo "Generated $html_file\n";
 $png_file = $root . '/docs/marketplace-cover-2100x1040.png';
 $jpg_file = $root . '/docs/marketplace-cover-2100x1040.jpg';
 
-$chrome = 'C:\Program Files\Google\Chrome\Application\chrome.exe';
+$chrome_paths = array(
+    'C:\Program Files\Google\Chrome\Application\chrome.exe',
+    'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe',
+    getenv( 'LOCALAPPDATA' ) . '\Google\Chrome\Application\chrome.exe',
+);
+$chrome = 'chrome.exe';
+foreach ( $chrome_paths as $cp ) {
+    if ( file_exists( $cp ) ) {
+        $chrome = $cp;
+        break;
+    }
+}
 $user_data = sys_get_temp_dir() . '/chrome_wsq_render';
 $cmd = "cmd.exe /c \"\"$chrome\" --headless=new --user-data-dir=\"$user_data\" --hide-scrollbars --window-size=2100,1040 --screenshot=\"$png_file\" \"file:///$html_file\"\"";
 exec( $cmd, $output, $return_var );

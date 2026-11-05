@@ -133,22 +133,41 @@ if ( file_exists( $legacy_pkg ) ) {
     $errors[] = "Outdated legacy package 'package-mazankar-1.0.0.zip' must be deleted!";
 }
 
-if ( file_exists( $plugin_zip ) && file_exists( $master_pkg ) ) {
-    $zip = new ZipArchive();
-    if ( $zip->open( $plugin_zip ) === true ) {
-        $has_entry = $zip->locateName( 'woo-smart-quote/woo-smart-quote.php' ) !== false;
-        $has_icon  = $zip->locateName( 'woo-smart-quote/assets/images/icon-320x320.png' ) !== false;
-        $num_files = $zip->numFiles;
-        $zip->close();
-        if ( $has_entry && $has_icon ) {
-            $successes[] = "Plugin archive check passed: {$plugin_zip} contains entrypoint and icon-320x320.png ({$num_files} files, " . filesize( $plugin_zip ) . " bytes).";
+$plugin_zips = [
+    $root . '/woo-smart-quote.zip',
+    $root . '/woo-smart-quote-1.0.0.zip'
+];
+
+foreach ( $plugin_zips as $pzip ) {
+    if ( file_exists( $pzip ) ) {
+        $zip = new ZipArchive();
+        if ( $zip->open( $pzip ) === true ) {
+            $has_entry = $zip->locateName( 'woo-smart-quote/woo-smart-quote.php' ) !== false;
+            $has_icon  = $zip->locateName( 'woo-smart-quote/assets/images/icon-320x320.png' ) !== false;
+            $num_files = $zip->numFiles;
+            $has_stub  = false;
+            for ( $i = 0; $i < $num_files; $i++ ) {
+                $ename = $zip->getNameIndex( $i );
+                if ( stripos( $ename, 'profeature' ) !== false || stripos( $ename, 'rtl_license' ) !== false ) {
+                    $has_stub = true;
+                    $errors[] = "Plugin zip {$pzip} contains prohibited license stub: {$ename}";
+                }
+            }
+            $zip->close();
+            if ( $has_entry && $has_icon && ! $has_stub ) {
+                $successes[] = "Plugin archive check passed: {$pzip} contains entrypoint, icon-320x320.png, and zero license stubs ({$num_files} files, " . filesize( $pzip ) . " bytes).";
+            } elseif ( ! $has_entry || ! $has_icon ) {
+                $errors[] = "Plugin zip {$pzip} missing entrypoint or icon";
+            }
         } else {
-            $errors[] = "Plugin zip missing entrypoint or icon";
+            $errors[] = "Cannot open $pzip";
         }
     } else {
-        $errors[] = "Cannot open $plugin_zip";
+        $errors[] = "Plugin zip missing: $pzip";
     }
+}
 
+if ( file_exists( $master_pkg ) ) {
     $zip2 = new ZipArchive();
     if ( $zip2->open( $master_pkg ) === true ) {
         $has_clean_zip = $zip2->locateName( 'woo-smart-quote.zip' ) !== false;
@@ -165,14 +184,15 @@ if ( file_exists( $plugin_zip ) && file_exists( $master_pkg ) ) {
         $errors[] = "Cannot open $master_pkg";
     }
 } else {
-    $errors[] = "Zip archives missing from root (expected $plugin_zip and $master_pkg)";
+    $errors[] = "Master delivery package missing: $master_pkg";
 }
 
 // 7. Demo preview and product description link check
 $html_files = [
     'docs/demo-preview.html',
     'index.html',
-    'docs/rastchin-product-page.html'
+    'docs/rastchin-product-page.html',
+    'docs/rastchin-description.html'
 ];
 foreach ( $html_files as $hf ) {
     $content = file_get_contents( $root . '/' . $hf );

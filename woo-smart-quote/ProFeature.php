@@ -1,2 +1,0 @@
-<?php
-// Stub for marketplace build environments.
